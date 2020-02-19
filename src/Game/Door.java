@@ -30,7 +30,7 @@ public class Door extends Displayable
 		{
 			Main.currRoom = leadRoom;
 			Main.interactingChar = this;
-			Main.toInit.add(leadRoom);
+			Main.initRoom(leadRoom);
 		}
     	super.show();
     	

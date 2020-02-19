@@ -16,6 +16,13 @@ public class Geometrical extends Image{
 			shapes.get(i).UIshow();
 		}
 	}
+	public void show()
+	{
+		for (int i = 0; i < shapes.size(); i++)
+		{
+			shapes.get(i).show();
+		}
+	}
 	public void setAlpha(float newAlpha)
 	{
 		float alphaFrac = newAlpha / getAlpha();

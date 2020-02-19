@@ -31,8 +31,8 @@ public class Projectile extends Image {
 	}
 	public static void showVisProjectiles()
 	{
-		visProj.forEach((proj) -> proj.show());
-		visProj.clear();
+		//visProj.forEach((proj) -> proj.show());
+		//visProj.clear();
 	}
 	
 	

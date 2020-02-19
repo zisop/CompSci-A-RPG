@@ -7,11 +7,13 @@ import UI.Item;
 import UI.ItemBag;
 import UI.UI;
 
-public class Shop extends Option{
+public class Shop{
 	private ExchangeSelection selection;
 	private CraftingBox box;
 	private ItemBag input;
 	private ItemBag output;
+	private boolean visibility;
+	private Shape xButton;
 	public Shop(ItemExchange[] inExchanges)
 	{
 		double yOffset = 400;
@@ -30,13 +32,21 @@ public class Shop extends Option{
 		selection.UIshow();
 		xButton.UIshow();
 	}
-	protected void createX()
+	public void createX()
 	{
+		double width = 50;
+		double length = 50;
 		xButton = new Shape(Shape.xButton, 
-				selection.getX() + selection.getWidth() / 2 + 50,
-				selection.getY() + selection.getLength() / 2 + 50, 100, 100);
+				selection.getX() + selection.getWidth() / 2 + length / 2,
+				selection.getY() + selection.getLength() / 2 + width / 2, width, length);
 	}
-	
+	public void updateX()
+	{
+		if (Main.leftClick && !Main.leftClickLastFrame && UI.mouseHovering(xButton))
+		{
+			visibility = false;
+		}
+	}
 	
 	//Buys whatever the player asks to buy if it's supposed to be buying it
 	private void manageExchanges()

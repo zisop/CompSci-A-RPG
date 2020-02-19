@@ -1,6 +1,7 @@
 package World;
 
 import Imported.Texture;
+import LowLevel.Geometrical;
 import LowLevel.Image;
 
 public class TileCreation {
@@ -16,27 +17,22 @@ public class TileCreation {
 		tileTex[GrassDirtUL] = new Texture("Tiles/GrassDirtUL.PNG");
 		tileTex[GrassDirtUR] = new Texture("Tiles/GrassDirtUR.PNG");
 	}
-	public static Image[] createGrid(int tile, int rows, int cols)
+	public static Geometrical createGrid(int tile, int rows, int cols)
 	{
+		Geometrical grid = new Geometrical();
 		double tileWidth = 50;
 		double tileLength = 50;
-		Image[] grid = new Image[rows * cols];
 		for (int r = 0; r < rows; r++)
 		{
 			for (int c = 0; c < cols; c++)
 			{
-				grid[r * cols + c] = new Image(tileTex[tile], tileWidth * c, tileLength * r, tileWidth, tileLength);
+				grid.addShape(new Image(tileTex[tile], 
+				tileWidth * c, tileLength * r, tileWidth, tileLength));
 			}
 		}
 		return grid;
 	}
-	public static void showTiles(Image[] tiles)
-	{
-		for (Image tile : tiles)
-		{
-			tile.show();
-		}
-	}
+
 	public static int Grass = 0;
 	public static int DirtGrass = 1;
 	public static int GrassDirt = 2;

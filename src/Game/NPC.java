@@ -5,6 +5,7 @@ import Imported.Texture;
 import LowLevel.Geometrical;
 import LowLevel.Shape;
 import UI.TextDisplay;
+import sun.java2d.opengl.OGLContext;
 
 public class NPC extends Movable{
 	//Put all raw dialogue for all NPCs in rawDialogue String[][][]
@@ -27,26 +28,142 @@ public class NPC extends Movable{
 	public static int textFrame = 0;
 	//All NPC dialogue is displayed in the textbox
 	public static Geometrical textBox;
+	
+	
+	public static int cowboy = 0;
+	
+	
 	private char[][][] dialogue;
 	private double fontSize;
 	private int currText;
 	private int frameNum;
-	public NPC(Texture img, double inX, double inY, double w, double l, int inDia, double font) {
-        super(img, inX, inY, w, l);
+	private Texture[] anims;
+	public NPC(int ID, double inX, double inY, double w, double l, int inDia, double font) {
+        super(null, inX, inY, w, l);
         dialogue = allDialogue[inDia];
-        currText = -1;
+        currText = notYetSpeaking;
         fontSize = font;
         setProjInteraction(false);
         frameNum = 0;
+        if (ID == cowboy)
+        {
+        	anims = getAnims(cowboyStart, cowboyEnd);
+        }
+        setAnim(0);
     }
     
-    public NPC(Texture img, double inX, double inY, double w, double l, double charW, double charL, int inDia, double font) {
-        super(img, inX, inY, w, l, charW, charL);
+    public NPC(int ID, double inX, double inY, double w, double l, double charW, double charL, int inDia, double font) {
+        super(null, inX, inY, w, l, charW, charL);
         dialogue = allDialogue[inDia];
-        currText = -1;
+        currText = notYetSpeaking;
         fontSize = font;
         setProjInteraction(false);
+        frameNum = 0;
+        if (ID == cowboy)
+        {
+        	anims = getAnims(cowboyStart, cowboyEnd);
+        }
+        setAnim(0);
     }
+    public void setAnim(int ID)
+    {
+    	setImage(anims[ID]);
+    }
+    
+    public int getCurr()
+    {
+    	return currText;
+    }
+    public void updateTextState()
+    {
+    	boolean skipped = false;
+    	if (currText != dialogue[Main.questState].length - 1)
+    	{
+    		if (currText != notYetSpeaking && frameNum < dialogue[Main.questState][currText].length)
+    		{
+    			frameNum = dialogue[Main.questState][currText].length;
+    			skipped = true;
+    		}
+    		else
+    		{
+    			currText += 1;
+			}
+    		Main.alreadyInteracting = true;
+    	}
+    	else 
+    	{
+    		if (Main.alreadyInteracting && frameNum < dialogue[Main.questState][currText].length)
+    		{
+    			frameNum = dialogue[Main.questState][currText].length;
+    			skipped = true;
+    		}
+    		else
+    		{
+    			Main.alreadyInteracting = false;
+    			currText = notYetSpeaking;
+    		}
+		}
+    	if (!skipped)
+    	{
+    		frameNum = 0;
+    	}
+    }
+
+    //Displays text from an NPC's dialogue given a font size
+    
+    public void showText()
+    {
+    	TextDisplay.showText(textBox, dialogue[Main.questState][currText], fontSize, frameNum);
+    	//we never overflow bois (doesnt matter unless this hits 2 million LOL)
+    	if (frameNum < dialogue[Main.questState][currText].length)
+    	{
+    		frameNum++;
+    	}
+    }
+    
+    public void show()
+    {
+    	//updatetextstate will show text or take away the text depending on npc information
+    	if (shouldInteract())
+    	{
+    		updateTextState();
+   			if (Main.alreadyInteracting)
+   			{
+   				Main.interactingChar = this;
+   			}
+   			else
+   			{
+   				Main.interactingChar = null;
+			}
+   			Main.xEvent = true;
+    	}
+    	super.show();
+    }
+    public boolean shouldInteract()
+    {
+    	return Main.xInteraction(this, 20) || Main.clickInteraction(this);
+    }
+    
+    
+    public static Texture[] NPCtex = new Texture[2];
+    
+    public static int cowboyStart = 0;
+    public static int cowboyEnd = 1;
+    public static void initTex()
+    {
+    	NPCtex[0] = new Texture("NPCs/Cowboy/IdleUp.PNG");
+    	NPCtex[1] = new Texture("NPCs/Cowboy/IdleDown.PNG");
+    }
+    public static Texture[] getAnims(int start, int end)
+    {
+    	Texture[] textures = new Texture[end - start + 1];
+    	for (int i = 0; i < textures.length; i++)
+    	{
+    		textures[i] = NPCtex[start + i]; 
+    	}
+    	return textures;
+    }
+    
     //Initializes char[][][] allDialogue
     public static void initText()
     {
@@ -101,73 +218,5 @@ public class NPC extends Movable{
     	}
     	
     }
-    public int getCurr()
-    {
-    	return currText;
-    }
-    public void updateTextState()
-    {
-    	boolean skipped = false;
-    	if (currText != dialogue[Main.questState].length - 1)
-    	{
-    		if (currText != -1 && frameNum < dialogue[Main.questState][currText].length)
-    		{
-    			frameNum = dialogue[Main.questState][currText].length;
-    			skipped = true;
-    		}
-    		else
-    		{
-    			currText += 1;
-			}
-    		Main.alreadyInteracting = true;
-    	}
-    	else 
-    	{
-    		if (Main.alreadyInteracting && frameNum < dialogue[Main.questState][currText].length)
-    		{
-    			frameNum = dialogue[Main.questState][currText].length;
-    			skipped = true;
-    		}
-    		else
-    		{
-    			Main.alreadyInteracting = !Main.alreadyInteracting;
-    		}
-		}
-    	if (!skipped)
-    	{
-    		frameNum = 0;
-    	}
-    }
-
-    //Displays text from an NPC's dialogue given a font size
-    
-    public void showText()
-    {
-    	TextDisplay.showText(textBox, dialogue[Main.questState][currText], fontSize, frameNum);
-    	//we never overflow bois (doesnt matter unless this hits 2 million LOL)
-    	if (frameNum < dialogue[Main.questState][currText].length)
-    	{
-    		frameNum++;
-    	}
-    }
-    
-    public void show()
-    {
-    	//updatetextstate will show text or take away the text depending on npc information
-    	if (Main.xInteraction(this, 20) || Main.clickInteraction(this))
-    	{
-    		updateTextState();
-   			if (Main.alreadyInteracting)
-   			{
-   				Main.interactingChar = this;
-   			}
-   			else
-   			{
-   				Main.interactingChar = null;
-			}
-   			Main.xEvent = true;
-    	}
-    	super.show();
-    	
-    }
+    public static int notYetSpeaking = -1;
 }

@@ -6,10 +6,12 @@ import org.lwjgl.opengl.GL;
 
 import Exchange.ItemExchange;
 import Exchange.Shop;
+import Exchange.ShopKeeper;
 import Imported.MergerSort;
 import Imported.Texture;
 import Input.CursorInput;
 import Input.KeyInput;
+import LowLevel.Geometrical;
 import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
@@ -38,7 +40,6 @@ public class Main
     public static GLFWVidMode videoMode;
     public static GLFWKeyCallback events;
     public static Displayable[][] allRooms = new Displayable[3][];
-    public static ArrayList<Integer> toInit;
     public static boolean[] initted = new boolean[allRooms.length];
     public static Player player;
     public static String currDialogue;
@@ -94,7 +95,7 @@ public class Main
         Shop shop = new Shop(new ItemExchange[] {exchange});
         shop.setVisibility(true);
         
-        Image[] tiles = TileCreation.createGrid(TileCreation.Grass, 200, 200);
+        Geometrical tiles = TileCreation.createGrid(TileCreation.Grass, 0, 0);
         
         while (!glfwWindowShouldClose(window)) {
         	double startTime = System.currentTimeMillis();
@@ -107,18 +108,8 @@ public class Main
             e = KeyInput.keys[GLFW_KEY_E];
             one = KeyInput.keys[GLFW_KEY_1];
             
-            for(int i = 0; i < toInit.size(); i++)
-            {
-            	initRoom(toInit.get(i));
-            }
-            
-            
             //movement = {ability to move north, east, south, west}
             boolean[] movement = player.getMovement();
-            for (int i = 0; i < toInit.size(); ++i) {
-                initRoom(toInit.get(i));
-            }
-            toInit.clear();
             
             boolean walked = false;
             boolean[] keysPressed = new boolean[4];
@@ -153,7 +144,7 @@ public class Main
             }
             //If player didn't walk, then he stopped walking :)
             if (!walked) {player.stopWalk();}
-            TileCreation.showTiles(tiles);
+            //tiles.show();
             showVisibles();
             if (shop.getVisibility()) {shop.UIshow();}
             
@@ -241,6 +232,7 @@ public class Main
     		allRooms[currRoom] = MergerSort.mergeSort(allRooms[currRoom]);
 		}
         
+
         for (int i = 0; i < allRooms[currRoom].length; ++i) {
            	((Image) allRooms[currRoom][i]).show();
         }
@@ -254,6 +246,7 @@ public class Main
     
     //Initializes a room given a roomNumber, or doesn't if already initialized
     public static void initRoom(int roomNum) {
+    	System.out.println(roomNum);
         if (!Main.initted[roomNum]) {
             if (roomNum == 0) {
                 initRoom0();
@@ -280,7 +273,6 @@ public class Main
     
     public static void initRoom0() {
         Displayable[] room = new Displayable[6];
-        NPC[] npcs = new NPC[1];
         Door door1 = new Door(Shape.shapes[0], 0, -300, 50, 100, 2);
         Door door2 = new Door(Shape.shapes[0], 200, -100, 100, 50, 1);
         room[0] = door1;
@@ -289,12 +281,13 @@ public class Main
         door2.setLead(2);
         room[2] = new Displayable(Shape.shapes[0], -200, 200, 150, 150);
         room[3] = new Displayable(Shape.shapes[0], 200, 200, 150, 150);
-        room[4] = new NPC(Player.loadedTex[5], 200, -50, 40, 40, 0, 15);
+        NPC npc = new NPC(0, 200, -50, 40, 40, 0, 15);
+        npc.setAnim(ShopKeeper.cowboyUp);
+        room[4] = npc;
         ItemBag bag = new ItemBag(0, 300, 40, 40, 2, 2);
         Item wand = new Item(2);
         bag.addItem(wand, 1);
         room[5] = new Chest(0, 200, 50, 50, 50, 50, 40, bag);
-        npcs[0] = (NPC)room[4];
         allRooms[0] = room;
         initted[0] = true;
     }
@@ -306,7 +299,8 @@ public class Main
         room[0] = theDoor;
         room[1] = new Displayable(Shape.shapes[0], -200, -200, 150, 150);
         room[2] = new Displayable(Shape.shapes[0], 200, -200, 150, 150);
-        room[3] = new NPC(Player.loadedTex[7], 100, 300, 40, 40, 1, 15);
+        NPC npc = new NPC(0, 100, 300, 40, 40, 1, 15);
+        room[3] = npc;
         allRooms[1] = room;
         initted[1] = true;
     }
@@ -326,7 +320,6 @@ public class Main
     //Initializes the game
     public static void init() {
         events = new KeyInput();
-        toInit = new ArrayList<Integer>();
         width = 1000;
         length = 800;
         glfwInit();
@@ -346,6 +339,7 @@ public class Main
         UI.init();
         TextDisplay.initText();
         TileCreation.initTex();
+        NPC.initTex();
         glEnable(3553);
         glEnable(3042);
         glBlendFunc(770, 771);
