@@ -12,8 +12,6 @@ public class Shop{
 	private CraftingBox box;
 	private ItemBag input;
 	private ItemBag output;
-	private boolean visibility;
-	private Shape xButton;
 	public Shop(ItemExchange[] inExchanges)
 	{
 		double yOffset = 400;
@@ -21,31 +19,12 @@ public class Shop{
 		selection = new ExchangeSelection(inExchanges, box, yOffset);
 		input = box.getInput();
 		output = box.getOutput();
-		visibility = false;
-		createX();
 	}
 	public void UIshow()
 	{
-		updateX();
 		manageExchanges();
 		box.UIshow();
 		selection.UIshow();
-		xButton.UIshow();
-	}
-	public void createX()
-	{
-		double width = 50;
-		double length = 50;
-		xButton = new Shape(Shape.xButton, 
-				selection.getX() + selection.getWidth() / 2 + length / 2,
-				selection.getY() + selection.getLength() / 2 + width / 2, width, length);
-	}
-	public void updateX()
-	{
-		if (Main.leftClick && !Main.leftClickLastFrame && UI.mouseHovering(xButton))
-		{
-			visibility = false;
-		}
 	}
 	
 	//Buys whatever the player asks to buy if it's supposed to be buying it
@@ -77,7 +56,8 @@ public class Shop{
 				outputItem.stick();
 				for (int i = 0; i < UI.playerBag.getSlots().length; i++)
 				{
-					if (UI.playerBag.getSlots()[i].getItem() != null)
+					if (UI.playerBag.getSlots()[i].getItem() == null 
+							|| UI.playerBag.getSlots()[i].getItem().getID() == outputItem.getID())
 					{
 						outputItem.setSlot(i);
 						slotSet = true;
@@ -90,14 +70,5 @@ public class Shop{
 				else {Audio.playSound("Inv/coin2");}
 			}
 		}
-	}
-	
-	public void setVisibility(boolean newVisibility)
-	{
-		visibility = newVisibility;
-	}
-	public boolean getVisibility()
-	{
-		return visibility;
 	}
 }

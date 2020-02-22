@@ -49,9 +49,13 @@ public class TextDisplay {
     	}
     	showText(textBox, tempLi, fontSize, frameNum, alpha);
     }
+	public static void showText(Geometrical textBox, char[] charLi, double fontSize, int frameNum, float a)
+	{
+		showText(textBox, charLi, fontSize, frameNum, a, 0, 0, 0);
+	}
 	
 	//FrameNum decides how many chars to display, allows us to display one char at a time
-    public static void showText(Geometrical textBox, char[] charLi, double fontSize, int frameNum, float alpha)
+    public static void showText(Geometrical textBox, char[] charLi, double fontSize, int frameNum, float a, float r, float g, float b)
     {
     	textBox.UIshow();
     	Shape mainRect = (Shape)(textBox.getShape(0));
@@ -69,7 +73,7 @@ public class TextDisplay {
     			CharTex currLetter = getLetter(charLi[i]);
     			texX -= (1 - currLetter.getSpace()) * fontSize;
     			letterImg = new Displayable(currLetter.getTex(), texX, texY, fontSize * currLetter.getSize(), fontSize * currLetter.getSize());
-    			letterImg.UIshow(0, 0, 0, alpha);
+    			letterImg.UIshow(r, g, b, a);
     			texX += currLetter.getSpace() * fontSize;
     		}
     		else 

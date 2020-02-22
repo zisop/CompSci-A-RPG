@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 public class Geometrical extends Image{
 	private ArrayList<Image> shapes;
+	private boolean visibility;
 	public Geometrical()
 	{
 		super(null, 0, 0, 0, 0);
 		shapes = new ArrayList<Image>();
+		visibility = true;
 	}
 	public void UIshow()
 	{
@@ -92,6 +94,8 @@ public class Geometrical extends Image{
 			currShape.setWidth(currLength * lengthFrac);
 		}
 	}
+	public void setVisibility(boolean newVisibility) {visibility = newVisibility;}
+	public boolean isVisible() {return visibility;}
 	public Shape getMain()
 	{
 		return (Shape)shapes.get(0);

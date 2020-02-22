@@ -1,5 +1,6 @@
 package Game;
 
+import Imported.Audio;
 import Imported.Texture;
 import UI.ItemBag;
 
@@ -50,11 +51,13 @@ public class Chest extends Displayable{
 			{
 				//If I just opened the chest, the game should start interacting with me
 				Main.interactingChar = this;
+				Audio.playSound("Door/door");
 			}
 			else 
 			{
 				//If I just closed the chest, the game should stop interacting with me
 				Main.interactingChar = null;
+				
 			}
 			//If we just interacted with this chest, the game needs to know not to interact with anybody else
 			//This is performed via an xEvent boolean
@@ -73,7 +76,9 @@ public class Chest extends Displayable{
 		}
 		if (openFrame == 3 || openFrame == 0)
 		{
+			boolean initVisibility = chestBag.getVisibility();
 			chestBag.setVisibility(isOpen);
+			if (!isOpen && initVisibility != isOpen) {Audio.playSound("Inter/interface1", 2);}
 		}
 		
 		super.show();

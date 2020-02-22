@@ -5,7 +5,6 @@ import Imported.Texture;
 import LowLevel.Geometrical;
 import LowLevel.Shape;
 import UI.TextDisplay;
-import sun.java2d.opengl.OGLContext;
 
 public class NPC extends Movable{
 	//Put all raw dialogue for all NPCs in rawDialogue String[][][]
@@ -27,7 +26,7 @@ public class NPC extends Movable{
 	public static char[][][][] allDialogue;
 	public static int textFrame = 0;
 	//All NPC dialogue is displayed in the textbox
-	public static Geometrical textBox;
+	public static Geometrical NPCtextBox;
 	
 	
 	public static int cowboy = 0;
@@ -114,7 +113,7 @@ public class NPC extends Movable{
     
     public void showText()
     {
-    	TextDisplay.showText(textBox, dialogue[Main.questState][currText], fontSize, frameNum);
+    	TextDisplay.showText(NPCtextBox, dialogue[Main.questState][currText], fontSize, frameNum);
     	//we never overflow bois (doesnt matter unless this hits 2 million LOL)
     	if (frameNum < dialogue[Main.questState][currText].length)
     	{
@@ -125,6 +124,7 @@ public class NPC extends Movable{
     public void show()
     {
     	handleText();
+    	if (showingText()) {showText();}
     	super.show();
     }
     public void handleText()
@@ -143,6 +143,10 @@ public class NPC extends Movable{
 			}
    			Main.interactionEvent = true;
     	}
+    }
+    public boolean showingText()
+    {
+    	return Main.interactingChar == this;
     }
     public boolean shouldInteract()
     {
@@ -189,16 +193,16 @@ public class NPC extends Movable{
     	Shape ellipse2 = new Shape(1, x + (width) / 2, y - (length) / 2, radius, radius, 232, 235, 150, 255);
     	Shape ellipse3 = new Shape(1, x - (width) / 2, y + (length) / 2, radius, radius, 232, 235, 150, 255);
     	Shape ellipse4 = new Shape(1, x + (width) / 2, y + (length) / 2, radius, radius, 232, 235, 150, 255);
-    	textBox = new Geometrical();
-    	textBox.addShape(mainRect);
-    	textBox.addShape(rect1);
-    	textBox.addShape(rect2);
-    	textBox.addShape(rect3);
-    	textBox.addShape(rect4);
-    	textBox.addShape(ellipse1);
-    	textBox.addShape(ellipse2);
-    	textBox.addShape(ellipse3);
-    	textBox.addShape(ellipse4);
+    	NPCtextBox = new Geometrical();
+    	NPCtextBox.addShape(mainRect);
+    	NPCtextBox.addShape(rect1);
+    	NPCtextBox.addShape(rect2);
+    	NPCtextBox.addShape(rect3);
+    	NPCtextBox.addShape(rect4);
+    	NPCtextBox.addShape(ellipse1);
+    	NPCtextBox.addShape(ellipse2);
+    	NPCtextBox.addShape(ellipse3);
+    	NPCtextBox.addShape(ellipse4);
 
     	
     	

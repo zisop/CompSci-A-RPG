@@ -9,7 +9,9 @@ import javax.swing.*;
 // Hence, we use a Swing application.
 public class Audio extends JFrame {
 
-	private static double volume = .05;
+	
+	public static double baseVolume = .8;
+	private static double volume = baseVolume;
 	private Clip clip;
 	public Audio(String file){
 
@@ -32,7 +34,7 @@ public class Audio extends JFrame {
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
 		}
-		volume = .05;
+		volume = baseVolume;
    }
    public void end()
    {
@@ -45,8 +47,7 @@ public class Audio extends JFrame {
    }
    public static Audio playSound(String file)
    {
-	    return null;
-		//return new Audio(file);
+		return new Audio(file);
    }
    public static Audio playSound(String file, double volumeMultiplier)
    {

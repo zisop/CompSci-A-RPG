@@ -45,6 +45,12 @@ public class Shape extends Image {
 	public void setBlue(float newBlue) {blue = newBlue;}
 	public void setGreen(float newGreen) {green = newGreen;}
 	public void setAlpha(float newAlpha) {alpha = newAlpha;}
+	public void setRGB(float newRed, float newBlue, float newGreen)
+	{
+		red = newRed;
+		green = newGreen;
+		blue = newBlue;
+	}
 	public static int square = 0;
 	public static int ellipse = 1;
 	public static int xButton = 2;

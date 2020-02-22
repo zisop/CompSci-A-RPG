@@ -2,6 +2,7 @@ package UI;
 
 import java.util.ArrayList;
 
+import Exchange.ShopKeeper;
 import Game.Main;
 import LowLevel.Geometrical;
 import LowLevel.Geometry;
@@ -18,6 +19,7 @@ public class UI {
     public static boolean statsShowing;
     public static ArrayList<ToolTip> visTips = new ArrayList<ToolTip>();
     public static ArrayList<Item> visItems = new ArrayList<Item>();
+    public static ArrayList<ShopKeeper> visMenus = new ArrayList<ShopKeeper>();
     //Can't be done in the ItemBag or Chest class because they dont store player's itemBag
     //Shows all visible ItemBags
     public static void showUI()
@@ -26,6 +28,7 @@ public class UI {
     	{
     		showStats();
     	}
+    	showMenus();
     	showBags();
     	
     }
@@ -53,7 +56,11 @@ public class UI {
     		if (ItemBag.heldItem.getQuantity() == 0) {ItemBag.heldItem.unStick();}
     		else {ItemBag.heldItem.UIshow();}
     	}
-    	
+    }
+    public static void showMenus()
+    {
+    	visMenus.forEach((keeper) -> keeper.showMenu());
+    	visMenus.clear();
     }
     public static void showStats()
     {
@@ -200,5 +207,13 @@ public class UI {
     	Point[] objPoints = obj.getShowBasis();
     	Point cursorPoint = new Point(Main.cursor.getX(), Main.cursor.getY());
     	return Geometry.insideShape(objPoints, cursorPoint);
+    }
+    public static boolean mouseInteraction(Positionable obj)
+    {
+    	return shouldInteract() && mouseHovering(obj);
+    }
+    public static boolean shouldInteract()
+    {
+    	return !Main.interactionEvent && Main.leftClick && !Main.leftClickLastFrame;
     }
 }

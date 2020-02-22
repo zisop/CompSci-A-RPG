@@ -1,9 +1,9 @@
 package UI;
 
 import LowLevel.Geometrical;
-import LowLevel.Positionable;
+import LowLevel.Image;
 
-public class ToolTip extends Positionable {
+public class ToolTip extends Image {
 	//In tooltips, ` will act as \n, meaning it indicates the start of a new line
 	//I did this because im way too lazy to implement regular expressions stop being mean to me
 	public static String[] rawTips = {
@@ -19,7 +19,7 @@ public class ToolTip extends Positionable {
 	private Item item;
 	public ToolTip(Item inItem, double width, double font, int inID, Geometrical inBox)
 	{
-		super(0, 0, width, 0);
+		super(null, 0, 0, width, 0);
 		item = inItem;
 		textBox = new Geometrical();
 		tip = allTips[inID];

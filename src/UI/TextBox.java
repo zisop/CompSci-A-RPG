@@ -7,13 +7,21 @@ public class TextBox extends Image{
 	private char[] text;
 	private Geometrical textBox;
 	private double fontSize;
+	private float textRed;
+	private float textGreen;
+	private float textBlue;
+	private float textAlpha;
 	public TextBox(double inSize, char[] myText, Geometrical display)
 	{
 		super(null, display.getX(), display.getY(), display.getWidth(), display.getLength());
 		text = myText;
 		textBox = display;
 		fontSize = inSize;
+		textRed = 0;
+		textBlue = 0;
+		textGreen = 0;
 		super.setAlpha((textBox.getMain().getAlpha()));
+		textAlpha = getAlpha();
 	}
 	public TextBox(double inSize, String myText, Geometrical display)
 	{
@@ -26,7 +34,11 @@ public class TextBox extends Image{
 		text = toChars;
 		textBox = display;
 		fontSize = inSize;
+		textRed = 0;
+		textBlue = 0;
+		textGreen = 0;
 		super.setAlpha((textBox.getMain().getAlpha()));
+		textAlpha = getAlpha();
 	}
 	public TextBox(double inSize, char[] myText, Geometrical display, float inAlpha)
 	{
@@ -34,7 +46,11 @@ public class TextBox extends Image{
 		text = myText;
 		textBox = display;
 		fontSize = inSize;
+		textRed = 0;
+		textBlue = 0;
+		textGreen = 0;
 		super.setAlpha(inAlpha);
+		textAlpha = inAlpha;
 	}
 	public TextBox(double inSize, String myText, Geometrical display, float inAlpha)
 	{
@@ -47,7 +63,11 @@ public class TextBox extends Image{
 		text = toChars;
 		textBox = display;
 		fontSize = inSize;
+		textRed = 0;
+		textBlue = 0;
+		textGreen = 0;
 		super.setAlpha(inAlpha);
+		textAlpha = inAlpha;
 	}
 	public void setText(String newText)
 	{
@@ -86,9 +106,24 @@ public class TextBox extends Image{
 		textBox.setLength(newLength);
 		super.setLength(newLength);
 	}
+	public void setTextRed(float newRed) {textRed = newRed;}
+	public void setTextGreen(float newGreen) {textGreen = newGreen;}
+	public void setTextBlue(float newBlue) {textBlue = newBlue;}
+	public void setTextAlpha(float newAlpha) {textAlpha = newAlpha;}
+	public float getTextRed() {return textRed;}
+	public float getTextGreen() {return textGreen;}
+	public float getTextBlue() {return textBlue;}
+	public float getTextAlpha() {return textAlpha;}
+	public void setTextRGBA(float newRed, float newGreen, float newBlue, float newAlpha)
+	{
+		setTextRed(newRed);
+		setTextBlue(newBlue);
+		setTextAlpha(newAlpha);
+		setTextGreen(newGreen);
+	}
 	public void UIshow()
 	{
-		TextDisplay.showText(textBox, text, fontSize, getAlpha());
+		TextDisplay.showText(textBox, text, fontSize, text.length, textAlpha, textRed, textGreen, textBlue);
 	}
 	public void setAlpha(float newAlpha)
 	{

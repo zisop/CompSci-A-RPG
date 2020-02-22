@@ -89,10 +89,7 @@ public class Main
         UI.playerBag.addItem(wand2, 0);
         UI.playerBag.addItem(ruby, 3);
         
-        int[] inIDs = new int[] {Item.ruby};
-        int[] inQuantities = new int[] {6};
-        ItemExchange exchange = new ItemExchange(inQuantities, inIDs, 0);
-        //Shop shop = new Shop(new ItemExchange[] {exchange});
+        
         //shop.setVisibility(true);
         
         
@@ -189,17 +186,15 @@ public class Main
     }
     public static boolean xInteraction(Displayable obj)
     {
-    	return x && !xLastFrame && player.xCollision(obj) && Main.canInteract(obj);
+    	return x && !xLastFrame && player.xCollision(obj) && canInteract(obj);
     }
     //Will determine if a click interaction has been made on an object
     public static boolean clickInteraction(Displayable obj)
     {
     	boolean validClick = leftClick && !leftClickLastFrame;
-    	boolean inRadius = player.clickCollision(obj);
-    	Point[] objPoints = obj.getShowBasis();
-    	Point cursorPoint = new Point(cursor.getX() + player.getX(), cursor.getY() + player.getY());
 
-    	return validClick && inRadius && Geometry.insideShape(objPoints, cursorPoint);
+    	return validClick && player.clickCollision(obj) &&
+    	Geometry.insideShape(obj.getShowBasis(), new Point(cursor.getX() + player.getX(), cursor.getY() + player.getY()));
     }
     
   //Shows all visible Displayables
@@ -224,10 +219,6 @@ public class Main
 
         for (int i = 0; i < allRooms[currRoom].length; ++i) {
            	((Image) allRooms[currRoom][i]).show();
-        }
-        if (interactingChar instanceof NPC)
-        {
-        	((NPC)interactingChar).showText();
         }
         Projectile.showVisProjectiles();
     }
@@ -269,7 +260,13 @@ public class Main
         door2.setLead(2);
         room[2] = new Displayable(Shape.shapes[0], -200, 200, 150, 150);
         room[3] = new Displayable(Shape.shapes[0], 200, 200, 150, 150);
-        ShopKeeper npc = new ShopKeeper(0, 200, -50, 40, 40, 0, 15);
+        
+        int[] inIDs = new int[] {Item.ruby};
+        int[] inQuantities = new int[] {6};
+        ItemExchange exchange = new ItemExchange(inQuantities, inIDs, 0);
+        Shop shop = new Shop(new ItemExchange[] {exchange});
+        ShopKeeper npc = new ShopKeeper(0, 200, -50, 40, 40, 0, 15, shop);
+        
         npc.setAnim(ShopKeeper.cowboyUp);
         room[4] = npc;
         ItemBag bag = new ItemBag(0, 300, 40, 40, 2, 2);

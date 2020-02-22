@@ -182,34 +182,13 @@ public class Positionable extends Point
         length = newLength;
     }
     
-    public void setAngle(double newAng) {
-        angle = newAng;
-    }
-    
-    
-    public double getWidth() {
-        return width;
-    }
-    
-    public double getLength() {
-        return length;
-    }
-    
-    public double getHitWidth() {
-        return hitWidth;
-    }
-    
-    public double getHitLength() {
-        return hitLength;
-    }
-    
-    public double getAngle() {
-        return angle;
-    }
-    public Point[] getShowBasis()
-    {
-    	return showBasis;
-    }
+    public void setAngle(double newAng) {angle = newAng;}
+    public double getWidth() {return width;}
+    public double getLength() {return length;}
+    public double getHitWidth() {return hitWidth;}
+    public double getHitLength() {return hitLength;}
+    public double getAngle() {return angle;}
+    public Point[] getShowBasis() {return showBasis;}
     public Point[] getCollisionBasis()
     {
     	return collisionBasis;
