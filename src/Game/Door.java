@@ -26,7 +26,6 @@ public class Door extends Displayable
     
     public void show()
     {
-    	System.out.println(Main.player.relPos(this));
     	if (Main.canInteract(this) && (Main.xInteraction(this) || Main.clickInteraction(this)) && Main.player.relPos(this) == entry)
 		{
 			Main.currRoom = leadRoom;

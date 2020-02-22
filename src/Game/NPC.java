@@ -124,8 +124,12 @@ public class NPC extends Movable{
     
     public void show()
     {
+    	handleText();
+    	super.show();
+    }
+    public void handleText()
+    {
     	//updatetextstate will show text or take away the text depending on npc information
-    	//System.out.println(Main.interact);
     	if (shouldInteract())
     	{
     		updateTextState();
@@ -137,9 +141,8 @@ public class NPC extends Movable{
    			{
    				Main.interactingChar = null;
 			}
-   			Main.xEvent = true;
+   			Main.interactionEvent = true;
     	}
-    	super.show();
     }
     public boolean shouldInteract()
     {

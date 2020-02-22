@@ -58,7 +58,7 @@ public class Chest extends Displayable{
 			}
 			//If we just interacted with this chest, the game needs to know not to interact with anybody else
 			//This is performed via an xEvent boolean
-			Main.xEvent = true;
+			Main.interactionEvent = true;
 		}
 		//Animation garbage
 		if (isOpen && openFrame != 3)

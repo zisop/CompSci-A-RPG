@@ -50,7 +50,7 @@ public class Main
     
     public static boolean[] movement;
     public static int moveDirecLastFrame;
-    public static boolean xEvent;
+    public static boolean interactionEvent;
     public static boolean alreadyInteracting;
     public static Displayable interactingChar;
     
@@ -71,7 +71,7 @@ public class Main
     
     public static void main(String[] args) throws InterruptedException {
         init();
-        glClearColor(1, 0, 1, 1);
+        glClearColor(.2f, .6f, 0, 1);
         Texture tex = new Texture("IdleAnim/IdleDown.PNG");
         player = new Player(tex, 0, 0, 70, 70, 35, 10, 25);
         initRoom(currRoom = 0);
@@ -92,8 +92,8 @@ public class Main
         int[] inIDs = new int[] {Item.ruby};
         int[] inQuantities = new int[] {6};
         ItemExchange exchange = new ItemExchange(inQuantities, inIDs, 0);
-        Shop shop = new Shop(new ItemExchange[] {exchange});
-        shop.setVisibility(true);
+        //Shop shop = new Shop(new ItemExchange[] {exchange});
+        //shop.setVisibility(true);
         
         
         while (!glfwWindowShouldClose(window)) {
@@ -145,8 +145,6 @@ public class Main
             if (!walked) {player.stopWalk();}
             showVisibles();
             
-            if (shop.getVisibility()) {shop.UIshow();}
-            
             UI.showUI();
             
             
@@ -164,7 +162,7 @@ public class Main
             oneLastFrame = one;
             rightClickLastFrame = rightClick;
             
-            xEvent = false;
+            interactionEvent = false;
         }
     }
     public static double cursorAngle()
@@ -187,7 +185,7 @@ public class Main
     //Figures out whether a character can interact, or if something else is already interacting
     public static boolean canInteract(Displayable obj)
     {
-    	return !xEvent && (interactingChar == null || interactingChar == obj);
+    	return !interactionEvent && (interactingChar == null || interactingChar == obj);
     }
     public static boolean xInteraction(Displayable obj)
     {
@@ -262,7 +260,7 @@ public class Main
     }
     
     public static void initRoom0() {
-        Displayable[] room = new Displayable[1];
+        Displayable[] room = new Displayable[6];
         Door door1 = new Door(Shape.shapes[0], 0, -300, 50, 100, 2);
         Door door2 = new Door(Shape.shapes[0], 200, -100, 100, 50, 1);
         room[0] = door1;
@@ -271,7 +269,7 @@ public class Main
         door2.setLead(2);
         room[2] = new Displayable(Shape.shapes[0], -200, 200, 150, 150);
         room[3] = new Displayable(Shape.shapes[0], 200, 200, 150, 150);
-        NPC npc = new NPC(0, 200, -50, 40, 40, 0, 15);
+        ShopKeeper npc = new ShopKeeper(0, 200, -50, 40, 40, 0, 15);
         npc.setAnim(ShopKeeper.cowboyUp);
         room[4] = npc;
         ItemBag bag = new ItemBag(0, 300, 40, 40, 2, 2);
