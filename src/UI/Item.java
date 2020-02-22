@@ -154,27 +154,19 @@ public class Item extends Image{
 			}
 		}
 	}
-	public void setPos(double newX, double newY)
-	{
-		double xDiff = newX - getX();
-		double yDiff = newY - getY();
-		super.setPos(newX, newY);
-		myToolTip.updatePos();
-		quantityDisplay.setPos(quantityDisplay.getX() + xDiff, quantityDisplay.getY() + yDiff);
-	}
 	public void setX(double newX)
 	{
 		double xDiff = newX - getX();
 		super.setX(newX);
-		myToolTip.updatePos();
 		quantityDisplay.setX(quantityDisplay.getX() + xDiff);
+		
 	}
 	public void setY(double newY)
 	{
 		double yDiff = newY - getY();
 		super.setY(newY);
-		myToolTip.updatePos();
 		quantityDisplay.setY(quantityDisplay.getY() + yDiff);
+		
 	}
 	public void setWidth(double newWidth)
 	{
@@ -245,6 +237,10 @@ public class Item extends Image{
 		copy.setBag(item.getBag());
 		copy.setSlot(item.getSlot());
 		return copy;
+	}
+	public ToolTip getToolTip()
+	{
+		return myToolTip;
 	}
 	
 	private static int wandInd = 0;

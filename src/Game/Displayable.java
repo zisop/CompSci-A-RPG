@@ -6,32 +6,21 @@ import LowLevel.Image;
 
 public class Displayable extends Image
 {
-    private double charWidth;
-    private double charLength;
     
     
     public Displayable(Texture img, double inX, double inY, double w, double l) {
         super(img, inX, inY, w, l);
-        charWidth = w;
-        charLength = l;
     }
     
-    public Displayable(Texture img, double inX, double inY, double w, double l, double charW, double charL) {
-        super(img, inX, inY, w, l);
-        charWidth = charW;
-        charLength = charL;
+    public Displayable(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
+        super(img, inX, inY, w, l, hitW, hitL);
+    }
+    public Displayable(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hitboxDown) {
+        super(img, inX, inY, w, l, hitW, hitL, hitboxDown);
     }
     
     
     public void rotate(double addAng) {
         setAngle(getAngle() + addAng);
-    }
-    
-    public double getCharWidth() {
-        return charWidth;
-    }
-    
-    public double getCharLength() {
-        return charLength;
     }
 }

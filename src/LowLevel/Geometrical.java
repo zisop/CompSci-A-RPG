@@ -48,19 +48,6 @@ public class Geometrical extends Image{
 	{
 		return shapes.get(i);
 	}
-	public void setPos(double newX, double newY)
-	{
-		double xDiff = newX - getX();
-		double yDiff = newY - getY();
-		super.setPos(newX, newY);
-		for (int i = 0; i < shapes.size(); i++)
-		{
-			Image currShape = shapes.get(i);
-			double currX = currShape.getX();
-			double currY = currShape.getY();
-			currShape.setPos(currX + xDiff, currY + yDiff);
-		}
-	}
 	public void setX(double newX)
 	{
 		double xDiff = newX - getX();

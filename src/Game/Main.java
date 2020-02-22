@@ -15,7 +15,7 @@ import LowLevel.Geometrical;
 import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
-
+import LowLevel.Positionable;
 
 import static org.lwjgl.opengl.GL11.*;
 import LowLevel.Shape;
@@ -73,7 +73,7 @@ public class Main
         init();
         glClearColor(1, 0, 1, 1);
         Texture tex = new Texture("IdleAnim/IdleDown.PNG");
-        player = new Player(tex, 0, 0, 70, 70, 35, 55);
+        player = new Player(tex, 0, 0, 70, 70, 35, 10, 25);
         initRoom(currRoom = 0);
         
         
@@ -95,7 +95,6 @@ public class Main
         Shop shop = new Shop(new ItemExchange[] {exchange});
         shop.setVisibility(true);
         
-        Geometrical tiles = TileCreation.createGrid(TileCreation.Grass, 0, 0);
         
         while (!glfwWindowShouldClose(window)) {
         	double startTime = System.currentTimeMillis();
@@ -144,8 +143,8 @@ public class Main
             }
             //If player didn't walk, then he stopped walking :)
             if (!walked) {player.stopWalk();}
-            //tiles.show();
             showVisibles();
+            
             if (shop.getVisibility()) {shop.UIshow();}
             
             UI.showUI();
@@ -190,24 +189,16 @@ public class Main
     {
     	return !xEvent && (interactingChar == null || interactingChar == obj);
     }
-    public static boolean xInteraction(Displayable obj, double interactionRadius)
+    public static boolean xInteraction(Displayable obj)
     {
-    	return x && !xLastFrame && player.collision(obj, interactionRadius) && Main.canInteract(obj);
+    	return x && !xLastFrame && player.xCollision(obj) && Main.canInteract(obj);
     }
     //Will determine if a click interaction has been made on an object
     public static boolean clickInteraction(Displayable obj)
     {
     	boolean validClick = leftClick && !leftClickLastFrame;
-    	boolean inRadius = player.collision(obj, 40);
-    	double objLeft = obj.getX() - obj.getCharWidth() / 2;
-    	double objRight = obj.getX() + obj.getCharWidth() / 2;
-    	double objTop = obj.getY() + obj.getCharLength() / 2;
-    	double objBot = obj.getY() - obj.getCharLength() / 2;
-    	Point p1 = new Point(objLeft, objBot);
-    	Point p2 = new Point(objRight, objBot);
-    	Point p3 = new Point(objRight, objTop);
-    	Point p4 = new Point(objLeft, objTop);
-    	Point[] objPoints = new Point[] {p1, p2, p3, p4};
+    	boolean inRadius = player.clickCollision(obj);
+    	Point[] objPoints = obj.getShowBasis();
     	Point cursorPoint = new Point(cursor.getX() + player.getX(), cursor.getY() + player.getY());
 
     	return validClick && inRadius && Geometry.insideShape(objPoints, cursorPoint);
@@ -246,7 +237,6 @@ public class Main
     
     //Initializes a room given a roomNumber, or doesn't if already initialized
     public static void initRoom(int roomNum) {
-    	System.out.println(roomNum);
         if (!Main.initted[roomNum]) {
             if (roomNum == 0) {
                 initRoom0();
@@ -272,7 +262,7 @@ public class Main
     }
     
     public static void initRoom0() {
-        Displayable[] room = new Displayable[6];
+        Displayable[] room = new Displayable[1];
         Door door1 = new Door(Shape.shapes[0], 0, -300, 50, 100, 2);
         Door door2 = new Door(Shape.shapes[0], 200, -100, 100, 50, 1);
         room[0] = door1;

@@ -8,8 +8,11 @@ public class Movable extends Displayable{
         super(img, inX, inY, w, l);
     }
     
-    public Movable(Texture img, double inX, double inY, double w, double l, double charW, double charL) {
-        super(img, inX, inY, w, l, charW, charL);
+    public Movable(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
+        super(img, inX, inY, w, l, hitW, hitL);
+    }
+    public Movable(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hitboxDown) {
+        super(img, inX, inY, w, l, hitW, hitL, hitboxDown);
     }
     public void move(int direc, double dist) {
         if (direc == 0)

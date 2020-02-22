@@ -6,11 +6,15 @@ import java.util.ArrayList;
 
 import Imported.Audio;
 import Imported.Texture;
+import LowLevel.Geometry;
+import LowLevel.Point;
 import LowLevel.Positionable;
 
 public class Player extends Movable
 {
 	public static Texture[] loadedTex;
+	private static double xInteractionRadius = 20;
+	private static double clickInteractionRadius = 40;
 	private int walkFrame;
 	private int walkAnim;
 	private int soundFXFrame;
@@ -25,8 +29,23 @@ public class Player extends Movable
 	private double healthRegen;
 	private double maxHealth;
 	private double maxMana;
-    public Player(Texture img, int inX, int inY, double w, double l, int charW, int charL) {
-        super(img, inX, inY, w, l, charW, charL);
+	private Point[] xInteractionPoints;
+	private Point[] clickInteractionPoints;
+    public Player(Texture img, int inX, int inY, double w, double l, double hitW, double hitL, double hbDown) {
+        super(img, inX, inY, w, l, hitW, hitL, hbDown);
+        Point[] collisionBasis = getCollisionBasis();
+        Point p1 = new Point(collisionBasis[DL].getX() - xInteractionRadius, collisionBasis[DL].getY() - xInteractionRadius);
+        Point p2 = new Point(collisionBasis[DR].getX() + xInteractionRadius, collisionBasis[DR].getY() - xInteractionRadius);
+        Point p3 = new Point(collisionBasis[UR].getX() + xInteractionRadius, collisionBasis[UR].getY() + xInteractionRadius);
+        Point p4 = new Point(collisionBasis[UL].getX() - xInteractionRadius, collisionBasis[UL].getY() + xInteractionRadius);
+        xInteractionPoints = new Point[] {p1, p2, p3, p4};
+        
+        p1 = new Point(collisionBasis[DL].getX() - clickInteractionRadius, collisionBasis[DL].getY() - clickInteractionRadius);
+        p2 = new Point(collisionBasis[DR].getX() + clickInteractionRadius, collisionBasis[DR].getY() - clickInteractionRadius);
+        p3 = new Point(collisionBasis[UR].getX() + clickInteractionRadius, collisionBasis[UR].getY() + clickInteractionRadius);
+        p4 = new Point(collisionBasis[UL].getX() - clickInteractionRadius, collisionBasis[UL].getY() + clickInteractionRadius);
+        clickInteractionPoints = new Point[] {p1, p2, p3, p4};
+        
         walkFrame = 0;
         soundFXFrame = 0;
         walkAnim = 1;
@@ -41,6 +60,62 @@ public class Player extends Movable
         mana = maxMana;
         manaRegen = .5;
         healthRegen = .5;
+    }
+    public boolean xCollision(Positionable otherChar)
+    {
+    	Point[] otherBasis = otherChar.getCollisionBasis();
+    	return Geometry.colliding(xInteractionPoints, otherBasis);
+    }
+    public boolean clickCollision(Positionable otherChar)
+    {
+    	Point[] otherBasis = otherChar.getCollisionBasis();
+    	return Geometry.colliding(clickInteractionPoints, otherBasis);
+    }
+    public void setWidth(double newWidth)
+    {
+    	super.setWidth(newWidth);
+    	Point[] collisionBasis = getCollisionBasis();
+        xInteractionPoints[DL].setX(collisionBasis[DL].getX() - xInteractionRadius);
+        xInteractionPoints[UL].setX(collisionBasis[UL].getX() - xInteractionRadius);
+        xInteractionPoints[UR].setX(collisionBasis[UR].getX() + xInteractionRadius);
+        xInteractionPoints[DR].setX(collisionBasis[DR].getX() + xInteractionRadius);
+        clickInteractionPoints[DL].setX(collisionBasis[DL].getX() - clickInteractionRadius);
+        clickInteractionPoints[UL].setX(collisionBasis[UL].getX() - clickInteractionRadius);
+        clickInteractionPoints[UR].setX(collisionBasis[UR].getX() + clickInteractionRadius);
+        clickInteractionPoints[DR].setX(collisionBasis[DR].getX() + clickInteractionRadius);
+    }
+    public void setLength(double newLength)
+    {
+    	super.setLength(newLength);
+    	Point[] collisionBasis = getCollisionBasis();
+        xInteractionPoints[DL].setY(collisionBasis[DL].getY() - xInteractionRadius);
+        xInteractionPoints[UL].setY(collisionBasis[UL].getY() - xInteractionRadius);
+        xInteractionPoints[UR].setY(collisionBasis[UR].getY() + xInteractionRadius);
+        xInteractionPoints[DR].setY(collisionBasis[DR].getY() + xInteractionRadius);
+        clickInteractionPoints[DL].setY(collisionBasis[DL].getY() - clickInteractionRadius);
+        clickInteractionPoints[UL].setY(collisionBasis[UL].getY() - clickInteractionRadius);
+        clickInteractionPoints[UR].setY(collisionBasis[UR].getY() + clickInteractionRadius);
+        clickInteractionPoints[DR].setY(collisionBasis[DR].getY() + clickInteractionRadius);
+    }
+    public void setX(double newX)
+    {
+    	double xDiff = newX - getX();
+    	super.setX(newX);
+    	for (int i = 0; i < clickInteractionPoints.length; i++)
+    	{
+    		clickInteractionPoints[i].setX(clickInteractionPoints[i].getX() + xDiff);
+    		xInteractionPoints[i].setX(xInteractionPoints[i].getX() + xDiff);
+    	}
+    }
+    public void setY(double newY)
+    {
+    	double yDiff = newY - getY();
+    	super.setY(newY);
+    	for (int i = 0; i < clickInteractionPoints.length; i++)
+    	{
+    		clickInteractionPoints[i].setY(clickInteractionPoints[i].getY() + yDiff);
+    		xInteractionPoints[i].setY(xInteractionPoints[i].getY() + yDiff);
+    	}
     }
     
     public void shootProjectile(int ID, double speed)
@@ -212,17 +287,9 @@ public class Player extends Movable
     	if (walkDirec == 2) {setImage(Player.loadedTex[5]);}
     	if (walkDirec == 3) {setImage(Player.loadedTex[6]);}
     }
-    public int relPos(Positionable otherChar)
-    {
-    	return super.relPos(otherChar, getCharLength() - 10);
-    }
     public boolean collision(Positionable otherChar)
     {
-    	return super.collision(otherChar, getCharLength() - 10, 0);
-    }
-    public boolean collision(Positionable otherChar, double extraRadius)
-    {
-    	return super.collision(otherChar, getCharLength() - 10, extraRadius);
+    	return super.collision(otherChar);
     }
     /**
      * returns the player's ability to move {north, east, south, west}
@@ -262,7 +329,9 @@ public class Player extends Movable
             		shouldBreak = true;
             	}
             	setX(getX() + speed);
-            	if (shouldBreak) {break;}
+            	if (shouldBreak) {
+            		break;
+            	}
             }
         }
         return movement;

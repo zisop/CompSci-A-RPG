@@ -111,7 +111,7 @@ public class Projectile extends Image {
 		}
 		else
 		{
-			double radius = Math.max(orbitter.getCharWidth(), orbitter.getCharLength()) * 1.3;
+			double radius = Math.max(orbitter.getHitWidth(), orbitter.getHitLength()) * 1.3;
 			orbitAngle += 5;
 			if (orbitAngle >= 360) {orbitAngle = orbitAngle - 360;}
 			//setAngle(orbitAngle);

@@ -41,7 +41,7 @@ public class Chest extends Displayable{
 		//Basically, the game checks that this is the object it's supposed to be interacting with
 		//The player should not be interacting with two things at once
 		
-		if (Main.xInteraction(this, 20) || Main.clickInteraction(this))
+		if (Main.xInteraction(this) || Main.clickInteraction(this))
 		{
 			//If I was closed, now I'm open.
 			//If I was open, now I'm closed

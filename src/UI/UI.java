@@ -197,16 +197,7 @@ public class UI {
   //Will determine if the mouse is hovering over a positionable in the UI
     public static boolean mouseHovering(Positionable obj)
     {
-    	double objLeft = obj.getX() - obj.getCharWidth() / 2;
-    	double objRight = obj.getX() + obj.getCharWidth() / 2;
-    	double objTop = obj.getY() + obj.getCharLength() / 2;
-    	double objBot = obj.getY() - obj.getCharLength() / 2;
-    	Point p1 = new Point(objLeft, objBot);
-    	Point p2 = new Point(objRight, objBot);
-    	Point p3 = new Point(objRight, objTop);
-    	Point p4 = new Point(objLeft, objTop);
-    	Point[] objPoints = new Point[] {p1, p2, p3, p4};
-
+    	Point[] objPoints = obj.getShowBasis();
     	Point cursorPoint = new Point(Main.cursor.getX(), Main.cursor.getY());
     	return Geometry.insideShape(objPoints, cursorPoint);
     }

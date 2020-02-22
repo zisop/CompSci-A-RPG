@@ -52,8 +52,8 @@ public class NPC extends Movable{
         setAnim(0);
     }
     
-    public NPC(int ID, double inX, double inY, double w, double l, double charW, double charL, int inDia, double font) {
-        super(null, inX, inY, w, l, charW, charL);
+    public NPC(int ID, double inX, double inY, double w, double l, double hitW, double hitL, int inDia, double font) {
+        super(null, inX, inY, w, l, hitW, hitL);
         dialogue = allDialogue[inDia];
         currText = notYetSpeaking;
         fontSize = font;
@@ -65,6 +65,7 @@ public class NPC extends Movable{
         }
         setAnim(0);
     }
+    
     public void setAnim(int ID)
     {
     	setImage(anims[ID]);
@@ -124,6 +125,7 @@ public class NPC extends Movable{
     public void show()
     {
     	//updatetextstate will show text or take away the text depending on npc information
+    	//System.out.println(Main.interact);
     	if (shouldInteract())
     	{
     		updateTextState();
@@ -141,7 +143,8 @@ public class NPC extends Movable{
     }
     public boolean shouldInteract()
     {
-    	return Main.xInteraction(this, 20) || Main.clickInteraction(this);
+    	
+    	return Main.xInteraction(this) || Main.clickInteraction(this);
     }
     
     

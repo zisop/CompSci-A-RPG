@@ -10,6 +10,7 @@ public class Image extends Positionable
     private int monLen;
     private int monWid;
     private float alpha;
+    private double hitboxDown;
     
     public Image(Texture img, double inX, double inY, double w, double l) {
         super(inX, inY, w, l);
@@ -17,6 +18,26 @@ public class Image extends Positionable
         monWid = Main.width;
         monLen = Main.length;
         alpha = 255;
+        hitboxDown = 0;
+    }
+    public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
+        super(inX, inY, w, l, hitW, hitL);
+        image = img;
+        monWid = Main.width;
+        monLen = Main.length;
+        alpha = 255;
+        hitboxDown = 0;
+    }
+    public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hbDown) {
+        super(inX, inY, w, l, hitW, hitL, hbDown);
+        image = img;
+        monWid = Main.width;
+        monLen = Main.length;
+        alpha = 255;
+    }
+    public int relPos(Positionable otherChar)
+    {
+    	return relPos(otherChar, hitboxDown);
     }
     
     public void setAlpha(float newAlpha)

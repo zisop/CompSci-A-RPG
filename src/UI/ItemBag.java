@@ -249,18 +249,6 @@ public class ItemBag extends Positionable {
 	{
 		return itemSlots[slot].getItem();
 	}
-	public void setPos(double newX, double newY)
-	{
-		double xDiff = newX - getX();
-		double yDiff = newY - getY();
-		super.setPos(newX, newY);
-		bagDisplay.setPos(newX, newY);
-		for (int i = 0; i < itemSlots.length; i++)
-		{
-			ItemSlot currSlot = itemSlots[i];
-			currSlot.setPos(currSlot.getX() + xDiff, currSlot.getY() + yDiff);
-		}
-	}
 	public void setX(double newX)
 	{
 		double xDiff = newX - getX();

@@ -66,11 +66,6 @@ public class TextBox extends Image{
 	{
 		fontSize = newSize;
 	}
-	public void setPos(double newX, double newY)
-	{
-		textBox.setPos(newX, newY);
-		super.setPos(newX, newY);
-	}
 	public void setX(double newX)
 	{
 		textBox.setX(newX);
