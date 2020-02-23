@@ -13,7 +13,6 @@ import UI.ItemBag;
 import UI.ItemSlot;
 import UI.TextBox;
 import UI.UI;
-import sun.java2d.opengl.OGLContext;
 
 public class ShopKeeper extends NPC{
 	private Geometrical menu;
@@ -198,6 +197,9 @@ public class ShopKeeper extends NPC{
 	}
 	public void emptyItems()
 	{
+		//it empties the crafting box's input items don't fucking ask
+		//emptied items are sent to the player's bag or deleted if the player's bag is full
+		//this code is either unreadable because i'm horrible at code or because dealing with the exceptions is supposed to suck
 		ItemBag inputBag = shop.getBox().getInput();
 		ItemSlot[] inputSlots = inputBag.getSlots();
 		for (int inputInd = 0; inputInd < inputSlots.length; inputInd++)
@@ -205,16 +207,16 @@ public class ShopKeeper extends NPC{
 			Item inputItem = inputSlots[inputInd].getItem();
 			if (inputItem != null)
 			{
-				boolean shouldKeep = false;
+				boolean shouldDelete = true;
 				ItemSlot[] playerSlots = UI.playerBag.getSlots();
-				for (int playerInd = 0; playerInd < UI.playerBag.getSlots().length; playerInd++)
+				for (int playerInd = 0; playerInd < playerSlots.length; playerInd++)
 				{
 					ItemSlot playerSlot = playerSlots[playerInd];
 					Item playerItem = playerSlot.getItem();
 					if (playerItem == null)
 					{
 						UI.playerBag.addItem(inputItem, playerInd);
-						shouldKeep = true;
+						shouldDelete = false;
 						break;
 					}
 					else if (playerItem.getID() == inputItem.getID() && playerItem.getQuantity() < playerItem.getMax())
@@ -222,21 +224,41 @@ public class ShopKeeper extends NPC{
 						int toAdd = Math.min(inputItem.getQuantity() + playerItem.getQuantity(), 
 								playerItem.getMax()) - playerItem.getQuantity();
 						playerItem.setQuantity(playerItem.getQuantity() + toAdd);
-						inputItem.setQuantity(toAdd - inputItem.getQuantity());
+						inputItem.setQuantity(inputItem.getQuantity() - toAdd);
 						if (inputItem.getQuantity() > 0)
 						{
-							inputInd--;
-							continue;
+							playerInd++;
+							while (inputItem.getQuantity() > 0 && playerInd < playerSlots.length)
+							{
+								playerSlot = playerSlots[playerInd];
+								playerItem = playerSlot.getItem();
+								if (playerItem == null)
+								{
+									UI.playerBag.addItem(inputItem, playerInd);
+									shouldDelete = false;
+									break;
+								}
+								else if (playerItem.getID() == inputItem.getID() && playerItem.getQuantity() < playerItem.getMax())
+								{
+									toAdd = Math.min(inputItem.getQuantity() + playerItem.getQuantity(), 
+											playerItem.getMax()) - playerItem.getQuantity();
+									playerItem.setQuantity(playerItem.getQuantity() + toAdd);
+									inputItem.setQuantity(inputItem.getQuantity() - toAdd);
+									shouldDelete = false;
+									break;
+								}
+								playerInd++;
+							}
+							break;
 						}
 						else 
 						{
-							shouldKeep = true;
+							shouldDelete = false;
 						}
 						break;
 					}
-					
 				}
-				if (!shouldKeep) {inputItem.setSlot(Item.destroyItem);}
+				if (shouldDelete) {inputItem.setSlot(Item.destroyItem);}
 				inputBag.removeItem(inputInd);
 			}
 		}
