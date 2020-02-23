@@ -64,16 +64,47 @@ public class ItemBag extends Positionable {
 	{
 		if (!visibility)
 		{
-			if (holdingItem && heldItem.getBag() == this && heldItem.getSlot() != Item.destroyItem)
+			if (holdingItem && heldItem.getBag() == this)
 			{
-				Item temp = getItem(heldItem.getSlot());
-				if (temp != null)
+				if (heldItem.getSlot() != Item.destroyItem)
 				{
-					temp.setQuantity(heldItem.getQuantity() + temp.getQuantity());
-				}
-				else
-				{
-					addItem(heldItem, heldItem.getSlot());	
+					Item temp = getItem(heldItem.getSlot());
+					if (temp != null)
+					{
+						temp.setQuantity(heldItem.getQuantity() + temp.getQuantity());
+						int excess = temp.getQuantity() - temp.getMax();
+						temp.setQuantity(temp.getQuantity() - excess);
+						heldItem.setQuantity(excess);
+						int currSlot = 0;
+						while (excess > 0 && currSlot != itemSlots.length)
+						{
+							for (currSlot = currSlot; currSlot < itemSlots.length; currSlot++)
+							{
+								ItemSlot slot = itemSlots[currSlot];
+								Item item = slot.getItem();
+								if (item == null)
+								{
+									addItem(heldItem, currSlot);
+									excess = 0;
+									break;
+								}
+								else if (item.getID() == heldItem.getID() && item.getQuantity() < item.getMax())
+								{
+									int before = item.getQuantity();
+									item.setQuantity(excess + before);
+									excess -= item.getQuantity() - before;
+									item.setQuantity(item.getQuantity() - excess);
+									heldItem.setQuantity(excess);
+									
+									break;
+								}
+							}
+						}
+					}
+					else
+					{
+						addItem(heldItem, heldItem.getSlot());	
+					}
 				}
 				heldItem.unStick();
 			}

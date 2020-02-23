@@ -41,9 +41,10 @@ public class UI {
         }
     	for (int i = 0; i < allBags.size(); i++)
     	{
-    		if (allBags.get(i).isShowing())
+    		ItemBag currBag = allBags.get(i);
+    		if (currBag.isShowing())
     		{
-    			allBags.get(i).UIshow();
+    			currBag.UIshow();
     		}
     	}
     	visItems.forEach((item) -> item.UIshow());
@@ -175,7 +176,7 @@ public class UI {
     	ItemSlot[] slots = {wandSlot, ringSlot, bookSlot, helmSlot};
     	
     	armorBag = new ItemBag(armor, slots);
-    	armorBag.setPos(-200, 235);
+    	armorBag.setPos(-395, 65);
     }
     public static void initStats()
     {

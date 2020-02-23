@@ -6,9 +6,14 @@ import Game.NPC;
 import Imported.Audio;
 import LowLevel.Geometrical;
 import LowLevel.Geometry;
+import LowLevel.Positionable;
 import LowLevel.Shape;
+import UI.Item;
+import UI.ItemBag;
+import UI.ItemSlot;
 import UI.TextBox;
 import UI.UI;
+import sun.java2d.opengl.OGLContext;
 
 public class ShopKeeper extends NPC{
 	private Geometrical menu;
@@ -20,6 +25,7 @@ public class ShopKeeper extends NPC{
 	private Geometrical shopButton;
 	private TextBox shopText;
 	private Shape shopX;
+	private Geometrical shopScreen;
 	private Shop shop;
 	
 	
@@ -27,9 +33,12 @@ public class ShopKeeper extends NPC{
 	public ShopKeeper(int ID, double x, double y, double w, double l, int inDia, double font, Shop inShop)
 	{
 		super(ID, x, y, w, l, inDia, font);
+		shopScreen = new Geometrical();
 		shop = inShop;
+		shopScreen.addShape(shop);
 		optionState = atMenu;
 		
+		//Create the menu inside and border
 		menu = new Geometrical();
 		double offset = 7;
 		double leftX = -50;
@@ -69,12 +78,13 @@ public class ShopKeeper extends NPC{
 		
 		Geometrical textBorder = new Geometrical();
 		
-		
+		//Create the new variable values for the shopbutton
 		leftX += 5;
 		rightX -= 5;
 		offset = 2.5;
 		botY = 45;
 		topY = 70;
+		//create the shopbutton
 		mainRect = Geometry.createSquare(leftX, rightX, botY, topY + 5, 0, 0, 0, 0);
 		r = 100; g = 100; b = 220;
 		rightRect = Geometry.createSquare(rightX, rightX + offset, botY, topY, r, g, b, a);
@@ -103,7 +113,12 @@ public class ShopKeeper extends NPC{
 		menu.setPos(400, -300);
 		menu.setVisibility(false);
 		
-		
+		xOffset = 18;
+		Positionable selection = shop.getSelection();
+		double cornerX = selection.getX() + selection.getWidth() / 2;
+		double cornerY = selection.getY() + selection.getLength() / 2;
+		shopX = new Shape(Shape.xButton, cornerX + xOffset / 2, cornerY + xOffset, xRadius, xRadius);
+		shopScreen.addShape(shopX);
 	}
 	
 	public void show()
@@ -135,6 +150,8 @@ public class ShopKeeper extends NPC{
 				Main.interactionEvent = true;
 				Main.interactingChar = null;
 				menu.setVisibility(false);
+				optionState = atMenu;
+				emptyItems();
 				Audio.playSound("NPC/Slime/slime5", .7);
 			}
 		}
@@ -162,7 +179,66 @@ public class ShopKeeper extends NPC{
 		}
 		if (optionState == shopping)
 		{
-			shop.UIshow();
+			shopScreen.UIshow();
+			if (UI.mouseHovering(shopX))
+			{
+				shopX.setRGB(100, 200, 200);
+				if (UI.shouldInteract())
+				{
+					optionState = atMenu;
+					emptyItems();
+					Audio.playSound("NPC/Slime/slime5", .7);
+				}
+			}
+			else 
+			{
+				shopX.setRGB(255, 255, 255);
+			}
+		}
+	}
+	public void emptyItems()
+	{
+		ItemBag inputBag = shop.getBox().getInput();
+		ItemSlot[] inputSlots = inputBag.getSlots();
+		for (int inputInd = 0; inputInd < inputSlots.length; inputInd++)
+		{
+			Item inputItem = inputSlots[inputInd].getItem();
+			if (inputItem != null)
+			{
+				boolean shouldKeep = false;
+				ItemSlot[] playerSlots = UI.playerBag.getSlots();
+				for (int playerInd = 0; playerInd < UI.playerBag.getSlots().length; playerInd++)
+				{
+					ItemSlot playerSlot = playerSlots[playerInd];
+					Item playerItem = playerSlot.getItem();
+					if (playerItem == null)
+					{
+						UI.playerBag.addItem(inputItem, playerInd);
+						shouldKeep = true;
+						break;
+					}
+					else if (playerItem.getID() == inputItem.getID() && playerItem.getQuantity() < playerItem.getMax())
+					{
+						int toAdd = Math.min(inputItem.getQuantity() + playerItem.getQuantity(), 
+								playerItem.getMax()) - playerItem.getQuantity();
+						playerItem.setQuantity(playerItem.getQuantity() + toAdd);
+						inputItem.setQuantity(toAdd - inputItem.getQuantity());
+						if (inputItem.getQuantity() > 0)
+						{
+							inputInd--;
+							continue;
+						}
+						else 
+						{
+							shouldKeep = true;
+						}
+						break;
+					}
+					
+				}
+				if (!shouldKeep) {inputItem.setSlot(Item.destroyItem);}
+				inputBag.removeItem(inputInd);
+			}
 		}
 	}
 	

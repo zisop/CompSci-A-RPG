@@ -32,7 +32,7 @@ public class ExchangeSelection extends Image{
 			newExch[i] = inExchanges[i];
 		}
 		exchanges = newExch;
-		storeBag = new ItemBag(box.getX(), box.getY() + yOffset, 60, 60, rows, cols);
+		storeBag = new ItemBag(getX(), getY(), 60, 60, rows, cols);
 		slots = storeBag.getSlots();
 		super.setWidth(storeBag.getWidth());
 		super.setLength(storeBag.getLength());

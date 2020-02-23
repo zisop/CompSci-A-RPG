@@ -2,18 +2,20 @@ package Exchange;
 
 import Game.Main;
 import Imported.Audio;
+import LowLevel.Image;
 import LowLevel.Shape;
 import UI.Item;
 import UI.ItemBag;
 import UI.UI;
 
-public class Shop{
+public class Shop extends Image{
 	private ExchangeSelection selection;
 	private CraftingBox box;
 	private ItemBag input;
 	private ItemBag output;
 	public Shop(ItemExchange[] inExchanges)
 	{
+		super(null, 0, 0, 0, 0);
 		double yOffset = 400;
 		box = new CraftingBox();
 		selection = new ExchangeSelection(inExchanges, box, yOffset);
@@ -50,10 +52,12 @@ public class Shop{
 			{
 				selectedExchange.removeItems(input, craftable);
 				
-				outputItem.setBag(UI.playerBag);
-				boolean slotSet = false;
+				
 				ItemBag.heldBag = UI.playerBag;
 				outputItem.stick();
+				
+				outputItem.setBag(UI.playerBag);
+				boolean slotSet = false;
 				for (int i = 0; i < UI.playerBag.getSlots().length; i++)
 				{
 					if (UI.playerBag.getSlots()[i].getItem() == null 
@@ -70,5 +74,13 @@ public class Shop{
 				else {Audio.playSound("Inv/coin2");}
 			}
 		}
+	}
+	public CraftingBox getBox()
+	{
+		return box;
+	}
+	public ExchangeSelection getSelection()
+	{
+		return selection;
 	}
 }
