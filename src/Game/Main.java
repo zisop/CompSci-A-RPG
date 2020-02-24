@@ -11,21 +11,22 @@ import Imported.MergerSort;
 import Imported.Texture;
 import Input.CursorInput;
 import Input.KeyInput;
-import LowLevel.Geometrical;
 import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
-import LowLevel.Positionable;
 
 import static org.lwjgl.opengl.GL11.*;
+
+import java.util.ArrayList;
+
+import javax.swing.event.MenuDragMouseEvent;
+
 import LowLevel.Shape;
 import UI.Item;
 import UI.ItemBag;
 import UI.TextDisplay;
 import UI.UI;
 import World.TileCreation;
-
-import java.util.ArrayList;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 import static org.lwjgl.glfw.GLFW.*;
@@ -41,6 +42,7 @@ public class Main
     public static GLFWKeyCallback events;
     public static Displayable[][] allRooms = new Displayable[3][];
     public static boolean[] initted = new boolean[allRooms.length];
+    public static ArrayList<Integer> toInit = new ArrayList<Integer>();
     public static Player player;
     public static String currDialogue;
     
@@ -53,6 +55,7 @@ public class Main
     public static boolean interactionEvent;
     public static boolean alreadyInteracting;
     public static Displayable interactingChar;
+    
     
     
     
@@ -97,6 +100,9 @@ public class Main
         	double startTime = System.currentTimeMillis();
             glfwPollEvents();
             glClear(GL_COLOR_BUFFER_BIT);
+            
+            toInit.forEach((room) -> initRoom(room));
+            toInit.clear();
             
             leftClick = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == 1;
             rightClick = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == 1;
@@ -226,6 +232,7 @@ public class Main
     
     //Initializes a room given a roomNumber, or doesn't if already initialized
     public static void initRoom(int roomNum) {
+    	Main.currRoom = roomNum;
         if (!Main.initted[roomNum]) {
             if (roomNum == 0) {
                 initRoom0();
@@ -265,7 +272,7 @@ public class Main
         int[] inQuantities = new int[] {6};
         ItemExchange exchange = new ItemExchange(inQuantities, inIDs, 0);
         Shop shop = new Shop(new ItemExchange[] {exchange});
-        ShopKeeper npc = new ShopKeeper(0, 200, -50, 40, 40, 0, 15, shop);
+        ShopKeeper npc = new ShopKeeper(0, 200, -50, 40, 40, 0, 13, shop);
         
         npc.setAnim(ShopKeeper.cowboyUp);
         room[4] = npc;
@@ -284,7 +291,7 @@ public class Main
         room[0] = theDoor;
         room[1] = new Displayable(Shape.shapes[0], -200, -200, 150, 150);
         room[2] = new Displayable(Shape.shapes[0], 200, -200, 150, 150);
-        NPC npc = new NPC(0, 100, 300, 40, 40, 1, 15);
+        NPC npc = new NPC(0, 100, 300, 40, 40, 1, 13);
         room[3] = npc;
         allRooms[1] = room;
         initted[1] = true;

@@ -36,7 +36,7 @@ public class ItemBag extends Positionable {
 			{
 				double currX = x - (r / 2.0 * itemW) + itemW / 2 + (currR * itemW);
 				double currY = y - (c / 2.0 * itemL) + itemL / 2 + (currC * itemL);
-				itemSlots[currR * c + currC] = new ItemSlot(currX, currY, itemW - 5, itemL - 5);
+				itemSlots[currC * r + currR] = new ItemSlot(currX, currY, itemW - 5, itemL - 5);
 			}
 		}
 	}

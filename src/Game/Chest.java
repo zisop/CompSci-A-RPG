@@ -51,7 +51,7 @@ public class Chest extends Displayable{
 			{
 				//If I just opened the chest, the game should start interacting with me
 				Main.interactingChar = this;
-				Audio.playSound("Door/door");
+				Audio.playSound("Door/door", .3);
 			}
 			else 
 			{
@@ -78,7 +78,7 @@ public class Chest extends Displayable{
 		{
 			boolean initVisibility = chestBag.getVisibility();
 			chestBag.setVisibility(isOpen);
-			if (!isOpen && initVisibility != isOpen) {Audio.playSound("Inter/interface1", 2);}
+			if (!isOpen && initVisibility != isOpen) {Audio.playSound("Inter/interface1", 1.3);}
 		}
 		
 		super.show();

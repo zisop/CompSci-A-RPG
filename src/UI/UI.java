@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import Exchange.ShopKeeper;
 import Game.Main;
+import Game.NPC;
 import LowLevel.Geometrical;
 import LowLevel.Geometry;
 import LowLevel.Image;
@@ -19,7 +20,8 @@ public class UI {
     public static boolean statsShowing;
     public static ArrayList<ToolTip> visTips = new ArrayList<ToolTip>();
     public static ArrayList<Item> visItems = new ArrayList<Item>();
-    public static ArrayList<ShopKeeper> visMenus = new ArrayList<ShopKeeper>();
+    public static ArrayList<ShopKeeper> interactingKeepers = new ArrayList<ShopKeeper>();
+    public static ArrayList<NPC> talkingNPCs = new ArrayList<NPC>();
     //Can't be done in the ItemBag or Chest class because they dont store player's itemBag
     //Shows all visible ItemBags
     public static void showUI()
@@ -28,70 +30,10 @@ public class UI {
     	{
     		showStats();
     	}
+    	showNPCText();
     	showMenus();
     	showBags();
     	
-    }
-    public static void showBags()
-    {
-    	if (Main.e && !Main.eLastFrame)
-        {
-        	playerBag.setVisibility(!UI.playerBag.getVisibility());
-        	armorBag.setVisibility(playerBag.getVisibility());
-        }
-    	for (int i = 0; i < allBags.size(); i++)
-    	{
-    		ItemBag currBag = allBags.get(i);
-    		if (currBag.isShowing())
-    		{
-    			currBag.UIshow();
-    		}
-    	}
-    	visItems.forEach((item) -> item.UIshow());
-    	visItems.clear();
-    	visTips.forEach((tip) -> tip.UIshow());
-    	visTips.clear();
-    	
-    	if (ItemBag.holdingItem)
-    	{
-    		if (ItemBag.heldItem.getQuantity() == 0) {ItemBag.heldItem.unStick();}
-    		else {ItemBag.heldItem.UIshow();}
-    	}
-    }
-    public static void showMenus()
-    {
-    	visMenus.forEach((keeper) -> keeper.showMenu());
-    	visMenus.clear();
-    }
-    public static void showStats()
-    {
-   
-    	Image healthBar = playerStats.getShape(5);
-		Image manaBar = playerStats.getShape(6);
-		Image maxHealth = playerStats.getShape(3);
-		Image maxMana = playerStats.getShape(4);
-	    
-		double HP = Main.player.getHealth();
-		double maxHP = Main.player.getMaxHealth();
-		double MN = Main.player.getMana();
-		double maxMN = Main.player.getMaxMana();
-	    
-		double HPfrac1 = healthBar.getWidth() / maxHealth.getWidth();
-		double HPfrac2 = Math.max(0, HP / maxHP);
-		double HPxDiff = (HPfrac2 - HPfrac1) / 2 * maxHealth.getWidth();
-	    
-	
-		double MNfrac1 = manaBar.getWidth() / maxMana.getWidth();
-		double MNfrac2 = Math.max(0, MN / maxMN);
-		double MNxDiff = (MNfrac2 - MNfrac1) / 2 * maxMana.getWidth();
-	    
-	    
-		healthBar.setWidth(maxHealth.getWidth() * HPfrac2);
-		healthBar.setX(healthBar.getX() + HPxDiff);
-		manaBar.setWidth(maxMana.getWidth() * MNfrac2);
-		manaBar.setX(manaBar.getX() + MNxDiff);
-	    
-    	playerStats.UIshow();
     }
     public static void init()
     {
@@ -99,7 +41,26 @@ public class UI {
     	initInventory();
     	initStats();
     }
-    public static Geometrical createSlot(String name)
+    
+    //Will determine if the mouse is hovering over a positionable in the UI
+    public static boolean mouseHovering(Positionable obj)
+    {
+    	Point[] objPoints = obj.getShowBasis();
+    	Point cursorPoint = new Point(Main.cursor.getX(), Main.cursor.getY());
+    	return Geometry.insideShape(objPoints, cursorPoint);
+    }
+    
+    public static boolean mouseInteraction(Positionable obj)
+    {
+    	return shouldInteract() && mouseHovering(obj);
+    }
+    
+    public static boolean shouldInteract()
+    {
+    	return !Main.interactionEvent && Main.leftClick && !Main.leftClickLastFrame;
+    }
+    
+    private static Geometrical createSlot(String name)
     {
     	Geometrical boxDisplay = new Geometrical();
     	Shape outBox = Geometry.createSquare(-2, 27, -2, 27, 150, 150, 150, 255);
@@ -134,7 +95,7 @@ public class UI {
     	return slotDisplay;
     }
     
-    public static void initInventory()
+    private static void initInventory()
     {
     	
     	//Player bag display
@@ -178,7 +139,7 @@ public class UI {
     	armorBag = new ItemBag(armor, slots);
     	armorBag.setPos(-395, 65);
     }
-    public static void initStats()
+    private static void initStats()
     {
     	//Stats Display
     	playerStats = new Geometrical();
@@ -202,19 +163,71 @@ public class UI {
     	playerStats.addShape(manaBar);
     	playerStats.setPos(-275, 365);
     }
-  //Will determine if the mouse is hovering over a positionable in the UI
-    public static boolean mouseHovering(Positionable obj)
+    private static void showNPCText()
     {
-    	Point[] objPoints = obj.getShowBasis();
-    	Point cursorPoint = new Point(Main.cursor.getX(), Main.cursor.getY());
-    	return Geometry.insideShape(objPoints, cursorPoint);
+    	talkingNPCs.forEach((npc) -> npc.showText());
+    	talkingNPCs.clear();
     }
-    public static boolean mouseInteraction(Positionable obj)
+
+    private static void showBags()
     {
-    	return shouldInteract() && mouseHovering(obj);
+    	if (Main.e && !Main.eLastFrame)
+        {
+        	playerBag.setVisibility(!UI.playerBag.getVisibility());
+        	armorBag.setVisibility(playerBag.getVisibility());
+        }
+    	for (int i = 0; i < allBags.size(); i++)
+    	{
+    		ItemBag currBag = allBags.get(i);
+    		if (currBag.isShowing())
+    		{
+    			currBag.UIshow();
+    		}
+    	}
+    	visItems.forEach((item) -> item.UIshow());
+    	visItems.clear();
+    	visTips.forEach((tip) -> tip.UIshow());
+    	visTips.clear();
+    	
+    	if (ItemBag.holdingItem)
+    	{
+    		if (ItemBag.heldItem.getQuantity() == 0) {ItemBag.heldItem.unStick();}
+    		else {ItemBag.heldItem.UIshow();}
+    	}
     }
-    public static boolean shouldInteract()
+    private static void showMenus()
     {
-    	return !Main.interactionEvent && Main.leftClick && !Main.leftClickLastFrame;
+    	interactingKeepers.forEach((keeper) -> keeper.showMenu());
+    	interactingKeepers.clear();
+    }
+    private static void showStats()
+    {
+   
+    	Image healthBar = playerStats.getShape(5);
+		Image manaBar = playerStats.getShape(6);
+		Image maxHealth = playerStats.getShape(3);
+		Image maxMana = playerStats.getShape(4);
+	    
+		double HP = Main.player.getHealth();
+		double maxHP = Main.player.getMaxHealth();
+		double MN = Main.player.getMana();
+		double maxMN = Main.player.getMaxMana();
+	    
+		double HPfrac1 = healthBar.getWidth() / maxHealth.getWidth();
+		double HPfrac2 = Math.max(0, HP / maxHP);
+		double HPxDiff = (HPfrac2 - HPfrac1) / 2 * maxHealth.getWidth();
+	    
+	
+		double MNfrac1 = manaBar.getWidth() / maxMana.getWidth();
+		double MNfrac2 = Math.max(0, MN / maxMN);
+		double MNxDiff = (MNfrac2 - MNfrac1) / 2 * maxMana.getWidth();
+	    
+	    
+		healthBar.setWidth(maxHealth.getWidth() * HPfrac2);
+		healthBar.setX(healthBar.getX() + HPxDiff);
+		manaBar.setWidth(maxMana.getWidth() * MNfrac2);
+		manaBar.setX(manaBar.getX() + MNxDiff);
+	    
+    	playerStats.UIshow();
     }
 }

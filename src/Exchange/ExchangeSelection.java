@@ -1,6 +1,7 @@
 package Exchange;
 
 import Game.Main;
+import Imported.Audio;
 import LowLevel.Geometrical;
 import LowLevel.Image;
 import LowLevel.Shape;
@@ -105,7 +106,6 @@ public class ExchangeSelection extends Image{
 	public void UIshow()
 	{
 		storeBag.UIshow();
-		boolean validClick = Main.leftClick && !Main.leftClickLastFrame;
 		boolean wasHovering = false;
 		for (int i = 0; i < slots.length; i++)
 		{
@@ -120,11 +120,15 @@ public class ExchangeSelection extends Image{
 					wasHovering = true;
 				}
 				//If i click the slot, let me select it
-				if (validClick) {
+				if (UI.shouldInteract()) {
 					selectedSlot = slots[i];
 					selectedDisplay = displays[i];
 					selectedExchange = exchanges[i];
 					box.getOutput().removeItem(0);
+					if (currSlot.getItem() != null)
+					{
+						Audio.playSound("Inv/coin3");
+					}
 				}
 				break;
 			}

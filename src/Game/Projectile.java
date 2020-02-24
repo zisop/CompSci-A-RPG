@@ -31,8 +31,8 @@ public class Projectile extends Image {
 	}
 	public static void showVisProjectiles()
 	{
-		//visProj.forEach((proj) -> proj.show());
-		//visProj.clear();
+		visProj.forEach((proj) -> proj.show());
+		visProj.clear();
 	}
 	
 	
@@ -111,7 +111,7 @@ public class Projectile extends Image {
 		}
 		else
 		{
-			double radius = Math.max(orbitter.getHitWidth(), orbitter.getHitLength()) * 1.3;
+			double radius = Math.max(orbitter.getHitWidth(), orbitter.getHitLength()) * 1.6;
 			orbitAngle += 5;
 			if (orbitAngle >= 360) {orbitAngle = orbitAngle - 360;}
 			//setAngle(orbitAngle);

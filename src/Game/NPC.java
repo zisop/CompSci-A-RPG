@@ -5,6 +5,7 @@ import Imported.Texture;
 import LowLevel.Geometrical;
 import LowLevel.Shape;
 import UI.TextDisplay;
+import UI.UI;
 
 public class NPC extends Movable{
 	//Put all raw dialogue for all NPCs in rawDialogue String[][][]
@@ -15,21 +16,27 @@ public class NPC extends Movable{
 		//NPC0
 		{
 			//QuestInd = 0
-			{",;!()@&#%$0123456789abcdefghijklmnopqrstuvwxyz:?/", "yourmom", "isgaylol"}
+			{
+				"I was sold into an arranged marriage by my father.", 
+				"My wife then left me because my penis was too small.",
+				"Now I just sell sticks."
+			}
 		},
 		//NPC1
 		{
 			//QuestInd = 0
-			{"all men are pigs", "rise up gamers"}
+			{
+				"I bought a stick from that old man in the other room.", 
+				"The quality is that of a wifeless loser.",
+				"Good thing the devs for this game all have significant others.",
+				"It'd be kind of ironic for them to make fun of the wifeless`despite not having ever dated"
+			}
 		}
 	};
 	public static char[][][][] allDialogue;
 	public static int textFrame = 0;
 	//All NPC dialogue is displayed in the textbox
 	public static Geometrical NPCtextBox;
-	
-	
-	public static int cowboy = 0;
 	
 	
 	private char[][][] dialogue;
@@ -65,15 +72,13 @@ public class NPC extends Movable{
         setAnim(0);
     }
     
-    public void setAnim(int ID)
-    {
-    	setImage(anims[ID]);
-    }
+    public void setAnim(int ID) {setImage(anims[ID]);}
+    public void setCurr(int newText) {currText = newText;}
+    public int getCurr() {return currText;}
+    public int getFrameNum() {return frameNum;}
+    public char[][][] getDialogue() {return dialogue;}
+    public void setFrameNum(int newNum) {frameNum = newNum;}
     
-    public int getCurr()
-    {
-    	return currText;
-    }
     public void updateTextState()
     {
     	boolean skipped = false;
@@ -124,7 +129,7 @@ public class NPC extends Movable{
     public void show()
     {
     	handleText();
-    	if (showingText()) {showText();}
+    	if (showingText()) {UI.talkingNPCs.add(this);}
     	super.show();
     }
     public void handleText()
@@ -204,8 +209,6 @@ public class NPC extends Movable{
     	NPCtextBox.addShape(ellipse3);
     	NPCtextBox.addShape(ellipse4);
 
-    	
-    	
     	allDialogue = new char[rawDialogue.length][][][];
     	for (int charInd = 0; charInd < rawDialogue.length; charInd++)
     	{
@@ -229,4 +232,5 @@ public class NPC extends Movable{
     	
     }
     public static int notYetSpeaking = -1;
+    public static int cowboy = 0;
 }

@@ -3,7 +3,6 @@ package Exchange;
 import Game.Main;
 import Imported.Audio;
 import LowLevel.Image;
-import LowLevel.Shape;
 import UI.Item;
 import UI.ItemBag;
 import UI.UI;

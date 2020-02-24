@@ -242,6 +242,11 @@ public class Item extends Image{
 	{
 		return myToolTip;
 	}
+	public void setAlpha(float newAlpha)
+	{
+		super.setAlpha(newAlpha);
+		quantityDisplay.setTextAlpha(newAlpha);
+	}
 	
 	private static int wandInd = 0;
 	public static int wand0 = wandInd + 0;

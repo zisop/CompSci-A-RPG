@@ -8,7 +8,7 @@ import LowLevel.Geometrical;
 import LowLevel.Shape;
 
 public class TextDisplay {
-	public static CharTex[] fontChars = new CharTex[49];
+	public static CharTex[] fontChars = new CharTex[51];
 	//Have geo, str, size, frame
 	public static void showText(Geometrical textBox, String str, double fontSize, int frameNum)
     {
@@ -59,8 +59,8 @@ public class TextDisplay {
     {
     	textBox.UIshow();
     	Shape mainRect = (Shape)(textBox.getShape(0));
-    	double texX = mainRect.getX() - mainRect.getWidth() / 2 + fontSize / 2 + fontSize / 2;
-    	double texY = mainRect.getY() + mainRect.getLength() / 2 - fontSize / 2 - fontSize / 2;
+    	double texX = mainRect.getX() - mainRect.getWidth() / 2 + fontSize;
+    	double texY = mainRect.getY() + mainRect.getLength() / 2 - fontSize;
     	Displayable letterImg;
     	
     	
@@ -76,13 +76,13 @@ public class TextDisplay {
     			letterImg.UIshow(r, g, b, a);
     			texX += currLetter.getSpace() * fontSize;
     		}
-    		else 
+    		else if (charLi[i] == ' ') 
     		{
 				texX += fontSize;
 			}
     		if (texX >= mainRect.getX() + mainRect.getWidth() / 2 - fontSize / 2 || charLi[i] == '`') 
     		{
-    			texX = mainRect.getX() - mainRect.getWidth() / 2 + fontSize / 2 + fontSize / 2;
+    			texX = mainRect.getX() - mainRect.getWidth() / 2 + fontSize;
     			texY -= fontSize;
     		}
     	}
@@ -105,6 +105,8 @@ public class TextDisplay {
 		if (letter == '%') {return fontChars[46];}
 		if (letter == '&') {return fontChars[45];}
 		if (letter == '$') {return fontChars[40];}
+		if (letter == '.') {return fontChars[49];}
+		if (letter == '\'') {return fontChars[50];}
     	int base = 0;
     	int letterVal = letter;
 		if (letterVal >= 48 && letterVal < 58) {base = 18;}
@@ -163,6 +165,8 @@ public class TextDisplay {
     	fontChars[46] = new CharTex(new Texture("Font/%.png"));
     	fontChars[47] = new CharTex(new Texture("Font/(.png"));
     	fontChars[48] = new CharTex(new Texture("Font/).png"));
+    	fontChars[49] = new CharTex(new Texture("Font/period.png"));
+    	fontChars[50] = new CharTex(new Texture("Font/apostrophe.png"), .6);
     	ToolTip.initTips();
     	NPC.initText();
     }

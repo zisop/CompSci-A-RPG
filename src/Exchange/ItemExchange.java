@@ -3,7 +3,6 @@ package Exchange;
 import UI.Item;
 import UI.ItemBag;
 import UI.ItemSlot;
-import UI.UI;
 
 public class ItemExchange {
 	private int[] desiredIDs;
