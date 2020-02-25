@@ -15,7 +15,7 @@ public class Texture
     //Initializes a texture given a Image name
     public Texture(String file) {
         try {
-        	BufferedImage bi = ImageIO.read(getClass().getClassLoader().getResource(file));
+        	BufferedImage bi = ImageIO.read(getClass().getClassLoader().getResource("res/" + file));
             width = bi.getWidth();
             length = bi.getHeight();
             int[] rawPix = new int[width * length * 4];

@@ -17,7 +17,7 @@ public class Audio extends JFrame {
 
 		try {
 			// Open an audio input stream.
-			URL url = this.getClass().getClassLoader().getResource(file + ".wav");
+			URL url = this.getClass().getClassLoader().getResource("Sounds/" + file + ".wav");
 			AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
 			// Get a sound clip resource.
 			clip = AudioSystem.getClip();
