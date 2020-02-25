@@ -4,6 +4,7 @@ import Imported.Texture;
 
 public class Movable extends Displayable{
 	public Displayable lastCollision;
+	private double speed;
 	public Movable(Texture img, double inX, double inY, double w, double l) {
         super(img, inX, inY, w, l);
     }
@@ -14,7 +15,8 @@ public class Movable extends Displayable{
     public Movable(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hitboxDown) {
         super(img, inX, inY, w, l, hitW, hitL, hitboxDown);
     }
-    public void move(int direc, double dist) {
+    public void move(int direc) {
+    	double dist = getSpeed();
         if (direc == 0)
         {
             setY(getY() + dist);
@@ -34,6 +36,14 @@ public class Movable extends Displayable{
         {
             setX(getX() - dist);
         }
+    }
+    public void setSpeed(double newSpeed)
+    {
+    	speed = newSpeed;
+    }
+    public double getSpeed()
+    {
+    	return speed;
     }
     
 }

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import javax.swing.event.MenuDragMouseEvent;
 
 import LowLevel.Shape;
+import Mobs.Mob;
 import UI.Item;
 import UI.ItemBag;
 import UI.TextDisplay;
@@ -331,6 +332,7 @@ public class Main
         UI.init();
         TextDisplay.initText();
         TileCreation.initTex();
+        Mob.initTex();
         NPC.initTex();
         glEnable(3553);
         glEnable(3042);

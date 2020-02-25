@@ -20,7 +20,6 @@ public class Player extends Movable
 	private int soundFXFrame;
 	private boolean walking;
 	private int walkDirec;
-	private double speed;
 	private ArrayList<Projectile> allSpells;
 	private ArrayList<Projectile> orbit;
 	private double manaRegen;
@@ -45,13 +44,12 @@ public class Player extends Movable
         p3 = new Point(collisionBasis[UR].getX() + clickInteractionRadius, collisionBasis[UR].getY() + clickInteractionRadius);
         p4 = new Point(collisionBasis[UL].getX() - clickInteractionRadius, collisionBasis[UL].getY() + clickInteractionRadius);
         clickInteractionPoints = new Point[] {p1, p2, p3, p4};
-        
+        setSpeed(baseSpeed);
         walkFrame = 0;
         soundFXFrame = 0;
         walkAnim = 1;
         walking = false;
         walkDirec = 0;
-        speed = 8;
         allSpells = new ArrayList<Projectile>();
         orbit = new ArrayList<Projectile>();
         maxHealth = 100;
@@ -213,18 +211,10 @@ public class Player extends Movable
     	}
     }
     
-    public void setSpeed(double newSpeed)
-    {
-    	speed = newSpeed;
-    }
-    public double getSpeed()
-    {
-    	return speed;
-    }
     //moves the player and cycles its walk animation
     public void move(int direc)
     {
-    	super.move(direc, speed);
+    	super.move(direc);
     	walkDirec = direc;
     	walkFrame++;
     	if (!walking) {walkAnim = 0; walking = true; walkFrame = 3; soundFXFrame = 0;}
@@ -304,31 +294,31 @@ public class Player extends Movable
             if (!(currChar instanceof Movable)) {
             	
             	boolean shouldBreak = false;
-            	setY(getY() + speed);
+            	setY(getY() + getSpeed());
             	if (collision(currChar))
             	{
             		movement[0] = false; 
             		shouldBreak = true;
             	}
-            	setPos(getX() + speed, getY() - speed);
+            	setPos(getX() + getSpeed(), getY() - getSpeed());
             	if (collision(currChar))
             	{
             		movement[1] = false;
             		shouldBreak = true;
             	}
-            	setPos(getX() - speed, getY() - speed);
+            	setPos(getX() - getSpeed(), getY() - getSpeed());
             	if (collision(currChar))
             	{
             		movement[2] = false;
             		shouldBreak = true;
             	}
-           		setPos(getX() - speed, getY() + speed);
+           		setPos(getX() - getSpeed(), getY() + getSpeed());
             	if (collision(currChar))
             	{
             		movement[3] = false;
             		shouldBreak = true;
             	}
-            	setX(getX() + speed);
+            	setX(getX() + getSpeed());
             	if (shouldBreak) {
             		break;
             	}
@@ -367,4 +357,5 @@ public class Player extends Movable
     	Player.loadedTex[14] = new Texture("WalkAnim/WalkUp/Up02.PNG");
     	Player.loadedTex[15] = new Texture("WalkAnim/WalkUp/Up03.PNG");
     }
+    public static double baseSpeed = 8;
 }
