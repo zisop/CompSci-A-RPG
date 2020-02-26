@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Geometry;
+import LowLevel.Image;
 import LowLevel.Point;
 import LowLevel.Positionable;
+import Mobs.Mob;
+import World.Room;
 
 public class Player extends Movable
 {
@@ -18,9 +21,7 @@ public class Player extends Movable
 	private int walkFrame;
 	private int walkAnim;
 	private int soundFXFrame;
-	private boolean walking;
 	private int walkDirec;
-	private double speed;
 	private ArrayList<Projectile> allSpells;
 	private ArrayList<Projectile> orbit;
 	private double manaRegen;
@@ -45,13 +46,11 @@ public class Player extends Movable
         p3 = new Point(collisionBasis[UR].getX() + clickInteractionRadius, collisionBasis[UR].getY() + clickInteractionRadius);
         p4 = new Point(collisionBasis[UL].getX() - clickInteractionRadius, collisionBasis[UL].getY() + clickInteractionRadius);
         clickInteractionPoints = new Point[] {p1, p2, p3, p4};
-        
+        setSpeed(baseSpeed);
         walkFrame = 0;
         soundFXFrame = 0;
-        walkAnim = 1;
-        walking = false;
+        walkAnim = notWalking;
         walkDirec = 0;
-        speed = 8;
         allSpells = new ArrayList<Projectile>();
         orbit = new ArrayList<Projectile>();
         maxHealth = 100;
@@ -213,56 +212,48 @@ public class Player extends Movable
     	}
     }
     
-    public void setSpeed(double newSpeed)
-    {
-    	speed = newSpeed;
-    }
-    public double getSpeed()
-    {
-    	return speed;
-    }
     //moves the player and cycles its walk animation
     public void move(int direc)
     {
-    	super.move(direc, speed);
+    	super.move(direc);
     	walkDirec = direc;
     	walkFrame++;
-    	if (!walking) {walkAnim = 0; walking = true; walkFrame = 3; soundFXFrame = 0;}
-    	if (walkFrame == 3)
+    	if (walkAnim == notWalking) {walkAnim = startWalking; walkFrame = 6;}
+    	if (walkFrame == 6)
     	{
     		walkAnim++;
     		walkFrame = 0;
     		if (walkDirec == 0)
     		{
     			if (walkAnim == 1) {setImage(Player.loadedTex[13]);}
-    			if (walkAnim == 3) {setImage(Player.loadedTex[14]);}
-    			if (walkAnim == 5) {setImage(Player.loadedTex[15]);}
-    			if (walkAnim == 7) {setImage(Player.loadedTex[14]);}
-    			if (walkAnim == 9) {walkAnim = 1; setImage(Player.loadedTex[13]);}
+    			else if (walkAnim == 2) {setImage(Player.loadedTex[14]);}
+    			else if (walkAnim == 3) {setImage(Player.loadedTex[15]);}
+    			else if (walkAnim == 4) {setImage(Player.loadedTex[14]);}
+    			else if (walkAnim == 5) {walkAnim = 1; setImage(Player.loadedTex[13]);}
     		}
-    		if (walkDirec == 1)
+    		else if (walkDirec == 1)
     		{
     			if (walkAnim == 1) {setImage(Player.loadedTex[0]);}
-    			if (walkAnim == 3) {setImage(Player.loadedTex[1]);}
-    			if (walkAnim == 5) {setImage(Player.loadedTex[2]);}
-    			if (walkAnim == 7) {setImage(Player.loadedTex[1]);}
-    			if (walkAnim == 9) {walkAnim = 1; setImage(Player.loadedTex[0]);}
+    			else if (walkAnim == 2) {setImage(Player.loadedTex[1]);}
+    			else if (walkAnim == 3) {setImage(Player.loadedTex[2]);}
+    			else if (walkAnim == 4) {setImage(Player.loadedTex[1]);}
+    			else if (walkAnim == 5) {walkAnim = 1; setImage(Player.loadedTex[0]);}
     		}
-    		if (walkDirec == 2)
+    		else if (walkDirec == 2)
     		{
     			if (walkAnim == 1) {setImage(Player.loadedTex[10]);}
-    			if (walkAnim == 3) {setImage(Player.loadedTex[11]);}
-    			if (walkAnim == 5) {setImage(Player.loadedTex[12]);}
-    			if (walkAnim == 7) {setImage(Player.loadedTex[11]);}
-    			if (walkAnim == 9) {walkAnim = 1; setImage(Player.loadedTex[10]);}
+    			else if (walkAnim == 2) {setImage(Player.loadedTex[11]);}
+    			else if (walkAnim == 3) {setImage(Player.loadedTex[12]);}
+    			else if (walkAnim == 4) {setImage(Player.loadedTex[11]);}
+    			else if (walkAnim == 5) {walkAnim = 1; setImage(Player.loadedTex[10]);}
     		}
-    		if (walkDirec == 3)
+    		else if (walkDirec == 3)
     		{
     			if (walkAnim == 1) {setImage(Player.loadedTex[7]);}
-    			if (walkAnim == 3) {setImage(Player.loadedTex[8]);}
-    			if (walkAnim == 5) {setImage(Player.loadedTex[9]);}
-    			if (walkAnim == 7) {setImage(Player.loadedTex[8]);}
-    			if (walkAnim == 9) {walkAnim = 1; setImage(Player.loadedTex[7]);}
+    			else if (walkAnim == 2) {setImage(Player.loadedTex[8]);}
+    			else if (walkAnim == 3) {setImage(Player.loadedTex[9]);}
+    			else if (walkAnim == 4) {setImage(Player.loadedTex[8]);}
+    			else if (walkAnim == 5) {walkAnim = 1; setImage(Player.loadedTex[7]);}
     		}
     		
     	}
@@ -271,7 +262,8 @@ public class Player extends Movable
     		soundFXFrame = 6;
     		Audio.playSound("Move/Steps/foot2");
     	}
-    	else {
+    	else 
+    	{
 			soundFXFrame++;
 		}
     	
@@ -279,9 +271,9 @@ public class Player extends Movable
     //stops the player's walk to put it back in idle
     public void stopWalk()
     {
-    	walking = false;
     	walkFrame = 0;
-    	walkAnim = 1;
+    	soundFXFrame = 0;
+    	walkAnim = notWalking;
     	if (walkDirec == 0) {setImage(Player.loadedTex[3]);}
     	if (walkDirec == 1) {setImage(Player.loadedTex[4]);}
     	if (walkDirec == 2) {setImage(Player.loadedTex[5]);}
@@ -296,39 +288,39 @@ public class Player extends Movable
      */
     public boolean[] getMovement()
     {
-    	Displayable[] loopRoom = Main.allRooms[Main.currRoom];
+    	Image[] room = Main.allRooms[Main.currRoom].getImages();
     	boolean[] movement = new boolean[]{true, true, true, true};
-        for (int i = 0; i < loopRoom.length; ++i) {
-            Displayable currChar = loopRoom[i];
+        for (int i = 0; i < room.length; ++i) {
+            Image currChar = room[i];
             //movables dont collide
             if (!(currChar instanceof Movable)) {
             	
             	boolean shouldBreak = false;
-            	setY(getY() + speed);
+            	setY(getY() + getSpeed());
             	if (collision(currChar))
             	{
             		movement[0] = false; 
             		shouldBreak = true;
             	}
-            	setPos(getX() + speed, getY() - speed);
+            	setPos(getX() + getSpeed(), getY() - getSpeed());
             	if (collision(currChar))
             	{
             		movement[1] = false;
             		shouldBreak = true;
             	}
-            	setPos(getX() - speed, getY() - speed);
+            	setPos(getX() - getSpeed(), getY() - getSpeed());
             	if (collision(currChar))
             	{
             		movement[2] = false;
             		shouldBreak = true;
             	}
-           		setPos(getX() - speed, getY() + speed);
+           		setPos(getX() - getSpeed(), getY() + getSpeed());
             	if (collision(currChar))
             	{
             		movement[3] = false;
             		shouldBreak = true;
             	}
-            	setX(getX() + speed);
+            	setX(getX() + getSpeed());
             	if (shouldBreak) {
             		break;
             	}
@@ -367,4 +359,7 @@ public class Player extends Movable
     	Player.loadedTex[14] = new Texture("WalkAnim/WalkUp/Up02.PNG");
     	Player.loadedTex[15] = new Texture("WalkAnim/WalkUp/Up03.PNG");
     }
+    public static double baseSpeed = 8;
+    public static int startWalking = 0;
+    public static int notWalking = -1;
 }

@@ -1,8 +1,9 @@
 package Game;
 
 import Imported.Texture;
+import LowLevel.Image;
 
-public class Door extends Displayable
+public class Door extends Image
 {
 	
     private int leadRoom;

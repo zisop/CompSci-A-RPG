@@ -2,9 +2,10 @@ package Game;
 
 import Imported.Audio;
 import Imported.Texture;
+import LowLevel.Image;
 import UI.ItemBag;
 
-public class Chest extends Displayable{
+public class Chest extends Image{
 	public static Texture[] chestTex = new Texture[4];
 	private ItemBag chestBag;
 	private boolean isOpen;

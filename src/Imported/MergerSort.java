@@ -1,10 +1,11 @@
 package Imported;
 
-import Game.Displayable;
+
+import LowLevel.Image;
 
 public class MergerSort 
 {
-    public static Displayable[] mergeSort(Displayable[] list) 
+    public static Image[] mergeSort(Image[] list) 
     {
         //If list is empty; no need to do anything
         if (list.length <= 1) {
@@ -12,8 +13,8 @@ public class MergerSort
         }
          
         //Split the array in half in two parts
-        Displayable[] first = new Displayable[list.length / 2];
-        Displayable[] second = new Displayable[list.length - first.length];
+        Image[] first = new Image[list.length / 2];
+        Image[] second = new Image[list.length - first.length];
         System.arraycopy(list, 0, first, 0, first.length);
         System.arraycopy(list, first.length, second, 0, second.length);
          
@@ -26,7 +27,7 @@ public class MergerSort
         return list;
     }
      
-    private static void merge(Displayable[] first, Displayable[] second, Displayable[] result) 
+    private static void merge(Image[] first, Image[] second, Image[] result) 
     {
         //Index Position in first array - starting with first element
         int iFirst = 0;
