@@ -14,7 +14,6 @@ public abstract class Mob extends Movable{
 	
 	
 	private int mobID;
-	private Point movementPoint;
 	private double verticalMove;
 	private double horizontalMove;
 	private boolean startingHorizontal;
@@ -29,12 +28,15 @@ public abstract class Mob extends Movable{
 	private int soundFXFrame;
 	private int soundFXSwitch;
 	private int firstSound;
+	
+	protected Point movementPoint;
 	protected boolean followingPlayer;
 	protected boolean attacking;
 	
 	public Mob(double x, double y, int ID)
 	{
 		super(null, x, y, 0, 0);
+
 		if (ID == skeleton)
 		{
 			setWidth(50);
@@ -47,10 +49,23 @@ public abstract class Mob extends Movable{
 			soundFXSwitch = 20;
 			firstSound = 6;
 			walkAnimSwitch = 6;
-			walkDirec = down;
+		}
+		if (ID == slime)
+		{
+			setWidth(50);
+			setLength(50);
+			setSpeed(MeleeMob.slimeSpeed);
+			maxStoppingFrame = MeleeMob.slimeStopFrames;
+			anims = getAnims(slimeAnimInd, slimeAnimInd + 19);
+			
+			walkSounds = getSounds(slimeSoundInd, slimeSoundInd + 9);
+			soundFXSwitch = 20;
+			firstSound = 6;
+			walkAnimSwitch = 6;
 		}
 		
 		int which = (int)(Math.random() * 4);
+		walkDirec = which;
 		if (which == up) {setImage(anims[uI]);}
 		else if (which == right) {setImage(anims[rI]);}
 		else if (which == down) {setImage(anims[dI]);}
@@ -63,6 +78,7 @@ public abstract class Mob extends Movable{
 		deathAnimFrame = 0;
 		soundFXFrame = 0;
 		walkFrame = 0;
+		createMovementPoints();
 	}
 	
 	
@@ -89,8 +105,11 @@ public abstract class Mob extends Movable{
 			stoppingFrame++;
 			return;
 		}
+		System.out.println("targetX: " + movementPoint.getX() + " targetY: " + movementPoint.getY());
 		boolean atHoriz = atHorizontal();
+		
 		boolean atVert = atVertical();
+		System.out.println("Athorizontal: " + atHoriz + " AtVertical: " + atVert);
 		int direc;
 		
 		//Decide which direction to move
@@ -128,7 +147,7 @@ public abstract class Mob extends Movable{
 		{
 			if (!atVert)
 			{
-				if (horizontalMove < getY())
+				if (verticalMove < getY())
 				{
 					direc = 2;
 				}
@@ -139,7 +158,7 @@ public abstract class Mob extends Movable{
 			}
 			else if (!atHoriz)
 			{
-				if (verticalMove < getX())
+				if (horizontalMove < getX())
 				{
 					direc = 3;
 				}
@@ -156,17 +175,25 @@ public abstract class Mob extends Movable{
 		}
 		
 		super.move(direc);
+		walkDirec = direc;
 		handleAnims();
 	}
 	public boolean atHorizontal()
 	{
 		double absDist = Math.abs(getX() - horizontalMove);
+		
 		return absDist <= getSpeed();
 	}
 	public boolean atVertical()
 	{
 		double absDist = Math.abs(getY() - verticalMove);
+		System.out.println(absDist);
 		return absDist <= getSpeed();
+	}
+	public void show()
+	{
+		super.show();
+		move();
 	}
 	private void handleAnims()
 	{
@@ -229,7 +256,7 @@ public abstract class Mob extends Movable{
 	private Audio playWalkSound()
 	{
 		int which = (int)(Math.random() * walkSounds.length);
-		return Audio.playSound(walkSounds[which], .3);
+		return Audio.playSound(walkSounds[which], .6);
 	}
 	
 	public abstract void createMovementPoint();
@@ -293,19 +320,52 @@ public abstract class Mob extends Movable{
 	public static int zombie = 2;
 	public static void init()
 	{
-		mobSounds = new String[2];
+		mobSounds = new String[12];
 		mobSounds[skelSoundInd + 0] = "Misc/random2";
 		mobSounds[skelSoundInd + 1] = "Misc/random3";
+		mobSounds[slimeSoundInd + 0] = "NPC/Slime/slime1";
+		mobSounds[slimeSoundInd + 1] = "NPC/Slime/slime2";
+		mobSounds[slimeSoundInd + 2] = "NPC/Slime/slime3";
+		mobSounds[slimeSoundInd + 3] = "NPC/Slime/slime4";
+		mobSounds[slimeSoundInd + 4] = "NPC/Slime/slime5";
+		mobSounds[slimeSoundInd + 5] = "NPC/Slime/slime6";
+		mobSounds[slimeSoundInd + 6] = "NPC/Slime/slime7";
+		mobSounds[slimeSoundInd + 7] = "NPC/Slime/slime8";
+		mobSounds[slimeSoundInd + 8] = "NPC/Slime/slime9";
+		mobSounds[slimeSoundInd + 9] = "NPC/Slime/slime10";
 		
-		mobTex = new Texture[20];
+		
+		mobTex = new Texture[40];
 		mobTex[skelAnimInd + uW0] = new Texture("Mobs/Skeleton/IdleDown.png");
 		for (int i = 1; i < 20; i++)
 		{
 			mobTex[i] = mobTex[0]; 
 		}
+		mobTex[slimeAnimInd + uW0] = new Texture("Mobs/Slime/IdleUp.png");
+		mobTex[slimeAnimInd + uW1] = mobTex[slimeAnimInd + uW0];
+		mobTex[slimeAnimInd + uW2] = mobTex[slimeAnimInd + uW0];
+		mobTex[slimeAnimInd + uI] = mobTex[slimeAnimInd + uW0];
+		mobTex[slimeAnimInd + uA] = mobTex[slimeAnimInd + uW0];
+		mobTex[slimeAnimInd + rW0] = new Texture("Mobs/Slime/IdleRight.png");
+		mobTex[slimeAnimInd + rW1] = mobTex[slimeAnimInd + rW0];
+		mobTex[slimeAnimInd + rW2] = mobTex[slimeAnimInd + rW0];
+		mobTex[slimeAnimInd + rI] = mobTex[slimeAnimInd + rW0];
+		mobTex[slimeAnimInd + rA] = mobTex[slimeAnimInd + rW0];
+		mobTex[slimeAnimInd + dW0] = new Texture("Mobs/Slime/IdleDown.png");
+		mobTex[slimeAnimInd + dW1] = mobTex[slimeAnimInd + dW0];
+		mobTex[slimeAnimInd + dW2] = mobTex[slimeAnimInd + dW0];
+		mobTex[slimeAnimInd + dI] = mobTex[slimeAnimInd + dW0];
+		mobTex[slimeAnimInd + dA] = mobTex[slimeAnimInd + dW0];
+		mobTex[slimeAnimInd + lW0] = new Texture("Mobs/Slime/IdleLeft.png");
+		mobTex[slimeAnimInd + lW1] = mobTex[slimeAnimInd + lW0];
+		mobTex[slimeAnimInd + lW2] = mobTex[slimeAnimInd + lW0];
+		mobTex[slimeAnimInd + lI] = mobTex[slimeAnimInd + lW0];
+		mobTex[slimeAnimInd + lA] = mobTex[slimeAnimInd + lW0];
 	}
 	private static int skelSoundInd = 0;
 	private static int skelAnimInd = 0;
+	private static int slimeAnimInd = 20;
+	private static int slimeSoundInd = 2;
 	
 	private static int notWalking = -1;
 	private static int startWalking = 0;

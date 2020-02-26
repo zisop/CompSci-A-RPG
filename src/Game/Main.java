@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import javax.swing.event.MenuDragMouseEvent;
 
 import LowLevel.Shape;
+import Mobs.MeleeMob;
 import Mobs.Mob;
 import UI.Item;
 import UI.ItemBag;
@@ -94,6 +95,8 @@ public class Main
         UI.playerBag.addItem(wand2, 0);
         UI.playerBag.addItem(ruby, 3);
         
+        MeleeMob slime = new MeleeMob(20, 20, Mob.slime);
+        
         
         
         
@@ -150,6 +153,7 @@ public class Main
             showVisibles();
             
             UI.showUI();
+            slime.show();
             
             
             
