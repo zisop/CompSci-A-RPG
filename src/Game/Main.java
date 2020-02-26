@@ -27,7 +27,9 @@ import UI.Item;
 import UI.ItemBag;
 import UI.TextDisplay;
 import UI.UI;
-import World.TileCreation;
+import World.Room;
+import World.Terrain;
+import World.Tile;
 
 import org.lwjgl.glfw.GLFWKeyCallback;
 import static org.lwjgl.glfw.GLFW.*;
@@ -41,13 +43,12 @@ public class Main
     public static long window;
     public static GLFWVidMode videoMode;
     public static GLFWKeyCallback events;
-    public static Displayable[][] allRooms = new Displayable[3][];
+    public static Room[] allRooms = new Room[3];
     public static boolean[] initted = new boolean[allRooms.length];
     public static ArrayList<Integer> toInit = new ArrayList<Integer>();
     public static Player player;
     public static String currDialogue;
     
-    public static boolean playerIn = false;
     public static CursorInput cursor;
     
     
@@ -55,7 +56,7 @@ public class Main
     public static int moveDirecLastFrame;
     public static boolean interactionEvent;
     public static boolean alreadyInteracting;
-    public static Displayable interactingChar;
+    public static Image interactingChar;
     
     
     
@@ -94,7 +95,6 @@ public class Main
         UI.playerBag.addItem(ruby, 3);
         
         
-        //shop.setVisibility(true);
         
         
         while (!glfwWindowShouldClose(window)) {
@@ -187,16 +187,16 @@ public class Main
     	return angle;
     }
     //Figures out whether a character can interact, or if something else is already interacting
-    public static boolean canInteract(Displayable obj)
+    public static boolean canInteract(Image obj)
     {
     	return !interactionEvent && (interactingChar == null || interactingChar == obj);
     }
-    public static boolean xInteraction(Displayable obj)
+    public static boolean xInteraction(Image obj)
     {
     	return x && !xLastFrame && player.xCollision(obj) && canInteract(obj);
     }
     //Will determine if a click interaction has been made on an object
-    public static boolean clickInteraction(Displayable obj)
+    public static boolean clickInteraction(Image obj)
     {
     	boolean validClick = leftClick && !leftClickLastFrame;
 
@@ -206,27 +206,7 @@ public class Main
     
   //Shows all visible Displayables
     public static void showVisibles() {
-    	if (!playerIn)
-    	{
-    		Displayable[] newVisibles = new Displayable[allRooms[currRoom].length + 1];
-    		for (int i = 0; i < allRooms[currRoom].length; i++)
-    		{
-    			newVisibles[i] = allRooms[currRoom][i];
-    		}
-    		newVisibles[newVisibles.length - 1] = player;
-    		newVisibles = MergerSort.mergeSort(newVisibles);
-            allRooms[currRoom] = newVisibles;
-            playerIn = true;
-    	}
-    	else 
-    	{
-    		allRooms[currRoom] = MergerSort.mergeSort(allRooms[currRoom]);
-		}
-        
-
-        for (int i = 0; i < allRooms[currRoom].length; ++i) {
-           	((Image) allRooms[currRoom][i]).show();
-        }
+        allRooms[currRoom].show();
         Projectile.showVisProjectiles();
     }
     
@@ -244,7 +224,6 @@ public class Main
             if (roomNum == 2) {
                 initRoom2();
             }
-            playerIn = false;
         }
         if (roomNum == 0) {
             player.setPos(0.0, -150.0);
@@ -259,15 +238,15 @@ public class Main
     }
     
     public static void initRoom0() {
-        Displayable[] room = new Displayable[6];
+        Image[] room = new Image[6];
         Door door1 = new Door(Shape.shapes[0], 0, -300, 50, 100, 2);
         Door door2 = new Door(Shape.shapes[0], 200, -100, 100, 50, 1);
         room[0] = door1;
         room[1] = door2;
         door1.setLead(1);
         door2.setLead(2);
-        room[2] = new Displayable(Shape.shapes[0], -200, 200, 150, 150);
-        room[3] = new Displayable(Shape.shapes[0], 200, 200, 150, 150);
+        room[2] = new Image(Shape.shapes[0], -200, 200, 150, 150);
+        room[3] = new Image(Shape.shapes[0], 200, 200, 150, 150);
         
         int[] inIDs = new int[] {Item.ruby};
         int[] inQuantities = new int[] {6};
@@ -281,32 +260,34 @@ public class Main
         Item wand = new Item(2);
         bag.addItem(wand, 1);
         room[5] = new Chest(0, 200, 50, 50, 50, 50, 40, bag);
-        allRooms[0] = room;
+        
+        Terrain test = Terrain.createTerrain(Tile.Grass, 0, 0, 10, 10, 80);
+        allRooms[0] = new Room(room, new Terrain[] {test});
         initted[0] = true;
     }
     
     public static void initRoom1() {
-        Displayable[] room = new Displayable[4];
+        Image[] room = new Image[4];
         Door theDoor = new Door(Shape.shapes[0], 0, 300, 50, 100, 0);
         theDoor.setLead(0);
         room[0] = theDoor;
-        room[1] = new Displayable(Shape.shapes[0], -200, -200, 150, 150);
-        room[2] = new Displayable(Shape.shapes[0], 200, -200, 150, 150);
+        room[1] = new Image(Shape.shapes[0], -200, -200, 150, 150);
+        room[2] = new Image(Shape.shapes[0], 200, -200, 150, 150);
         NPC npc = new NPC(0, 100, 300, 40, 40, 1, 13);
         room[3] = npc;
-        allRooms[1] = room;
+        allRooms[1] = new Room(room, new Terrain[] {});
         initted[1] = true;
     }
     
     public static void initRoom2() {
     	
-        Displayable[] room = new Displayable[3];
+        Image[] room = new Image[3];
         Door theDoor = new Door(Shape.shapes[0], 0, 300, 50, 100, 0);
         theDoor.setLead(0);
         room[0] = theDoor;
-        room[1] = new Displayable(Shape.shapes[0], -100, -200, 150, 150);
-        room[2] = new Displayable(Shape.shapes[0], 100, -200, 150, 150);
-        allRooms[2] = room;
+        room[1] = new Image(Shape.shapes[0], -100, -200, 150, 150);
+        room[2] = new Image(Shape.shapes[0], 100, -200, 150, 150);
+        allRooms[2] = new Room(room, new Terrain[] {null});
         initted[2] = true;
     }
     
@@ -331,8 +312,8 @@ public class Main
         Shape.initShapes();
         UI.init();
         TextDisplay.initText();
-        TileCreation.initTex();
-        Mob.initTex();
+        Tile.initTex();
+        Mob.init();
         NPC.initTex();
         glEnable(3553);
         glEnable(3042);

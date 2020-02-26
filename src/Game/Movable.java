@@ -1,9 +1,9 @@
 package Game;
 
 import Imported.Texture;
+import LowLevel.Image;
 
-public class Movable extends Displayable{
-	public Displayable lastCollision;
+public class Movable extends Image{
 	private double speed;
 	public Movable(Texture img, double inX, double inY, double w, double l) {
         super(img, inX, inY, w, l);

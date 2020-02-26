@@ -1,10 +1,11 @@
 package UI;
 
-import Game.Displayable;
+
 import Game.NPC;
 import Imported.Texture;
 import LowLevel.CharTex;
 import LowLevel.Geometrical;
+import LowLevel.Image;
 import LowLevel.Shape;
 
 public class TextDisplay {
@@ -61,7 +62,7 @@ public class TextDisplay {
     	Shape mainRect = (Shape)(textBox.getShape(0));
     	double texX = mainRect.getX() - mainRect.getWidth() / 2 + fontSize;
     	double texY = mainRect.getY() + mainRect.getLength() / 2 - fontSize;
-    	Displayable letterImg;
+    	Image letterImg;
     	
     	
     	//Draw each character in the charLi string to the screen
@@ -72,7 +73,7 @@ public class TextDisplay {
     		{
     			CharTex currLetter = getLetter(charLi[i]);
     			texX -= (1 - currLetter.getSpace()) * fontSize;
-    			letterImg = new Displayable(currLetter.getTex(), texX, texY, fontSize * currLetter.getSize(), fontSize * currLetter.getSize());
+    			letterImg = new Image(currLetter.getTex(), texX, texY, fontSize * currLetter.getSize(), fontSize * currLetter.getSize());
     			letterImg.UIshow(r, g, b, a);
     			texX += currLetter.getSpace() * fontSize;
     		}
