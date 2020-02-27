@@ -10,8 +10,6 @@ import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
 import LowLevel.Positionable;
-import Mobs.Mob;
-import World.Room;
 
 public class Player extends Movable
 {

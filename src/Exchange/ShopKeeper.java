@@ -20,7 +20,6 @@ public class ShopKeeper extends NPC{
 	
 	private Geometrical talkButton;
 	private TextBox talkText;
-	private Shape textX;
 	
 	private Geometrical shopButton;
 	private TextBox shopText;

@@ -28,6 +28,7 @@ public abstract class Mob extends Movable{
 	private int soundFXFrame;
 	private int soundFXSwitch;
 	private int firstSound;
+	private boolean shouldCreate;
 	
 	protected Point movementPoint;
 	protected boolean followingPlayer;
@@ -73,29 +74,20 @@ public abstract class Mob extends Movable{
 		
 		mobID = ID;
 		followingPlayer = false;
+		shouldCreate = true;
 		stoppingFrame = maxStoppingFrame;
 		walkAnim = resetWalk;
 		deathAnimFrame = 0;
 		soundFXFrame = 0;
 		walkFrame = 0;
-		createMovementPoints();
 	}
 	
-	
-	public void createMovementPoints()
+	public void show()
 	{
-		stopWalk();
-		createMovementPoint();
-		stoppingFrame = 0;
-		startingHorizontal = Math.random() < .5;
-		createDistances();
+		super.show();
+		move();
 	}
 	
-	public void createDistances()
-	{
-		horizontalMove = movementPoint.getX();
-		verticalMove = movementPoint.getY();
-	}
 	public void move()
 	{
 		if (stoppingFrame != maxStoppingFrame) 
@@ -103,95 +95,77 @@ public abstract class Mob extends Movable{
 			stoppingFrame++;
 			return;
 		}
+		if (shouldCreate)
+		{
+			createMovementPoints();
+			shouldCreate = false;
+		}
+		int direc = findDirection();
+		if (direc == shouldStopWalk) {stopWalk(); return;}
+		
+		super.move(direc);
+		if (walkDirec != direc) {walkAnim = resetWalk;}
+		walkDirec = direc;
+		handleAnims();
+	}
+	
+	private int findDirection()
+	{
 		boolean atHoriz = atHorizontal();
 		boolean atVert = atVertical();
-		int direc;
-		
 		//Decide which direction to move
 		if (startingHorizontal)
 		{
 			if (!atHoriz)
 			{
-				if (horizontalMove < getX())
-				{
-					direc = 3;
-				}
-				else 
-				{
-					direc = 1;
-				}
+				if (horizontalMove < getX()) {return left;}
+				else {return right;}
 			}
 			else if (!atVert)
 			{
-				if (verticalMove < getY())
-				{
-					direc = 2;
-				}
-				else 
-				{
-					direc = 0;
-				}
+				if (verticalMove < getY()) {return down;}
+				else {return up;}
 			}
-			else 
-			{
-				createMovementPoints();
-				return;
-			}
+			else {return shouldStopWalk;}
 		}
 		else 
 		{
 			if (!atVert)
 			{
-				if (verticalMove < getY())
-				{
-					direc = 2;
-				}
-				else 
-				{
-					direc = 0;
-				}
+				if (verticalMove < getY()) {return down;}
+				else {return up;}
 			}
 			else if (!atHoriz)
 			{
-				if (horizontalMove < getX())
-				{
-					direc = 3;
-				}
-				else 
-				{
-					direc = 1;
-				}
+				if (horizontalMove < getX()) {return left;}
+				else {return right;}
 			}
-			else 
-			{
-				createMovementPoints();
-				return;
-			}
+			else {return shouldStopWalk;}
 		}
-		
-		super.move(direc);
-		if (walkDirec != direc)
-		{
-			walkAnim = resetWalk;
-		}
-		walkDirec = direc;
-		handleAnims();
 	}
-	public boolean atHorizontal()
+	private void createMovementPoints()
+	{
+		createMovementPoint();
+		startingHorizontal = Math.random() < .5;
+		createDistances();
+	}
+	
+	private void createDistances()
+	{
+		horizontalMove = movementPoint.getX();
+		verticalMove = movementPoint.getY();
+	}
+	private boolean atHorizontal()
 	{
 		double absDist = Math.abs(getX() - horizontalMove);
 		return absDist <= getSpeed();
 	}
-	public boolean atVertical()
+	private boolean atVertical()
 	{
 		double absDist = Math.abs(getY() - verticalMove);
 		return absDist <= getSpeed();
 	}
-	public void show()
-	{
-		super.show();
-		move();
-	}
+	
 	private void handleAnims()
 	{
 		walkFrame++;
@@ -245,6 +219,8 @@ public abstract class Mob extends Movable{
 		walkAnim = resetWalk;
 		walkFrame = 0;
 		soundFXFrame = 0;
+		stoppingFrame = 0;
+		shouldCreate = true;
 		if (walkDirec == up) {setImage(anims[uI]);}
 		else if (walkDirec == right) {setImage(anims[rI]);}
 		else if (walkDirec == down) {setImage(anims[dI]);}
@@ -257,6 +233,7 @@ public abstract class Mob extends Movable{
 	}
 	
 	public abstract void createMovementPoint();
+	public abstract boolean inAttackRange();
 	public abstract void attack();
 	
 	public static int up = 0;
@@ -364,6 +341,7 @@ public abstract class Mob extends Movable{
 	private static int slimeAnimInd = 20;
 	private static int slimeSoundInd = 2;
 	
+	private static int shouldStopWalk = -1;
 	private static int resetWalk = -1;
 	private static int startWalking = 0;
 	//private static int 

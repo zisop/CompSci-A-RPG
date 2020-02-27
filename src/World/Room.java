@@ -4,10 +4,14 @@ import Game.Main;
 import Game.Projectile;
 import Imported.MergerSort;
 import LowLevel.Image;
+import LowLevel.Point;
+import LowLevel.Positionable;
 
 public class Room extends Image{
 	private Terrain[] terrains;
 	private Image[] images;
+	//Terrain should all be rectangles; if you need to make complex polygons, split them into multiple rectangles
+	//Do not try to make diagonals out of squares you fucking idiots
 	public Room(Image[] inImages, Terrain[] inTerrains)
 	{
 		super(null, 0, 0, 0, 0);
@@ -35,5 +39,20 @@ public class Room extends Image{
 	public Image[] getImages()
 	{
 		return images;
+	}
+	public Terrain[] getTerrain()
+	{
+		return terrains;
+	}
+	public boolean insideRoom(Positionable character, Point movementPoint)
+	{
+		for (int i = 0; i < terrains.length; i++)
+		{
+			if (terrains[i].insideTerrain(character, movementPoint))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

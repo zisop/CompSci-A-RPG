@@ -7,7 +7,6 @@ import org.lwjgl.opengl.GL;
 import Exchange.ItemExchange;
 import Exchange.Shop;
 import Exchange.ShopKeeper;
-import Imported.MergerSort;
 import Imported.Texture;
 import Input.CursorInput;
 import Input.KeyInput;
@@ -18,8 +17,6 @@ import LowLevel.Point;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.ArrayList;
-
-import javax.swing.event.MenuDragMouseEvent;
 
 import LowLevel.Shape;
 import Mobs.MeleeMob;
@@ -116,40 +113,31 @@ public class Main
             
             //movement = {ability to move north, east, south, west}
             boolean[] movement = player.getMovement();
-            
-            boolean walked = false;
             boolean[] keysPressed = new boolean[4];
             //Stores W A S D presses in keysPressed
             // 0 = W, 1 = D, 2 = S, 3 = A
-            keysPressed[0] = KeyInput.keys[GLFW_KEY_W];
-            keysPressed[1] = KeyInput.keys[GLFW_KEY_D];
-            keysPressed[2] = KeyInput.keys[GLFW_KEY_S];
-            keysPressed[3] = KeyInput.keys[GLFW_KEY_A];
+            keysPressed[up] = KeyInput.keys[GLFW_KEY_W];
+            keysPressed[right] = KeyInput.keys[GLFW_KEY_D];
+            keysPressed[down] = KeyInput.keys[GLFW_KEY_S];
+            keysPressed[left] = KeyInput.keys[GLFW_KEY_A];
             //Makes player walk according to KeyPresses
-            int moveDirec = -1;
+            int moveDirec = notMoving;
             if (!alreadyInteracting) {
-                if (keysPressed[0] && movement[0] && (moveDirecLastFrame == 0 || moveDirecLastFrame == -1)) {
-                    moveDirec = 0;
-                    walked = true;
+                if (keysPressed[up] && movement[up] && (moveDirecLastFrame == up || moveDirecLastFrame == notMoving)) {
+                    moveDirec = up;
                 } 
-                else if (keysPressed[1] && movement[1] && (moveDirecLastFrame == 1 || moveDirecLastFrame == -1)) {
-                    moveDirec = 1;
-                    walked = true;
+                else if (keysPressed[right] && movement[right] && (moveDirecLastFrame == right || moveDirecLastFrame == notMoving)) {
+                    moveDirec = right;
                 } 
-                else if (keysPressed[2] && movement[2] && (moveDirecLastFrame == 2 || moveDirecLastFrame == -1)) {
+                else if (keysPressed[down] && movement[down] && (moveDirecLastFrame == down || moveDirecLastFrame == notMoving)) {
                     moveDirec = 2;
-                    walked = true;
                 } 
-                else if (keysPressed[3] && movement[3] && (moveDirecLastFrame == 3 || moveDirecLastFrame == -1)) {
+                else if (keysPressed[left] && movement[left] && (moveDirecLastFrame == left || moveDirecLastFrame == notMoving)) {
                     moveDirec = 3;
-                    walked = true;
                 }
             }
-            if (moveDirec != -1) {
-            	player.move(moveDirec);
-            }
-            //If player didn't walk, then he stopped walking :)
-            if (!walked) {player.stopWalk();}
+            if (moveDirec != notMoving) {player.move(moveDirec);}
+            else {player.stopWalk();}
             showVisibles();
             
             UI.showUI();
@@ -169,7 +157,6 @@ public class Main
             moveDirecLastFrame = moveDirec;
             oneLastFrame = one;
             rightClickLastFrame = rightClick;
-            
             interactionEvent = false;
         }
     }
@@ -265,7 +252,10 @@ public class Main
         bag.addItem(wand, 1);
         room[5] = new Chest(0, 200, 50, 50, 50, 50, 40, bag);
         
-        Terrain test = Terrain.createTerrain(Tile.Grass, 0, 0, 10, 10, 80);
+        Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10, 80);
+        test.addRow(Tile.GrassDirtL, right);
+        test.addRow(Tile.GrassDirtR, left);
+        
         allRooms[0] = new Room(room, new Terrain[] {test});
         initted[0] = true;
     }
@@ -324,4 +314,10 @@ public class Main
         glBlendFunc(770, 771);
         glfwSetKeyCallback(window, events);
     }
+    
+    private static int notMoving = -1;
+    private static int up = 0;
+    private static int right = 1;
+    private static int down = 2;
+    private static int left = 3;
 }

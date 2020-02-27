@@ -126,6 +126,8 @@ public class Positionable extends Point
     
     public void setWidth(double newWidth) {
         
+    	//Assumed that hitboxwidth is always the same as hitboxlength
+    	//Because we've only altered lengths so far
         showBasis[DL].setX(getX() - newWidth / 2);
         showBasis[UL].setX(getX() - newWidth / 2);
         showBasis[DR].setX(getX() + newWidth / 2);
@@ -137,6 +139,7 @@ public class Positionable extends Point
         collisionBasis[UR].setX(getX() + newWidth / 2);
         
         width = newWidth;
+        hitWidth = newWidth;
     }
     public void setX(double newX)
     {
@@ -173,13 +176,22 @@ public class Positionable extends Point
         showBasis[UL].setY(getY() + newLength / 2);
         showBasis[DR].setY(getY() - newLength / 2);
         showBasis[UR].setY(getY() + newLength / 2);
-        
-        collisionBasis[DL].setY(collisionCenterY - yDiff);
-        collisionBasis[UL].setY(collisionCenterY + yDiff);
-        collisionBasis[DR].setY(collisionCenterY - yDiff);
-        collisionBasis[UR].setY(collisionCenterY + yDiff);
-        
         length = newLength;
+        
+        if (hitLength <= 0) {
+        	hitLength = newLength;
+        	collisionBasis[DL].setY(showBasis[DL].getY());
+        	collisionBasis[UL].setY(showBasis[UL].getY());
+        	collisionBasis[DR].setY(showBasis[DR].getY());
+        	collisionBasis[UR].setY(showBasis[UR].getY());
+        }
+        else {
+        	collisionBasis[DL].setY(collisionCenterY - yDiff);
+        	collisionBasis[UL].setY(collisionCenterY + yDiff);
+        	collisionBasis[DR].setY(collisionCenterY - yDiff);
+        	collisionBasis[UR].setY(collisionCenterY + yDiff);
+        	hitLength = collisionBasis[UL].getY() - collisionBasis[DL].getY();
+        }
     }
     
     public void setAngle(double newAng) {angle = newAng;}
@@ -189,10 +201,7 @@ public class Positionable extends Point
     public double getHitLength() {return hitLength;}
     public double getAngle() {return angle;}
     public Point[] getShowBasis() {return showBasis;}
-    public Point[] getCollisionBasis()
-    {
-    	return collisionBasis;
-    }
+    public Point[] getCollisionBasis() {return collisionBasis;}
     public int compareTo(Object otherObj)
     {
     	Positionable k = (Positionable)otherObj;

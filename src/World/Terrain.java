@@ -2,7 +2,10 @@ package World;
 
 import java.util.ArrayList;
 
+import LowLevel.Geometry;
 import LowLevel.Image;
+import LowLevel.Point;
+import LowLevel.Positionable;
 
 public class Terrain extends Image {
 	private ArrayList<Tile> tiles;
@@ -10,11 +13,14 @@ public class Terrain extends Image {
 	private double maxX;
 	private double minY;
 	private double maxY;
+	private double tileWidth;
 	public Terrain(Tile[] inTiles)
 	{
-		super(null, 0, 0, 0, 0);
+		super(null, 0, 0, 1, 1, 1, 1);
 		tiles = new ArrayList<Tile>();
-		tiles.add(inTiles[0]);
+		Tile startTile = inTiles[0];
+		tileWidth = startTile.getWidth();
+		tiles.add(startTile);
 		int minXInd = 0;
 		int maxXInd = 0;
 		int minYInd = 0;
@@ -28,12 +34,12 @@ public class Terrain extends Image {
 			if (currTile.getY() > inTiles[maxYInd].getY()) {maxYInd = i;}
 			tiles.add(currTile);
 		}
-		minX = inTiles[minXInd].getX();
-		maxX = inTiles[maxXInd].getX();
-		minY = inTiles[minYInd].getY();
-		maxY = inTiles[maxYInd].getY();
-		setX((minX + maxX) / 2);
-		setY((minY + maxY) / 2);
+		minX = inTiles[minXInd].getX() - tileWidth / 2;
+		maxX = inTiles[maxXInd].getX() + tileWidth / 2;
+		minY = inTiles[minYInd].getY() - tileWidth / 2;
+		maxY = inTiles[maxYInd].getY() + tileWidth / 2;
+		super.setX((minX + maxX) / 2);
+		super.setY((minY + maxY) / 2);
 		setWidth(maxX - minX);
 		setLength(maxY - minY);
 	}
@@ -71,39 +77,97 @@ public class Terrain extends Image {
 	{
 		double tileX = tile.getX();
 		double tileY = tile.getY();
-		if (tile.getX() > maxX) {setMaxX(tileX);}
-		if (tile.getX() < minX) {setMinX(tileX);}
-		if (tile.getY() > maxY) {setMaxY(tileY);}
-		if (tile.getY() < minY) {setMinY(tileY);}
+		if (tileX + tileWidth / 2 > maxX) {setMaxX(tileX + tileWidth / 2);}
+		if (tileX - tileWidth / 2 < minX) {setMinX(tileX - tileWidth / 2);}
+		if (tileY + tileWidth / 2 > maxY) {setMaxY(tileY + tileWidth / 2);}
+		if (tileY - tileWidth / 2 < minY) {setMinY(tileY - tileWidth / 2);}
 		tiles.add(tile);
 	}
-	public void setMaxX(double newX)
+	public void addRow(int ID, int direc)
+	{
+		double xVal;
+		double yVal;
+		if (direc == up) {
+			setMaxY(maxY + tileWidth);
+			
+			//get rid of rounding errors
+			int numTiles = (int)((getWidth() + .00001) / tileWidth);
+			xVal = minX + tileWidth / 2;
+			yVal = maxY - tileWidth / 2;
+			for (int i = 0; i < numTiles; i++)
+			{
+				tiles.add(new Tile(ID, xVal, xVal, tileWidth));
+				xVal += tileWidth;
+			}
+		}
+		
+		else if (direc == right) {
+			setMaxX(maxX + tileWidth);
+			int numTiles = (int)((getLength() + .00001) / tileWidth);
+			System.out.println(numTiles);
+			xVal = maxX - tileWidth / 2;
+			yVal = minY + tileWidth / 2;
+			for (int i = 0; i < numTiles; i++)
+			{
+				tiles.add(new Tile(ID, xVal, yVal, tileWidth));
+				yVal += tileWidth;
+			}
+		}
+		
+		else if (direc == down) {
+			setMinY(minY - tileWidth);
+			int numTiles = (int)((getWidth() + .00001) / tileWidth);
+			xVal = minX + tileWidth / 2;
+			yVal = minY + tileWidth / 2;
+			for (int i = 0; i < numTiles; i++)
+			{
+				tiles.add(new Tile(ID, xVal, yVal, tileWidth));
+				xVal += tileWidth;
+			}
+		}
+		
+		else if (direc == left) {
+			setMinX(minX - tileWidth);
+			int numTiles = (int)((getLength() + .00001) / tileWidth);
+			xVal = minX + tileWidth / 2;
+			yVal = minY + tileWidth / 2;
+			for (int i = 0; i < numTiles; i++)
+			{
+				tiles.add(new Tile(ID, xVal, yVal, tileWidth));
+				yVal += tileWidth;
+			}
+		}
+		
+	}
+	
+	
+	private void setMaxX(double newX)
 	{
 		double xDiff = newX - maxX;
-		setX(getX() + xDiff / 2);
+		super.setX(getX() + xDiff / 2);
 		maxX = newX;
-		setWidth(maxX - minX);
+		super.setWidth(maxX - minX);
 	}
-	public void setMinX(double newX)
+	private void setMinX(double newX)
 	{
 		double xDiff = newX - minX;
-		setX(getX() + xDiff / 2);
+		super.setX(getX() + xDiff / 2);
 		minX = newX;
-		setWidth(maxX - minX);
+		super.setWidth(maxX - minX);
 	}
-	public void setMaxY(double newY)
+	private void setMaxY(double newY)
 	{
 		double yDiff = newY - maxY;
-		setY(getY() + yDiff / 2);
+		super.setY(getY() + yDiff / 2);
 		maxY = newY;
-		setLength(maxY - minY);
+		super.setLength(maxY - minY);
 	}
-	public void setMinY(double newY)
+	private void setMinY(double newY)
 	{
 		double yDiff = newY - minY;
-		setY(getY() + yDiff / 2);
+		super.setY(getY() + yDiff / 2);
 		minY = newY;
-		setLength(maxY - minY);
+		super.setLength(maxY - minY);
 	}
 	public double getMinX() {return minX;}
 	public double getMaxX() {return maxX;}
@@ -130,4 +194,17 @@ public class Terrain extends Image {
 		}
 		return new Terrain(tiles);
 	}
+	public boolean insideTerrain(Positionable character, Point movementPoint)
+	{
+		double originalX = character.getX();
+		double originalY = character.getY();
+		character.setPos(movementPoint.getX(), movementPoint.getY());
+		boolean wasInside = collision(character);
+		character.setPos(originalX, originalY);
+		return wasInside;
+	}
+	private static int up = 0;
+    private static int right = 1;
+    private static int down = 2;
+    private static int left = 3;
 }
