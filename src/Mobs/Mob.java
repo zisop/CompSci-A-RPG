@@ -50,6 +50,8 @@ public abstract class Mob extends Movable{
 			soundFXSwitch = 20;
 			firstSound = 6;
 			walkAnimSwitch = 6;
+			hitBoxDown(20);
+			setHitLength(10);
 		}
 		else if (ID == slime)
 		{
@@ -63,6 +65,8 @@ public abstract class Mob extends Movable{
 			soundFXSwitch = 20;
 			firstSound = 6;
 			walkAnimSwitch = 6;
+			hitBoxDown(10);
+			setHitLength(15);
 		}
 		
 		int which = (int)(Math.random() * 4);

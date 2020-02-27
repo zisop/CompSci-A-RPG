@@ -37,6 +37,46 @@ public class Geometry
     	//small error of .00001 to adjust for double rounding
     	else {return point.getY() >= m * point.getX() + b - .00001;}
     }
+    //Checks for purely horizontal or vertical intersection
+    public static boolean lineIntersection(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
+    {
+    	//line1 is vertical
+    	if (p1_2.getX() == p1_1.getX())
+    	{
+    		//line1 vertical, line2 vertical
+    		if (p2_1.getX() == p2_2.getX())
+    		{
+    			//If both vertical, should be the same x values
+    			return p2_1.getX() == p1_1.getX();
+    		}
+    		//line1 vertical, line2 horizontal
+    		else 
+    		{
+    			//Line 1's y value must be in between line 2's y values
+				return (p1_1.getY() >= p2_1.getY() && p1_1.getY() <= p2_2.getY()) 
+						|| (p1_1.getY() <= p2_1.getY() && p1_1.getY() >= p2_2.getY());
+			}
+    	}
+    	//line2 is vertical
+    	else if (p2_2.getX() == p2_1.getX())
+    	{
+    		//line1 is horizontal
+    		if (p1_1.getX() != p1_2.getX())
+    		{
+    			//If line1 horizontal, line2 vertical,
+    			//Line 1's y value must be in between line 2's y values
+				return (p2_1.getY() >= p1_1.getY() && p2_1.getY() <= p1_2.getY()) 
+						|| (p2_1.getY() <= p1_1.getY() && p2_1.getY() >= p1_2.getY());
+			}
+    		System.out.println("Line intersection error in Geometry.java");
+    		return false;
+		}
+    	//both lines horizontal
+    	else 
+    	{
+			return p1_1.getY() == p2_1.getY();
+		}
+    }
     public static boolean onLeft(Point l1, Point l2, Point point, boolean checkBelow)
     {
     	//slope (y = mx + b)

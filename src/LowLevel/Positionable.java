@@ -161,6 +161,31 @@ public class Positionable extends Point
     		collisionBasis[i].setY(collisionBasis[i].getY() + yDiff);
     	}
     }
+    public void hitBoxDown(double yVal)
+    {
+    	collisionBasis[DL].setY(collisionBasis[DL].getY() - yVal);
+    	collisionBasis[UL].setY(collisionBasis[UL].getY() - yVal);
+    	collisionBasis[DR].setY(collisionBasis[DR].getY() - yVal);
+    	collisionBasis[UR].setY(collisionBasis[UR].getY() - yVal);
+    }
+    public void setHitLength(double newLength)
+    {
+    	double currCenterY = collisionBasis[UL].getY() - getHitLength() / 2;
+    	collisionBasis[UL].setY(currCenterY + newLength / 2);
+    	collisionBasis[UR].setY(currCenterY + newLength / 2);
+    	collisionBasis[DL].setY(currCenterY - newLength / 2);
+    	collisionBasis[DR].setY(currCenterY - newLength / 2);
+    	hitLength = newLength;
+    }
+    public void setHitWidth(double newWidth)
+    {
+    	double currCenterX = collisionBasis[UL].getX() - getHitLength() / 2;
+    	collisionBasis[UL].setX(currCenterX - newWidth / 2);
+    	collisionBasis[DL].setX(currCenterX - newWidth / 2);
+    	collisionBasis[UR].setX(currCenterX + newWidth / 2);
+    	collisionBasis[DR].setX(currCenterX + newWidth / 2);
+    	hitWidth = newWidth;
+    }
     public void setPos(double newX, double newY)
     {
     	setX(newX);

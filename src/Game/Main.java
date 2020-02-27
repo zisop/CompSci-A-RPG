@@ -253,10 +253,9 @@ public class Main
         room[5] = new Chest(0, 200, 50, 50, 50, 50, 40, bag);
         
         Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10, 80);
-        test.addRow(Tile.GrassDirtL, right);
-        test.addRow(Tile.GrassDirtR, left);
+        Terrain test2 = Terrain.createTerrain(Tile.Grass, -200, 800, 10, 4, 80);
         
-        allRooms[0] = new Room(room, new Terrain[] {test});
+        allRooms[0] = new Room(room, new Terrain[] {test, test2});
         initted[0] = true;
     }
     
