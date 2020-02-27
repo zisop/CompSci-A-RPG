@@ -50,10 +50,10 @@ public abstract class Mob extends Movable{
 			firstSound = 6;
 			walkAnimSwitch = 6;
 		}
-		if (ID == slime)
+		else if (ID == slime)
 		{
-			setWidth(50);
-			setLength(50);
+			setWidth(35);
+			setLength(35);
 			setSpeed(MeleeMob.slimeSpeed);
 			maxStoppingFrame = MeleeMob.slimeStopFrames;
 			anims = getAnims(slimeAnimInd, slimeAnimInd + 19);
@@ -74,7 +74,7 @@ public abstract class Mob extends Movable{
 		mobID = ID;
 		followingPlayer = false;
 		stoppingFrame = maxStoppingFrame;
-		walkAnim = notWalking;
+		walkAnim = resetWalk;
 		deathAnimFrame = 0;
 		soundFXFrame = 0;
 		walkFrame = 0;
@@ -93,10 +93,8 @@ public abstract class Mob extends Movable{
 	
 	public void createDistances()
 	{
-		double xDist = movementPoint.getX() - getX();
-		double yDist = movementPoint.getY() - getY();
-		horizontalMove = xDist;
-		verticalMove = yDist;
+		horizontalMove = movementPoint.getX();
+		verticalMove = movementPoint.getY();
 	}
 	public void move()
 	{
@@ -105,11 +103,8 @@ public abstract class Mob extends Movable{
 			stoppingFrame++;
 			return;
 		}
-		System.out.println("targetX: " + movementPoint.getX() + " targetY: " + movementPoint.getY());
 		boolean atHoriz = atHorizontal();
-		
 		boolean atVert = atVertical();
-		System.out.println("Athorizontal: " + atHoriz + " AtVertical: " + atVert);
 		int direc;
 		
 		//Decide which direction to move
@@ -175,19 +170,21 @@ public abstract class Mob extends Movable{
 		}
 		
 		super.move(direc);
+		if (walkDirec != direc)
+		{
+			walkAnim = resetWalk;
+		}
 		walkDirec = direc;
 		handleAnims();
 	}
 	public boolean atHorizontal()
 	{
 		double absDist = Math.abs(getX() - horizontalMove);
-		
 		return absDist <= getSpeed();
 	}
 	public boolean atVertical()
 	{
 		double absDist = Math.abs(getY() - verticalMove);
-		System.out.println(absDist);
 		return absDist <= getSpeed();
 	}
 	public void show()
@@ -198,7 +195,7 @@ public abstract class Mob extends Movable{
 	private void handleAnims()
 	{
 		walkFrame++;
-		if (walkAnim == notWalking) {walkAnim = startWalking; walkFrame = walkAnimSwitch;}
+		if (walkAnim == resetWalk) {walkAnim = startWalking; walkFrame = walkAnimSwitch;}
 		if (walkFrame == walkAnimSwitch)
 		{
 			walkAnim++;
@@ -245,7 +242,7 @@ public abstract class Mob extends Movable{
 	}
 	private void stopWalk()
 	{
-		walkAnim = notWalking;
+		walkAnim = resetWalk;
 		walkFrame = 0;
 		soundFXFrame = 0;
 		if (walkDirec == up) {setImage(anims[uI]);}
@@ -367,7 +364,7 @@ public abstract class Mob extends Movable{
 	private static int slimeAnimInd = 20;
 	private static int slimeSoundInd = 2;
 	
-	private static int notWalking = -1;
+	private static int resetWalk = -1;
 	private static int startWalking = 0;
 	//private static int 
 }
