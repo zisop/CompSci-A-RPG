@@ -232,7 +232,6 @@ public class Geometry
         		}
         		if (lineIntersection(p1_1, p1_2, p2_1, p2_2))
         		{
-        			System.out.println("rancode");
         			return true;
         		}
     		}

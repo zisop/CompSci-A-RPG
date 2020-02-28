@@ -221,37 +221,49 @@ public class Player extends Movable
     	{
     		walkAnim++;
     		walkFrame = 0;
-    		if (walkDirec == 0)
+    		switch (walkDirec)
     		{
-    			if (walkAnim == 1) {setImage(Player.loadedTex[13]);}
-    			else if (walkAnim == 2) {setImage(Player.loadedTex[14]);}
-    			else if (walkAnim == 3) {setImage(Player.loadedTex[15]);}
-    			else if (walkAnim == 4) {setImage(Player.loadedTex[14]);}
-    			else if (walkAnim == 5) {walkAnim = 1; setImage(Player.loadedTex[13]);}
-    		}
-    		else if (walkDirec == 1)
-    		{
-    			if (walkAnim == 1) {setImage(Player.loadedTex[0]);}
-    			else if (walkAnim == 2) {setImage(Player.loadedTex[1]);}
-    			else if (walkAnim == 3) {setImage(Player.loadedTex[2]);}
-    			else if (walkAnim == 4) {setImage(Player.loadedTex[1]);}
-    			else if (walkAnim == 5) {walkAnim = 1; setImage(Player.loadedTex[0]);}
-    		}
-    		else if (walkDirec == 2)
-    		{
-    			if (walkAnim == 1) {setImage(Player.loadedTex[10]);}
-    			else if (walkAnim == 2) {setImage(Player.loadedTex[11]);}
-    			else if (walkAnim == 3) {setImage(Player.loadedTex[12]);}
-    			else if (walkAnim == 4) {setImage(Player.loadedTex[11]);}
-    			else if (walkAnim == 5) {walkAnim = 1; setImage(Player.loadedTex[10]);}
-    		}
-    		else if (walkDirec == 3)
-    		{
-    			if (walkAnim == 1) {setImage(Player.loadedTex[7]);}
-    			else if (walkAnim == 2) {setImage(Player.loadedTex[8]);}
-    			else if (walkAnim == 3) {setImage(Player.loadedTex[9]);}
-    			else if (walkAnim == 4) {setImage(Player.loadedTex[8]);}
-    			else if (walkAnim == 5) {walkAnim = 1; setImage(Player.loadedTex[7]);}
+    		case 0:
+    			switch (walkAnim)
+    			{
+    				case 1: setImage(Player.loadedTex[13]); break;
+    				case 2: setImage(Player.loadedTex[14]); break;
+    				case 3: setImage(Player.loadedTex[15]); break;
+    				case 4: setImage(Player.loadedTex[14]); break;
+    				case 5: walkAnim = 1; setImage(Player.loadedTex[13]); break;
+    			}
+    			break;
+    		
+    		case 1:
+    			switch (walkAnim)
+    			{
+    				case 1: setImage(Player.loadedTex[0]); break;
+    				case 2: setImage(Player.loadedTex[1]); break;
+    				case 3: setImage(Player.loadedTex[2]); break;
+    				case 4: setImage(Player.loadedTex[1]); break;
+    				case 5: walkAnim = 1; setImage(Player.loadedTex[0]); break;
+    			}
+    			break;
+    		case 2:
+    			switch (walkAnim)
+    			{
+    				case 1: setImage(Player.loadedTex[10]); break;
+    				case 2: setImage(Player.loadedTex[11]); break;
+    				case 3: setImage(Player.loadedTex[12]); break;
+    				case 4: setImage(Player.loadedTex[11]); break;
+    				case 5: walkAnim = 1; setImage(Player.loadedTex[10]); break;
+    			}
+    			break;
+    		case 3:
+    			switch (walkAnim)
+    			{
+    				case 1: setImage(Player.loadedTex[7]); break;
+    				case 2: setImage(Player.loadedTex[8]); break;
+    				case 3: setImage(Player.loadedTex[9]); break;
+    				case 4: setImage(Player.loadedTex[8]); break;
+    				case 5: walkAnim = 1; setImage(Player.loadedTex[7]); break;
+    			}
+    			break;
     		}
     		
     	}

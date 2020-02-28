@@ -38,8 +38,8 @@ public abstract class Mob extends Movable{
 	{
 		super(null, x, y, 0, 0);
 
-		if (ID == skeleton)
-		{
+		switch (ID) {
+		case skeleton:
 			setWidth(50);
 			setLength(50);
 			setSpeed(MeleeMob.skeletonSpeed);
@@ -52,29 +52,34 @@ public abstract class Mob extends Movable{
 			walkAnimSwitch = 6;
 			hitBoxDown(20);
 			setHitLength(10);
-		}
-		else if (ID == slime)
-		{
+			break;
+
+		case slime:
 			setWidth(35);
 			setLength(35);
 			setSpeed(MeleeMob.slimeSpeed);
 			maxStoppingFrame = MeleeMob.slimeStopFrames;
 			anims = getAnims(slimeAnimInd, slimeAnimInd + 19);
-			
 			walkSounds = getSounds(slimeSoundInd, slimeSoundInd + 9);
 			soundFXSwitch = 20;
 			firstSound = 6;
 			walkAnimSwitch = 6;
 			hitBoxDown(10);
 			setHitLength(15);
+			break;
 		}
+
+			
+		
 		
 		int which = (int)(Math.random() * 4);
 		walkDirec = which;
-		if (which == up) {setImage(anims[uI]);}
-		else if (which == right) {setImage(anims[rI]);}
-		else if (which == down) {setImage(anims[dI]);}
-		else if (which == left) {setImage(anims[lI]);}
+		switch (which) {
+		case up: setImage(anims[uI]); break;
+		case right: setImage(anims[rI]); break;
+		case down: setImage(anims[dI]); break;
+		case left: setImage(anims[lI]); break;
+		}
 		
 		mobID = ID;
 		followingPlayer = false;
@@ -178,37 +183,48 @@ public abstract class Mob extends Movable{
 		{
 			walkAnim++;
 			walkFrame = 0;
-			if (walkDirec == up)
+			switch (walkDirec)
 			{
-				if (walkAnim == 1) {setImage(anims[uW0]);}
-				else if (walkAnim == 2) {setImage(anims[uW1]);}
-				else if (walkAnim == 3) {setImage(anims[uW2]);}
-				else if (walkAnim == 4) {setImage(anims[uW1]);}
-				else if (walkAnim == 5) {walkAnim = 1; setImage(anims[uW0]);}
-			}
-			else if (walkDirec == right)
-			{
-				if (walkAnim == 1) {setImage(anims[rW0]);}
-				else if (walkAnim == 2) {setImage(anims[rW1]);}
-				else if (walkAnim == 3) {setImage(anims[rW2]);}
-				else if (walkAnim == 4) {setImage(anims[rW1]);}
-				else if (walkAnim == 5) {walkAnim = 1; setImage(anims[rW0]);}
-			}
-			else if (walkDirec == down)
-			{
-				if (walkAnim == 1) {setImage(anims[dW0]);}
-				else if (walkAnim == 2) {setImage(anims[dW1]);}
-				else if (walkAnim == 3) {setImage(anims[dW2]);}
-				else if (walkAnim == 4) {setImage(anims[dW1]);}
-				else if (walkAnim == 5) {walkAnim = 1; setImage(anims[dW0]);}
-			}
-			else if (walkDirec == left)
-			{
-				if (walkAnim == 1) {setImage(anims[lW0]);}
-				else if (walkAnim == 2) {setImage(anims[lW1]);}
-				else if (walkAnim == 3) {setImage(anims[lW2]);}
-				else if (walkAnim == 4) {setImage(anims[lW1]);}
-				else if (walkAnim == 5) {walkAnim = 1; setImage(anims[lW0]);}
+				case up:
+					switch (walkAnim)
+					{
+						case 1: setImage(anims[uW0]); break;
+						case 2: setImage(anims[uW1]); break;
+						case 3: setImage(anims[uW2]); break;
+						case 4: setImage(anims[uW1]); break;
+						case 5: walkAnim = 1; setImage(anims[uW0]); break;
+					}
+					break;
+				case right:
+					switch (walkAnim)
+					{
+						case 1: setImage(anims[rW0]); break;
+						case 2: setImage(anims[rW1]); break;
+						case 3: setImage(anims[rW2]); break;
+						case 4: setImage(anims[rW1]); break;
+						case 5: walkAnim = 1; setImage(anims[rW0]); break;
+					}
+					break;
+				case down:
+					switch (walkAnim)
+					{
+						case 1: setImage(anims[dW0]); break;
+						case 2: setImage(anims[dW1]); break;
+						case 3: setImage(anims[dW2]); break;
+						case 4: setImage(anims[dW1]); break;
+						case 5: walkAnim = 1; setImage(anims[dW0]); break;
+					}
+				break;
+				case left: 
+					switch (walkAnim)
+					{
+						case 1: setImage(anims[lW0]); break;
+						case 2: setImage(anims[lW1]); break;
+						case 3: setImage(anims[lW2]); break;
+						case 4: setImage(anims[lW1]); break;
+						case 5: walkAnim = 1; setImage(anims[lW0]); break;
+					}
+				break;
 			}
 		}
 		if (soundFXFrame == soundFXSwitch || soundFXFrame == firstSound)
@@ -225,10 +241,13 @@ public abstract class Mob extends Movable{
 		soundFXFrame = 0;
 		stoppingFrame = 0;
 		shouldCreate = true;
-		if (walkDirec == up) {setImage(anims[uI]);}
-		else if (walkDirec == right) {setImage(anims[rI]);}
-		else if (walkDirec == down) {setImage(anims[dI]);}
-		else if (walkDirec == left) {setImage(anims[lI]);}
+		switch (walkDirec)
+		{
+			case up: setImage(anims[uI]);
+			case right: setImage(anims[rI]);
+			case down: setImage(anims[dI]);
+			case left: setImage(anims[lI]);
+		}
 	}
 	private Audio playWalkSound()
 	{
@@ -240,25 +259,25 @@ public abstract class Mob extends Movable{
 	public abstract boolean inAttackRange();
 	public abstract void attack();
 	
-	public static int up = 0;
-	public static int right = 1;
-	public static int down = 2;
-	public static int left = 3;
+	public static final int up = 0;
+	public static final int right = 1;
+	public static final int down = 2;
+	public static final int left = 3;
 	
 	//uW0 = up walk 0
 	//uI = up idle
 	//uA = up attack
-	public static int uW0 = 0;
-	public static int uW1 = 1;
-	public static int uW2 = 2;
-	public static int uI = 3;
-	public static int uA = 4;
+	public static final int uW0 = 0;
+	public static final int uW1 = 1;
+	public static final int uW2 = 2;
+	public static final int uI = 3;
+	public static final int uA = 4;
 	
-	public static int rW0 = 5;
-	public static int rW1 = 6;
-	public static int rW2 = 7;
-	public static int rI = 8;
-	public static int rA = 9;
+	public static final int rW0 = 5;
+	public static final int rW1 = 6;
+	public static final int rW2 = 7;
+	public static final int rI = 8;
+	public static final int rA = 9;
 	
 	public static int dW0 = 10;
 	public static int dW1 = 11;
@@ -266,11 +285,11 @@ public abstract class Mob extends Movable{
 	public static int dI = 13;
 	public static int dA = 14;
 	
-	public static int lW0 = 15;
-	public static int lW1 = 16;
-	public static int lW2 = 17;
-	public static int lI = 18;
-	public static int lA = 19;
+	public static final int lW0 = 15;
+	public static final int lW1 = 16;
+	public static final int lW2 = 17;
+	public static final int lI = 18;
+	public static final int lA = 19;
 	
 	private static Texture[] getAnims(int start, int end)
 	{
@@ -293,9 +312,9 @@ public abstract class Mob extends Movable{
 	
 	private static String[] mobSounds;
 	private static Texture[] mobTex;
-	public static int skeleton = 0;
-	public static int slime = 1;
-	public static int zombie = 2;
+	public final static int skeleton = 0;
+	public final static int slime = 1;
+	public final static int zombie = 2;
 	public static void init()
 	{
 		mobSounds = new String[12];
@@ -340,13 +359,13 @@ public abstract class Mob extends Movable{
 		mobTex[slimeAnimInd + lI] = mobTex[slimeAnimInd + lW0];
 		mobTex[slimeAnimInd + lA] = mobTex[slimeAnimInd + lW0];
 	}
-	private static int skelSoundInd = 0;
-	private static int skelAnimInd = 0;
-	private static int slimeAnimInd = 20;
-	private static int slimeSoundInd = 2;
+	private static final int skelSoundInd = 0;
+	private static final int skelAnimInd = 0;
+	private static final int slimeAnimInd = 20;
+	private static final int slimeSoundInd = 2;
 	
-	private static int shouldStopWalk = -1;
-	private static int resetWalk = -1;
-	private static int startWalking = 0;
+	private static final int shouldStopWalk = -1;
+	private static final int resetWalk = -1;
+	private static final int startWalking = 0;
 	//private static int 
 }
