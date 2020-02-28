@@ -369,7 +369,7 @@ public class Player extends Movable
     	Player.loadedTex[14] = new Texture("WalkAnim/WalkUp/Up02.PNG");
     	Player.loadedTex[15] = new Texture("WalkAnim/WalkUp/Up03.PNG");
     }
-    public static double baseSpeed = 8;
-    public static int startWalking = 0;
-    public static int notWalking = -1;
+    public final static double baseSpeed = 8;
+    public final static int startWalking = 0;
+    public final static int notWalking = -1;
 }

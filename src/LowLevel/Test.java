@@ -5,15 +5,15 @@ public class Test {
 	{
 
 		
-		Point p1 = new Point(118.5, -116.0);
-		Point p2 = new Point(153.5, -116.0);
-		Point p3 = new Point(153.5, -106.0);
-		Point p4 = new Point(118.5, -106.0);
+		Point p1 = new Point(-25, 0);
+		Point p2 = new Point(0, -25);
+		Point p3 = new Point(25, 0);
+		Point p4 = new Point(0, 25);
 		
-		Point p5 = new Point(150.0, 125.0);
-		Point p6 = new Point(250.0, 125.0);
-		Point p7 = new Point(250.0, 75.0);
-		Point p8 = new Point(150.0, 75.0);
+		Point p5 = new Point(-12.5, 0);
+		Point p6 = new Point(0, -12.5);
+		Point p7 = new Point(12.5, 0);
+		Point p8 = new Point(0, 12.5);
 
 		Point[] shape1 = new Point[] {p1, p2, p3, p4};
 		Point[] shape2 = new Point[] {p5, p6, p7, p8};

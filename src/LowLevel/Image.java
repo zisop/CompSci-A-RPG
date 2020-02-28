@@ -7,8 +7,6 @@ import Imported.Texture;
 public class Image extends Positionable
 {
     private Texture image;
-    private int monLen;
-    private int monWid;
     private float alpha;
     private double hitboxDown;
     
@@ -18,24 +16,18 @@ public class Image extends Positionable
     public Image(Texture img, double inX, double inY, double w, double l) {
         super(inX, inY, w, l);
         image = img;
-        monWid = Main.width;
-        monLen = Main.length;
         alpha = 255;
         hitboxDown = 0;
     }
     public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
         super(inX, inY, w, l, hitW, hitL);
         image = img;
-        monWid = Main.width;
-        monLen = Main.length;
         alpha = 255;
         hitboxDown = 0;
     }
     public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hbDown) {
         super(inX, inY, w, l, hitW, hitL, hbDown);
         image = img;
-        monWid = Main.width;
-        monLen = Main.length;
         alpha = 255;
     }
     public int relPos(Positionable otherChar)
@@ -134,4 +126,6 @@ public class Image extends Positionable
     	float r = 255, g = 255, b = 255;
         UIshow(r, g, b, alpha);
     }
+    private static int monLen = Main.length;
+    private static int monWid = Main.width;
 }

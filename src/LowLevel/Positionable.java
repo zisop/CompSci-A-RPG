@@ -225,6 +225,8 @@ public class Positionable extends Point
     public double getHitWidth() {return hitWidth;}
     public double getHitLength() {return hitLength;}
     public double getAngle() {return angle;}
+    public void setCollisionBasis(Point[] newBasis) {collisionBasis = newBasis;}
+    public void setShowBasis(Point[] newBasis) {showBasis = newBasis;}
     public Point[] getShowBasis() {return showBasis;}
     public Point[] getCollisionBasis() {return collisionBasis;}
     public int compareTo(Object otherObj)

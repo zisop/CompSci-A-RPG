@@ -8,17 +8,12 @@ import Imported.Texture;
 
 public class Polygon extends Image{
 	
-	private Point[] basis;
 	private Texture image;
-	private float monWid;
-	private float monLen;
 	private float r, g, b, a;
 	public Polygon(Point[] points)
 	{
 		super(null, 0, 0, 0, 0);
 		image = Shape.shapes[0];
-		monWid = Main.width;
-		monLen = Main.length;
 		double maxX = points[0].getX();
 		double minX = maxX;
 		double maxY = points[0].getY();
@@ -44,15 +39,19 @@ public class Polygon extends Image{
 		super.setY((minY + maxY) / 2);
 		super.setWidth(maxX - minX);
 		super.setLength(maxY - minY);
-		basis = points;
+		setShowBasis(points);
+		Point[] collBas = new Point[points.length];
+		for (int i = 0; i < points.length; i++)
+		{
+			collBas[i] = new Point(points[i].getX(), points[i].getY()); 
+		}
+		setCollisionBasis(collBas);
 		r = 255; g = 255; b = 255; a = 255;
 	}
 	public Polygon(Point[] points, float red, float green, float blue, float alpha)
 	{
 		super(null, 0, 0, 0, 0);
 		image = Shape.shapes[0];
-		monWid = Main.width;
-		monLen = Main.length;
 		double maxX = points[0].getX();
 		double minX = maxX;
 		double maxY = points[0].getY();
@@ -78,15 +77,29 @@ public class Polygon extends Image{
 		super.setY((minY + maxY) / 2);
 		super.setWidth(maxX - minX);
 		super.setLength(maxY - minY);
-		basis = points;
+		setShowBasis(points);
+		Point[] collBas = new Point[points.length];
+		for (int i = 0; i < points.length; i++)
+		{
+			collBas[i] = new Point(points[i].getX(), points[i].getY()); 
+		}
+		setCollisionBasis(collBas);
 		r = red; g = green; b = blue; a = alpha;
 	}
 	public void setWidth(double newWidth)
 	{
+		Point[] showBasis = getShowBasis();
+		Point[] collBasis = getCollisionBasis();
 		double widthFrac = newWidth / getWidth();
-		for (int i = 0; i < basis.length; i++)
+		for (int i = 0; i < showBasis.length; i++)
 		{
-			Point currPoint = basis[i];
+			Point currPoint = showBasis[i];
+			double xDiff = currPoint.getX() - getX();
+			currPoint.setX(currPoint.getX() + xDiff * widthFrac);
+		}
+		for (int i = 0; i < collBasis.length; i++)
+		{
+			Point currPoint = collBasis[i];
 			double xDiff = currPoint.getX() - getX();
 			currPoint.setX(currPoint.getX() + xDiff * widthFrac);
 		}
@@ -94,49 +107,30 @@ public class Polygon extends Image{
 	}
 	public void setLength(double newLength)
 	{
+		Point[] showBasis = getShowBasis();
+		Point[] collBasis = getCollisionBasis();
 		double lengthFrac = newLength / getLength();
-		for (int i = 0; i < basis.length; i++)
+		for (int i = 0; i < showBasis.length; i++)
 		{
-			Point currPoint = basis[i];
+			Point currPoint = showBasis[i];
+			double yDiff = currPoint.getY() - getY();
+			currPoint.setX(currPoint.getY() + yDiff * lengthFrac);
+		}
+		for (int i = 0; i < collBasis.length; i++)
+		{
+			Point currPoint = collBasis[i];
 			double yDiff = currPoint.getY() - getY();
 			currPoint.setX(currPoint.getY() + yDiff * lengthFrac);
 		}
 		super.setWidth(newLength);
 	}
-	public void setX(double newX)
-	{
-		double xDiff = newX - getX();
-		for (int i = 0; i < basis.length; i++)
-		{
-			basis[i].setX(basis[i].getX() + xDiff);
-		}
-		super.setX(newX);
-	}
-	public void setY(double newY)
-	{
-		double yDiff = newY - getY();
-		for (int i = 0; i < basis.length; i++)
-		{
-			basis[i].setY(basis[i].getY() + yDiff);
-		}
-		super.setY(newY);
-	}
-	public void setPos(double newX, double newY)
-	{
-		double xDiff = newX - getX();
-		double yDiff = newY - getY();
-		for (int i = 0; i < basis.length; i++)
-		{
-			basis[i].setPos(basis[i].getX() + xDiff, basis[i].getY() + yDiff);
-		}
-		super.setPos(newX, newY);
-	}
 	//displays the image + rotations if those end up being useful
     public void UIshow() {
-        Point[] pointCords = new Point[basis.length];
+    	Point[] showBasis = getShowBasis();
+        Point[] pointCords = new Point[showBasis.length];
         for (int i = 0; i < pointCords.length; i++)
         {
-        	Point adjustedPoint = new Point(basis[i].getX() - getX(), basis[i].getY() - getY());
+        	Point adjustedPoint = new Point(showBasis[i].getX() - getX(), showBasis[i].getY() - getY());
         	pointCords[i] = Geometry.rotatePoint(adjustedPoint, getAngle()); 
         }
         
@@ -155,6 +149,13 @@ public class Polygon extends Image{
     
     public void show()
     {
-    	System.out.println("not implemented");
+    	System.out.println("show not implemented for class Polygon");
     }
+    public int relPos(Positionable otherChar)
+    {
+    	System.out.println("relPos unimplemented for class Polygon");
+    	return 0;
+    }
+    private static int monWid = Main.width;
+	private static int monLen = Main.length;
 }
