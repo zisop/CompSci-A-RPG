@@ -38,44 +38,75 @@ public class Geometry
     	else {return point.getY() >= m * point.getX() + b - .00001;}
     }
     //Checks for purely horizontal or vertical intersection
-    public static boolean lineIntersection(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
+    public static boolean vertIntersec(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
     {
     	//line1 is vertical
-    	if (p1_2.getX() == p1_1.getX())
+    	if (p1_1.getX() == p1_2.getX())
     	{
-    		//line1 vertical, line2 vertical
+    		double minYL1 = Math.min(p1_1.getY(), p1_2.getY());
+			double maxYL1 = Math.max(p1_1.getY(), p1_2.getY());
+			double minYL2 = Math.min(p2_1.getY(), p2_2.getY());
+			double maxYL2 = Math.max(p2_1.getY(), p2_2.getY());
+			//line2 is also vertical
     		if (p2_1.getX() == p2_2.getX())
     		{
-    			//If both vertical, should be the same x values
-    			return p2_1.getX() == p1_1.getX();
+    			return ((minYL1 <= minYL2 && maxYL1 >= minYL2) || (minYL2 <= minYL1 && maxYL2 >= minYL1)) && p1_1.getX() == p2_1.getX();
     		}
-    		//line1 vertical, line2 horizontal
-    		else 
-    		{
-    			//Line 1's y value must be in between line 2's y values
-				return (p1_1.getY() >= p2_1.getY() && p1_1.getY() <= p2_2.getY()) 
-						|| (p1_1.getY() <= p2_1.getY() && p1_1.getY() >= p2_2.getY());
-			}
+    		double m2 = (p2_2.getY() - p2_1.getY()) / (p2_2.getX() - p2_1.getX());
+    		double b2 = p2_2.getY() - m2 * p2_2.getX();
+    		double intersecY = p1_1.getX() * m2 + b2;
+    		double intersecX = (p1_1.getY() - b2) / m2;
+    		
+    		double minXL2 = Math.min(p2_1.getX(), p2_2.getX());
+    		double maxXL2 = Math.max(p2_1.getX(), p2_2.getX());
+    		
+    		boolean yBounded = intersecY >= minYL1 - .00001 && intersecY <= maxYL1 + .00001;
+    		boolean xBounded = intersecX >= minXL2 - .00001 && intersecX <= maxXL2 + .00001;
+    		
+    		return yBounded && xBounded;
     	}
     	//line2 is vertical
-    	else if (p2_2.getX() == p2_1.getX())
+    	if (p2_1.getX() == p2_2.getX())
     	{
-    		//line1 is horizontal
-    		if (p1_1.getX() != p1_2.getX())
-    		{
-    			//If line1 horizontal, line2 vertical,
-    			//Line 1's y value must be in between line 2's y values
-				return (p2_1.getY() >= p1_1.getY() && p2_1.getY() <= p1_2.getY()) 
-						|| (p2_1.getY() <= p1_1.getY() && p2_1.getY() >= p1_2.getY());
-			}
-    		System.out.println("Line intersection error in Geometry.java");
-    		return false;
-		}
-    	//both lines horizontal
-    	else 
+    		double minYL1 = Math.min(p1_1.getY(), p1_2.getY());
+			double maxYL1 = Math.max(p1_1.getY(), p1_2.getY());
+			
+    		double m1 = (p1_2.getY() - p1_1.getY()) / (p1_2.getX() - p1_1.getX());
+    		double b1 = p1_2.getY() - m1 * p1_2.getX();
+    		double intersecY = p2_1.getX() * m1 + b1;
+    		double intersecX = (p2_1.getY() - b1) / m1;
+    		
+    		double minXL1 = Math.min(p1_1.getX(), p1_2.getX());
+    		double maxXL1 = Math.max(p1_1.getX(), p1_2.getX());
+    		
+    		boolean yBounded = intersecY >= minYL1 - .00001 && intersecY <= maxYL1 + .00001;
+    		boolean xBounded = intersecX >= minXL1 - .00001 && intersecX <= maxXL1 + .00001;
+    		
+    		return yBounded && xBounded;
+    	}
+    	return false;
+    }
+    public static boolean lineIntersection(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
+    {
+    	if (vertIntersec(p1_1, p1_2, p2_1, p2_2))
     	{
-			return p1_1.getY() == p2_1.getY();
-		}
+    		return true;
+    	}
+    	double m1 = (p1_2.getY() - p1_1.getY()) / (p1_2.getX() - p1_1.getX());
+    	double m2 = (p2_2.getY() - p2_1.getY()) / (p2_2.getX() - p2_1.getX());
+    	double b1 = p1_2.getY() - m1 * p1_2.getX();
+    	double b2 = p2_2.getY() - m2 * p2_2.getX();
+    	//y = m1x + b1
+    	//y = m2x + b2
+    	//m1x - m2x + b1 - b2 = 0
+    	//x(m1 - m2) = b2 - b1
+    	//x = (b2 - b1) / (m1 - m2)
+    	double intersecX = (b2 - b1) / (m1 - m2);
+    	boolean insideFirst = (p1_1.getX() - .0001 <= intersecX && intersecX <= p1_2.getX() + .0001) 
+    			|| (p1_2.getX() - .0001 <= intersecX && intersecX <= p1_1.getX() + .0001);
+    	boolean insideSecond = (p2_1.getX() - .0001 <= intersecX && intersecX <= p2_2.getX() + .0001) 
+    			|| (p2_2.getX() - .0001 <= intersecX && intersecX <= p2_1.getX() + .0001);
+    	return insideFirst && insideSecond;
     }
     public static boolean onLeft(Point l1, Point l2, Point point, boolean checkBelow)
     {
