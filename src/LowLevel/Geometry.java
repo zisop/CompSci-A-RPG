@@ -1,5 +1,7 @@
 package LowLevel;
 
+import Game.Main;
+
 public class Geometry
 {
     public static Point rotatePoint(Point point, double angle) {
@@ -40,6 +42,7 @@ public class Geometry
     //Checks for purely horizontal or vertical intersection
     public static boolean vertIntersec(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
     {
+    	
     	//line1 is vertical
     	if (p1_1.getX() == p1_2.getX())
     	{
@@ -50,39 +53,58 @@ public class Geometry
 			//line2 is also vertical
     		if (p2_1.getX() == p2_2.getX())
     		{
+    			
     			return ((minYL1 <= minYL2 && maxYL1 >= minYL2) || (minYL2 <= minYL1 && maxYL2 >= minYL1)) && p1_1.getX() == p2_1.getX();
     		}
-    		double m2 = (p2_2.getY() - p2_1.getY()) / (p2_2.getX() - p2_1.getX());
-    		double b2 = p2_2.getY() - m2 * p2_2.getX();
-    		double intersecY = p1_1.getX() * m2 + b2;
-    		double intersecX = (p1_1.getY() - b2) / m2;
-    		
     		double minXL2 = Math.min(p2_1.getX(), p2_2.getX());
     		double maxXL2 = Math.max(p2_1.getX(), p2_2.getX());
     		
-    		boolean yBounded = intersecY >= minYL1 - .00001 && intersecY <= maxYL1 + .00001;
-    		boolean xBounded = intersecX >= minXL2 - .00001 && intersecX <= maxXL2 + .00001;
+    		double m2 = (p2_2.getY() - p2_1.getY()) / (p2_2.getX() - p2_1.getX());
+    		double b2 = p2_2.getY() - m2 * p2_2.getX();
+    		double intersecY = p1_1.getX() * m2 + b2;
+    		double intersecX = p1_1.getX();
     		
-    		return yBounded && xBounded;
+    		boolean y1Bounded = intersecY >= minYL1 - .00001 && intersecY <= maxYL1 + .00001;
+    		if (y1Bounded)
+    		{
+    			boolean y2Bounded = intersecY >= minYL2 - .00001 && intersecY <= maxYL2 + .00001;
+    			if (y2Bounded)
+    			{
+    				boolean xBounded = intersecX >= minXL2 - .00001 && intersecX <= maxXL2 + .00001;
+    				return xBounded;
+    			}
+    		}
+    		return false;
     	}
     	//line2 is vertical
     	if (p2_1.getX() == p2_2.getX())
     	{
     		double minYL1 = Math.min(p1_1.getY(), p1_2.getY());
 			double maxYL1 = Math.max(p1_1.getY(), p1_2.getY());
+			double minYL2 = Math.min(p2_1.getY(), p2_2.getY());
+			double maxYL2 = Math.max(p2_1.getY(), p2_2.getY());
+			
+			double minXL1 = Math.min(p1_1.getX(), p1_2.getX());
+    		double maxXL1 = Math.max(p1_1.getX(), p1_2.getX());
 			
     		double m1 = (p1_2.getY() - p1_1.getY()) / (p1_2.getX() - p1_1.getX());
+    		
+    		
     		double b1 = p1_2.getY() - m1 * p1_2.getX();
     		double intersecY = p2_1.getX() * m1 + b1;
-    		double intersecX = (p2_1.getY() - b1) / m1;
+    		double intersecX = p2_1.getX();
     		
-    		double minXL1 = Math.min(p1_1.getX(), p1_2.getX());
-    		double maxXL1 = Math.max(p1_1.getX(), p1_2.getX());
-    		
-    		boolean yBounded = intersecY >= minYL1 - .00001 && intersecY <= maxYL1 + .00001;
-    		boolean xBounded = intersecX >= minXL1 - .00001 && intersecX <= maxXL1 + .00001;
-    		
-    		return yBounded && xBounded;
+    		boolean y1Bounded = intersecY >= minYL1 - .00001 && intersecY <= maxYL1 + .00001;
+    		if (y1Bounded)
+    		{
+    			boolean y2Bounded = intersecY >= minYL2 - .00001 && intersecY <= maxYL2 + .00001;
+    			if (y2Bounded)
+    			{
+    				boolean xBounded = intersecX >= minXL1 - .00001 && intersecX <= maxXL1 + .00001;
+    				return xBounded;
+    			}
+    		}
+    		return false;
     	}
     	return false;
     }
@@ -90,6 +112,7 @@ public class Geometry
     {
     	if (vertIntersec(p1_1, p1_2, p2_1, p2_2))
     	{
+    		
     		return true;
     	}
     	double m1 = (p1_2.getY() - p1_1.getY()) / (p1_2.getX() - p1_1.getX());
@@ -104,9 +127,13 @@ public class Geometry
     	double intersecX = (b2 - b1) / (m1 - m2);
     	boolean insideFirst = (p1_1.getX() - .0001 <= intersecX && intersecX <= p1_2.getX() + .0001) 
     			|| (p1_2.getX() - .0001 <= intersecX && intersecX <= p1_1.getX() + .0001);
-    	boolean insideSecond = (p2_1.getX() - .0001 <= intersecX && intersecX <= p2_2.getX() + .0001) 
+    	if (insideFirst)
+    	{
+    		boolean insideSecond = (p2_1.getX() - .0001 <= intersecX && intersecX <= p2_2.getX() + .0001) 
     			|| (p2_2.getX() - .0001 <= intersecX && intersecX <= p2_1.getX() + .0001);
-    	return insideFirst && insideSecond;
+    		return insideSecond;
+    	}
+    	return false;
     }
     public static boolean onLeft(Point l1, Point l2, Point point, boolean checkBelow)
     {
@@ -174,22 +201,42 @@ public class Geometry
     	
     }
     //Checks collision between concave polygons
+    //runs at extremely high fps (on the order of 10^7), so not a problem at scale
+    //is O(n^2)
     public static boolean colliding(Point[] shape1, Point[] shape2)
     {
-    	for (int i = 0; i < shape2.length; i++)
+    	Point p1_1;
+		Point p1_2;
+		Point p2_1;
+		Point p2_2;
+    	for (int s1I = 0; s1I < shape1.length; s1I++)
     	{
-    		if (insideShape(shape1, shape2[i]))
+    		if (s1I == 0) {
+				p1_1 = shape1[shape1.length - 1];
+				p1_2 = shape1[0];
+			}
+    		else {
+    			p1_1 = shape1[s1I - 1];
+    			p1_2 = shape1[s1I];
+    		}
+    		for (int s2I = 0; s2I < shape2.length; s2I++)
     		{
-    			return true;
+    			
+    			if (s2I == 0) {
+    				p2_1 = shape2[shape2.length - 1];
+    				p2_2 = shape2[0];
+    			}
+        		else {
+        			p2_1 = shape2[s2I - 1];
+        			p2_2 = shape2[s2I];
+        		}
+        		if (lineIntersection(p1_1, p1_2, p2_1, p2_2))
+        		{
+        			System.out.println("rancode");
+        			return true;
+        		}
     		}
     	}
-    	for (int i = 0; i < shape1.length; i++)
-    	{
-    		if (insideShape(shape2, shape1[i]))
-    		{
-    			return true;
-    		}
-    	}
-    	return false;
+    	return insideShape(shape1, shape2[0]) || insideShape(shape2, shape1[0]);
     }
 }
