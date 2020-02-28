@@ -79,9 +79,13 @@ public class Positionable extends Point
     }
     
     public boolean collision(Positionable otherChar) {
-    	if ((otherChar) == null) {return false;}
         Point[] otherCollisionBasis = otherChar.getCollisionBasis();
         return Geometry.colliding(collisionBasis, otherCollisionBasis);
+    }
+    public boolean strictCollision(Positionable otherChar)
+    {
+    	Point[] otherCollisionBasis = otherChar.getCollisionBasis();
+    	return Geometry.strictCollision(collisionBasis, otherCollisionBasis);
     }
     //Returns the direction of the collision with some otherChar
     //0 = other obj to north, 1 = other obj to south, 2 = other obj to east, 3 = other obj to west

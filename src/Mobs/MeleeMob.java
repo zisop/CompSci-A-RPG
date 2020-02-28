@@ -12,8 +12,10 @@ public class MeleeMob extends Mob{
 	public MeleeMob(double x, double y, int ID)
 	{
 		super(x, y, ID);
-		if (ID == skeleton) {attackRangeSquared = 15 * 15;}
-		else if (ID == slime) {attackRangeSquared = 10 * 10;}
+		switch (ID) {
+			case skeleton: attackRangeSquared = 15 * 15; break;
+			case slime: attackRangeSquared = 10 * 10; break;
+		}
 	}
 	public void attack()
 	{
@@ -42,6 +44,7 @@ public class MeleeMob extends Mob{
 	{
 		Room currRoom = Main.allRooms[Main.currRoom];
 		Terrain[] allTerrain = Main.allRooms[Main.currRoom].getTerrain();
+		//keep this here for later
 		Terrain currTerrain = null;
 		for (int i = 0; i < allTerrain.length; i++)
 		{
@@ -51,6 +54,7 @@ public class MeleeMob extends Mob{
 				break;
 			}
 		}
+		//
 		double xRange = 600;
 		double yRange = 600;
 		double minX = getX() - xRange / 2;

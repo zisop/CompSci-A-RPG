@@ -1,6 +1,5 @@
 package LowLevel;
 
-import Game.Main;
 
 public class Geometry
 {
@@ -43,13 +42,13 @@ public class Geometry
     public static boolean vertIntersec(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
     {
     	
+    	double minYL1 = Math.min(p1_1.getY(), p1_2.getY());
+		double maxYL1 = Math.max(p1_1.getY(), p1_2.getY());
+		double minYL2 = Math.min(p2_1.getY(), p2_2.getY());
+		double maxYL2 = Math.max(p2_1.getY(), p2_2.getY());
     	//line1 is vertical
     	if (p1_1.getX() == p1_2.getX())
     	{
-    		double minYL1 = Math.min(p1_1.getY(), p1_2.getY());
-			double maxYL1 = Math.max(p1_1.getY(), p1_2.getY());
-			double minYL2 = Math.min(p2_1.getY(), p2_2.getY());
-			double maxYL2 = Math.max(p2_1.getY(), p2_2.getY());
 			//line2 is also vertical
     		if (p2_1.getX() == p2_2.getX())
     		{
@@ -78,18 +77,11 @@ public class Geometry
     	}
     	//line2 is vertical
     	if (p2_1.getX() == p2_2.getX())
-    	{
-    		double minYL1 = Math.min(p1_1.getY(), p1_2.getY());
-			double maxYL1 = Math.max(p1_1.getY(), p1_2.getY());
-			double minYL2 = Math.min(p2_1.getY(), p2_2.getY());
-			double maxYL2 = Math.max(p2_1.getY(), p2_2.getY());
-			
+    	{	
 			double minXL1 = Math.min(p1_1.getX(), p1_2.getX());
     		double maxXL1 = Math.max(p1_1.getX(), p1_2.getX());
 			
     		double m1 = (p1_2.getY() - p1_1.getY()) / (p1_2.getX() - p1_1.getX());
-    		
-    		
     		double b1 = p1_2.getY() - m1 * p1_2.getX();
     		double intersecY = p2_1.getX() * m1 + b1;
     		double intersecX = p2_1.getX();
@@ -205,6 +197,11 @@ public class Geometry
     //is O(n^2)
     public static boolean colliding(Point[] shape1, Point[] shape2)
     {
+    	return strictCollision(shape1, shape2) || 
+    			insideShape(shape1, shape2[0]) || insideShape(shape2, shape1[0]);
+    }
+    public static boolean strictCollision(Point[] shape1, Point[] shape2)
+    {
     	Point p1_1;
 		Point p1_2;
 		Point p2_1;
@@ -236,6 +233,6 @@ public class Geometry
         		}
     		}
     	}
-    	return insideShape(shape1, shape2[0]) || insideShape(shape2, shape1[0]);
+    	return false;
     }
 }

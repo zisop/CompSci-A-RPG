@@ -199,9 +199,13 @@ public class Terrain extends Image {
 		double originalX = character.getX();
 		double originalY = character.getY();
 		character.setPos(movementPoint.getX(), movementPoint.getY());
-		boolean wasInside = collision(character);
+		//If the movementpoint puts the character in a collision with a terrain's boundary,
+		//Then the character would be moving outside of the terrain visually
+		//So we test no strict collision, and that the point is inside the terrain
+		boolean wasInside = Geometry.insideShape(getCollisionBasis(), movementPoint);
+		boolean lineIntersec = strictCollision(character);
 		character.setPos(originalX, originalY);
-		return wasInside;
+		return wasInside && !lineIntersec;
 	}
 	private static int up = 0;
     private static int right = 1;
