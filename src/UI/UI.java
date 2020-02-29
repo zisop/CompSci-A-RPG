@@ -63,8 +63,8 @@ public class UI {
     private static Geometrical createSlot(String name)
     {
     	Geometrical boxDisplay = new Geometrical();
-    	Shape outBox = Geometry.createSquare(-2, 27, -2, 27, 150, 150, 150, 255);
-    	Shape inBox = Geometry.createSquare(0, 25, 0, 25, 3, 162, 162, 255);
+    	Shape outBox = Geometry.createRect(-2, 27, -2, 27, 150, 150, 150, 255);
+    	Shape inBox = Geometry.createRect(0, 25, 0, 25, 3, 162, 162, 255);
     	boxDisplay.addShape(outBox);
     	boxDisplay.addShape(inBox);
     	
@@ -102,8 +102,8 @@ public class UI {
     	playerBag = new ItemBag(-395, 245, 40, 40, 4, 4);
     	Geometrical armor = new Geometrical();
     	
-    	Shape armorMainRect = Geometry.createSquare(-2, 152, -2, 177, 100, 100, 100, 255);
-    	Shape armorInRect = Geometry.createSquare(0, 150, 0, 175, 161, 101, 9, 255);
+    	Shape armorMainRect = Geometry.createRect(-2, 152, -2, 177, 100, 100, 100, 255);
+    	Shape armorInRect = Geometry.createRect(0, 150, 0, 175, 161, 101, 9, 255);
 
     	Geometrical wandSlotDisplay = createSlot("Wand");
     	ItemSlot wandSlot = new ItemSlot(wandSlotDisplay.getX(), wandSlotDisplay.getY(), 25, 25, Item.wandType);
@@ -144,13 +144,13 @@ public class UI {
     	//Stats Display
     	playerStats = new Geometrical();
     	statsShowing = true;
-    	Shape mainRect = Geometry.createSquare(-2, 402, -2, 52, 0, 0, 0, 255);
-    	Shape innerRect = Geometry.createSquare(0, 400, 0, 50, 100, 100, 100, 255);
-    	Shape healthRect = Geometry.createSquare(54, 396, 27, 48, 150, 0, 0, 255);
-    	Shape manaRect = Geometry.createSquare(54, 396, 2, 23, 0, 0, 150, 255);
-    	Shape charSlot = Geometry.createSquare(4, 46, 4, 46, 255, 255, 255, 255);
-    	Shape healthBar = Geometry.createSquare(54, 396, 27, 48, 255, 0, 0, 255);
-    	Shape manaBar = Geometry.createSquare(54, 396, 2, 23, 0, 0, 255, 255);
+    	Shape mainRect = Geometry.createRect(-2, 402, -2, 52, 0, 0, 0, 255);
+    	Shape innerRect = Geometry.createRect(0, 400, 0, 50, 100, 100, 100, 255);
+    	Shape healthRect = Geometry.createRect(54, 396, 27, 48, 150, 0, 0, 255);
+    	Shape manaRect = Geometry.createRect(54, 396, 2, 23, 0, 0, 150, 255);
+    	Shape charSlot = Geometry.createRect(4, 46, 4, 46, 255, 255, 255, 255);
+    	Shape healthBar = Geometry.createRect(54, 396, 27, 48, 255, 0, 0, 255);
+    	Shape manaBar = Geometry.createRect(54, 396, 2, 23, 0, 0, 255, 255);
     	//Index 0
     	playerStats.addShape(mainRect);
     	playerStats.addShape(innerRect);

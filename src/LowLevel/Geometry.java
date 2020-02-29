@@ -1,9 +1,16 @@
 package LowLevel;
 
-import java.util.ArrayList;
+
 
 public class Geometry
 {
+	/**
+	 * rotates a point about (0, 0) by angle,
+	 * assumes center is exactly (0, 0)
+	 * @param point
+	 * @param angle
+	 * @return rotated point
+	 */
     public static Point rotatePoint(Point point, double angle) {
     	double x = point.getX();
     	double y = point.getY();
@@ -16,11 +23,23 @@ public class Geometry
         final double newAngle = currAngle + angle;
         return new Point(Math.cos(newAngle) * hypoLen, Math.sin(newAngle) * hypoLen);
     }
-    public static Shape createSquare(double x1, double x2, double y1, double y2, float r, float g, float b, float a)
+    /**
+     * Creates a rectangle between two diagonal points
+     * @param x1
+     * @param x2
+     * @param y1
+     * @param y2
+     * @param r
+     * @param g
+     * @param b
+     * @param a
+     * @return new rectangle
+     */
+    public static Shape createRect(double x1, double x2, double y1, double y2, float r, float g, float b, float a)
     {
     	return new Shape(0, x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2, x2 - x1, y2 - y1, r, g, b, a);
     }
-    public static boolean onLeft(Point l1, Point l2, Point point)
+    private static boolean onLeft(Point l1, Point l2, Point point)
     {
     	boolean checkBelow = true;
     	if (l2.getX() > l1.getX())
@@ -40,7 +59,7 @@ public class Geometry
     	else {return point.getY() >= m * point.getX() + b - .00001;}
     }
     //Checks for purely horizontal or vertical intersection
-    public static boolean vertIntersec(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
+    private static boolean vertIntersec(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
     {
     	
     	double minYL1 = Math.min(p1_1.getY(), p1_2.getY());
@@ -101,6 +120,14 @@ public class Geometry
     	}
     	return false;
     }
+    /**
+     * determines if P1_1 -> P1_2 intersects P2_1 -> P2_2
+     * @param p1_1
+     * @param p1_2
+     * @param p2_1
+     * @param p2_2
+     * @return intersection == true
+     */
     public static boolean lineIntersection(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
     {
     	if (vertIntersec(p1_1, p1_2, p2_1, p2_2))
@@ -127,7 +154,17 @@ public class Geometry
     	}
     	return false;
     }
-    public static boolean onLeft(Point l1, Point l2, Point point, boolean checkBelow)
+    /**
+     * determines if two lines intersect
+     * @param l1
+     * @param l2
+     * @return intersection == true
+     */
+    public static boolean lineIntersection(Line l1, Line l2)
+    {
+    	return lineIntersection(l1.getP1(), l1.getP2(), l2.getP1(), l2.getP2());
+    }
+    private static boolean onLeft(Point l1, Point l2, Point point, boolean checkBelow)
     {
     	//slope (y = mx + b)
     	double m = (l2.getY() - l1.getY()) / (l2.getX() - l1.getX());
@@ -139,6 +176,13 @@ public class Geometry
     	//if it should be above, check that y >= mx + b
     	else {return point.getY() >= m * point.getX() + b;}
     }
+    /**
+     * Determines if a point is inside a shape
+     * Assumes shapes have points organized in clockwise order
+     * @param shape
+     * @param point
+     * @return pointInside == true
+     */
     public static boolean insideShape(Point[] shape, Point point)
     {
     	
@@ -192,14 +236,25 @@ public class Geometry
     	return stillInside;
     	
     }
-    //Checks collision between concave polygons
-    //runs at extremely high fps (on the order of 10^7), so not a problem at scale
-    //is O(n^2)
+    /**
+     * Determines if two shapes overlap
+     * Assumes clockwise arrangement of points
+     * @param shape1
+     * @param shape2
+     * @return overlap == true
+     */
     public static boolean colliding(Point[] shape1, Point[] shape2)
     {
     	return strictCollision(shape1, shape2) || 
     			insideShape(shape1, shape2[0]) || insideShape(shape2, shape1[0]);
     }
+    /**
+     * Determines if two lists of points intersect at the lines
+     * Assumes that points go clockwise around a shape
+     * @param shape1
+     * @param shape2
+     * @return intersection == true
+     */
     public static boolean strictCollision(Point[] shape1, Point[] shape2)
     {
     	Point p1_1;
@@ -236,6 +291,43 @@ public class Geometry
     	return false;
     }
     /**
+     * Determines if two sets of lines intersect
+     * @param shape1
+     * @param shape2
+     * @return intersection == true
+     */
+    public static boolean strictCollision(Line[] shape1, Line[] shape2)
+    {
+    	for (int s1I = 0; s1I < shape1.length; s1I++)
+    	{
+    		for (int s2I = 0; s2I < shape2.length; s2I++)
+    		{
+    			if (lineIntersection(shape1[s1I], shape2[s2I]))
+    			{
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
+    /**
+     * determines if a line intersects a list of lines
+     * @param shape
+     * @param test
+     * @return intersection == true
+     */
+    public static boolean shapeIntersection(Line[] shape, Line test)
+    {
+    	for (int i = 0; i < shape.length; i++)
+    	{
+    		if (lineIntersection(shape[i], test))
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    /**
      * DONT FUCKING ASK ME HOW THIS WORKS
      * Make sure that your shapes are intersecting each other tangentially :)
      * @param mainShape
@@ -256,47 +348,60 @@ public class Geometry
     		allLines[count] = newShape[i];
     		count++;
     	}
+    	Line[] newLines = new Line[allLines.length];
+    	count = 0;
     	for (int mInd = 0; mInd < mainShape.length; mInd++)
     	{
     		Line currMain = mainShape[mInd];
     		for (int nInd = 0; nInd < newShape.length; nInd++)
     		{
     			Line currNew = newShape[nInd];
-    			boolean shouldDelete = false;
     			if (currMain.overlapping(currNew))
     			{
-    				currMain.eraseOverlap(currNew);
-    				shouldDelete = true;
+    				Line[] toAdd = currMain.eraseOverlap(currNew);
+    				newLines[count] = toAdd[0];
+    				count++;
+    				newLines[count] = toAdd[1];
+    				count++;
+    				currNew.delete();
+    				currMain.delete();
+    				break;
     			}
     			else if (currMain.adjacent(currNew))
     			{
     				currMain.combine(currNew);
-    				shouldDelete = true;
-    			}
-    			if (shouldDelete) {
-    				
+    				newLines[count] = currMain;
     				currNew.delete();
-    				
+    				count++;
+    				break;
     			}
     		}
-    	}
-    	Line[] adjustedLines = new Line[allLines.length];
-    	count = 0;
-    	for (int i = 0; i < allLines.length; i++)
-    	{
-    		if (!allLines[i].isDeleted())
+    		if (!currMain.isDeleted())
     		{
-    			adjustedLines[count] = allLines[i];
+    			newLines[count] = currMain;
+    			count++;
+    		}
+    	}
+    	for (int i = 0; i < newShape.length; i++)
+    	{
+    		if (!newShape[i].isDeleted())
+    		{
+    			newLines[count] = newShape[i];
     			count++;
     		}
     	}
     	Line[] endLines = new Line[count];
-    	for (int i = 0; i < count; i++)
+    	for (int i = 0; i < newLines.length; i++)
     	{
-    		endLines[i] = adjustedLines[i];
+    		endLines[i] = newLines[i];
     	}
     	return endLines;
     }
+    /**
+     * turns points into a list of lines
+     * @param points
+     * @return 
+     */
     public static Line[] createLines(Point[] points)
     {
     	Line[] lines = new Line[points.length];
@@ -313,6 +418,12 @@ public class Geometry
     	}
     	return lines;
     }
+    /**
+     * turns lines into a list of points,
+     * not yet implemented
+     * @param lines
+     * @return clockwise ordered points
+     */
     public static Point[] createPoints(Line[] lines)
     {
     	

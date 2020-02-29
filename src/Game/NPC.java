@@ -162,8 +162,8 @@ public class NPC extends Movable{
     
     public static Texture[] NPCtex = new Texture[2];
     
-    public static int cowboyStart = 0;
-    public static int cowboyEnd = 1;
+    public static final int cowboyStart = 0;
+    public static final int cowboyEnd = 1;
     public static void initTex()
     {
     	NPCtex[0] = new Texture("NPCs/Cowboy/IdleUp.PNG");
@@ -231,6 +231,6 @@ public class NPC extends Movable{
     	}
     	
     }
-    public static int notYetSpeaking = -1;
-    public static int cowboy = 0;
+    public static final int notYetSpeaking = -1;
+    public static final int cowboy = 0;
 }

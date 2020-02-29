@@ -19,6 +19,7 @@ public class Chest extends Image{
 		isOpen = false;
 		openFrame = 0;
 		whichChest = inChest;
+		setCollisionStatus(true);
 	}
 	public Chest(int inChest, double x, double y, double width, double length, double charWidth, double charLength, ItemBag inBag)
 	{
@@ -27,6 +28,7 @@ public class Chest extends Image{
 		isOpen = false;
 		openFrame = 0;
 		whichChest = inChest;
+		setCollisionStatus(true);
 	}
 	public void setState(boolean state)
 	{

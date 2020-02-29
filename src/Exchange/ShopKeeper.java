@@ -275,16 +275,16 @@ public class ShopKeeper extends NPC{
 		double rightX = 50;
 		double topY = 75;
 		double botY = -75;
-		Shape mainRect = Geometry.createSquare(leftX, rightX, botY, topY, 50, 50, 50, 255);
+		Shape mainRect = Geometry.createRect(leftX, rightX, botY, topY, 50, 50, 50, 255);
 		float r, g, b, a;
 		r = 20;
 		g = 230;
 		b = 230;
 		a = 255;
-		Shape rightRect = Geometry.createSquare(rightX, rightX + offset, botY, topY, r, g, b, a);
-		Shape leftRect = Geometry.createSquare(leftX - offset, leftX, botY, topY, r, g, b, a);
-		Shape topRect = Geometry.createSquare(leftX - offset, rightX + offset, topY, topY + offset, r, g, b, a);
-		Shape botRect = Geometry.createSquare(leftX - offset, rightX + offset, botY, botY - offset, r, g, b, a);
+		Shape rightRect = Geometry.createRect(rightX, rightX + offset, botY, topY, r, g, b, a);
+		Shape leftRect = Geometry.createRect(leftX - offset, leftX, botY, topY, r, g, b, a);
+		Shape topRect = Geometry.createRect(leftX - offset, rightX + offset, topY, topY + offset, r, g, b, a);
+		Shape botRect = Geometry.createRect(leftX - offset, rightX + offset, botY, botY - offset, r, g, b, a);
 		double radius = 10;
 		double circleOffset = 5;
 		r = 200; g = 200; b = 80;
@@ -312,12 +312,12 @@ public class ShopKeeper extends NPC{
 		botY = 45;
 		topY = 70;
 		//create the shopbutton
-		mainRect = Geometry.createSquare(leftX, rightX, botY, topY + 5, 0, 0, 0, 0);
+		mainRect = Geometry.createRect(leftX, rightX, botY, topY + 5, 0, 0, 0, 0);
 		r = 100; g = 100; b = 220;
-		rightRect = Geometry.createSquare(rightX, rightX + offset, botY, topY, r, g, b, a);
-		leftRect = Geometry.createSquare(leftX - offset, leftX, botY, topY, r, g, b, a);
-		topRect = Geometry.createSquare(leftX - offset, rightX + offset, topY, topY + offset, r, g, b, a);
-		botRect = Geometry.createSquare(leftX - offset, rightX + offset, botY, botY - offset, r, g, b, a);
+		rightRect = Geometry.createRect(rightX, rightX + offset, botY, topY, r, g, b, a);
+		leftRect = Geometry.createRect(leftX - offset, leftX, botY, topY, r, g, b, a);
+		topRect = Geometry.createRect(leftX - offset, rightX + offset, topY, topY + offset, r, g, b, a);
+		botRect = Geometry.createRect(leftX - offset, rightX + offset, botY, botY - offset, r, g, b, a);
 		textBorder.addShape(mainRect);
 		textBorder.addShape(rightRect);
 		textBorder.addShape(topRect);
@@ -338,12 +338,12 @@ public class ShopKeeper extends NPC{
 		botY = 10;
 		topY = 35;
 		//create the shopbutton
-		mainRect = Geometry.createSquare(leftX, rightX, botY, topY + 5, 0, 0, 0, 0);
+		mainRect = Geometry.createRect(leftX, rightX, botY, topY + 5, 0, 0, 0, 0);
 		r = 100; g = 100; b = 220;
-		rightRect = Geometry.createSquare(rightX, rightX + offset, botY, topY, r, g, b, a);
-		leftRect = Geometry.createSquare(leftX - offset, leftX, botY, topY, r, g, b, a);
-		topRect = Geometry.createSquare(leftX - offset, rightX + offset, topY, topY + offset, r, g, b, a);
-		botRect = Geometry.createSquare(leftX - offset, rightX + offset, botY, botY - offset, r, g, b, a);
+		rightRect = Geometry.createRect(rightX, rightX + offset, botY, topY, r, g, b, a);
+		leftRect = Geometry.createRect(leftX - offset, leftX, botY, topY, r, g, b, a);
+		topRect = Geometry.createRect(leftX - offset, rightX + offset, topY, topY + offset, r, g, b, a);
+		botRect = Geometry.createRect(leftX - offset, rightX + offset, botY, botY - offset, r, g, b, a);
 		textBorder.addShape(mainRect);
 		textBorder.addShape(rightRect);
 		textBorder.addShape(topRect);

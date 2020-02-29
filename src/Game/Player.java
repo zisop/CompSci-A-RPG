@@ -142,6 +142,10 @@ public class Player extends Movable
     		mana -= 33.34;
     	}
     }
+    /**
+     * Shows all the player's visible spells
+     * Adds them to the visProj arrayList so they will be displayed at the top of the screen
+     */
     public void showSpells()
     {
     	for (int i = allSpells.size() - 1; i >= 0; i--)
@@ -164,6 +168,9 @@ public class Player extends Movable
     	showSpells();
     	super.show();
     }
+    /**
+     * Determines where to place projectiles
+     */
     public void manageProjectiles()
     {
     	int idealNum = (int)(mana / 33.33);
@@ -210,7 +217,9 @@ public class Player extends Movable
     	}
     }
     
-    //moves the player and cycles its walk animation
+    /**
+     * Moves the player and handles animations / sound effects on walk
+     */
     public void move(int direc)
     {
     	super.move(direc);
@@ -278,7 +287,9 @@ public class Player extends Movable
 		}
     	
     }
-    //stops the player's walk to put it back in idle
+    /**
+     * puts the player into Idle
+     */
     public void stopWalk()
     {
     	walkFrame = 0;
@@ -294,7 +305,8 @@ public class Player extends Movable
     	return super.collision(otherChar);
     }
     /**
-     * returns the player's ability to move {north, east, south, west}
+     * 
+     * @return boolean[] of movement capabilities {north, east, south, west}
      */
     public boolean[] getMovement()
     {
@@ -302,8 +314,7 @@ public class Player extends Movable
     	boolean[] movement = new boolean[]{true, true, true, true};
         for (int i = 0; i < room.length; ++i) {
             Image currChar = room[i];
-            //movables dont collide
-            if (!(currChar instanceof Movable)) {
+            if (currChar.collides()) {
             	
             	boolean shouldBreak = false;
             	setY(getY() + getSpeed());

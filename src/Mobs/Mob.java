@@ -16,7 +16,6 @@ public abstract class Mob extends Movable{
 	private int mobID;
 	private double verticalMove;
 	private double horizontalMove;
-	private boolean startingHorizontal;
 	private int stoppingFrame;
 	private int maxStoppingFrame;
 	private int deathAnimFrame;
@@ -30,6 +29,7 @@ public abstract class Mob extends Movable{
 	private int firstSound;
 	private boolean shouldCreate;
 	
+	protected boolean startingHorizontal;
 	protected Point movementPoint;
 	protected boolean followingPlayer;
 	protected boolean attacking;
@@ -96,7 +96,10 @@ public abstract class Mob extends Movable{
 		super.show();
 		move();
 	}
-	
+	/**
+	 * moves the mob towards its movement points<br>
+	 * or doesn't move it if it's in a state of pausing<br>
+	 */
 	public void move()
 	{
 		if (stoppingFrame != maxStoppingFrame) 
@@ -117,7 +120,12 @@ public abstract class Mob extends Movable{
 		walkDirec = direc;
 		handleAnims();
 	}
-	
+	/**
+	 * determines what direction mob should move after movement point generated<br>
+	 * recommended to use Mob.(up, right, down, left) for each int direction<br>
+	 * mob.up == 0
+	 * @return {0 = north, 1 = east, 2 = south, 3 = west}
+	 */
 	private int findDirection()
 	{
 		boolean atHoriz = atHorizontal();
@@ -155,8 +163,11 @@ public abstract class Mob extends Movable{
 	private void createMovementPoints()
 	{
 		createMovementPoint();
-		startingHorizontal = Math.random() < .5;
 		createDistances();
+	}
+	public boolean startingHorizontal()
+	{
+		return startingHorizontal;
 	}
 	
 	private void createDistances()
@@ -174,7 +185,9 @@ public abstract class Mob extends Movable{
 		double absDist = Math.abs(getY() - verticalMove);
 		return absDist <= getSpeed();
 	}
-	
+	/**
+	 * handles walk animations
+	 */
 	private void handleAnims()
 	{
 		walkFrame++;

@@ -1,11 +1,9 @@
 package Mobs;
 
 import Game.Main;
-import Game.Player;
 import LowLevel.Point;
 import World.Room;
 import World.Terrain;
-import World.Tile;
 
 public class MeleeMob extends Mob{
 	private double attackRangeSquared;
@@ -40,6 +38,10 @@ public class MeleeMob extends Mob{
 	{
 		//create point to player
 	}
+	/**
+	 * Sends the mob in a random direction with a random radius<br>
+	 * radius is bounded to individual
+	 */
 	private void pointRandomly()
 	{
 		Room currRoom = Main.allRooms[Main.currRoom];
@@ -55,21 +57,20 @@ public class MeleeMob extends Mob{
 			}
 		}
 		//
-		double xRange = 600;
-		double yRange = 600;
-		double minX = getX() - xRange / 2;
-		double minY = getY() - yRange / 2;
+		double maxRadius = 600;
 		
-		double randomX = (xRange) * Math.random();
-		double randomY = (yRange) * Math.random();
-		Point testPoint = new Point(randomX + minX, randomY + minY);
+		double radius = maxRadius * Math.random();
+		double angle = 2 * Math.PI * Math.random();
+		startingHorizontal = Math.random() < .5;
+		Point testPoint = new Point(getX() + Math.cos(angle) * radius, getY() + Math.sin(angle) * radius);
 		int numTries = 0;
-		while (!currRoom.insideRoom(this, testPoint))
+		while (!currRoom.pathPossible(this, testPoint))
 		{
-			randomX = (xRange) * Math.random();
-			randomY = (yRange) * Math.random();
-			testPoint = new Point(randomX + minX, randomY + minY);
+			startingHorizontal = Math.random() < .5;
+			radius = maxRadius * Math.random();
+			angle = 2 * Math.PI * Math.random();
 			
+			testPoint = new Point(getX() + Math.cos(angle) * radius, getY() + Math.sin(angle) * radius);
 			numTries++;
 			if (numTries == 1000)
 			{

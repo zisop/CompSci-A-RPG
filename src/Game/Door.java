@@ -19,6 +19,7 @@ public class Door extends Image
     public Door(Texture img, double inX, double inY, double w, double l, int inEntry) {
         super(img, inX, inY, w, l);
         this.entry = inEntry;
+        setCollisionStatus(true);
     }
     //Sets the door's lead room to an int
     public void setLead(int newLead) {

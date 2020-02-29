@@ -122,8 +122,8 @@ public class Positionable extends Point
         return relPos(otherChar, 0);
     }
     /**
-     * This class stores a bunch of getter and setter methods that nobody cares about
-     * Also, everything that interacts with the game extends it because it has the ability to store a lot of data
+     * adjusts width
+     * @param newWidth
      */
 
 
@@ -145,6 +145,11 @@ public class Positionable extends Point
         width = newWidth;
         hitWidth = newWidth;
     }
+    
+    /**
+     * 
+     * adjusts x
+     */
     public void setX(double newX)
     {
     	double xDiff = newX - getX();
@@ -155,6 +160,9 @@ public class Positionable extends Point
     		collisionBasis[i].setX(collisionBasis[i].getX() + xDiff);
     	}
     }
+    /**
+     * adjusts y
+     */
     public void setY(double newY)
     {
     	double yDiff = newY - getY();
@@ -165,6 +173,10 @@ public class Positionable extends Point
     		collisionBasis[i].setY(collisionBasis[i].getY() + yDiff);
     	}
     }
+    /**
+     * Moves the collisionBasis (hitbox) of a character down by yValue
+     * @param yVal
+     */
     public void hitBoxDown(double yVal)
     {
     	collisionBasis[DL].setY(collisionBasis[DL].getY() - yVal);
@@ -172,6 +184,10 @@ public class Positionable extends Point
     	collisionBasis[DR].setY(collisionBasis[DR].getY() - yVal);
     	collisionBasis[UR].setY(collisionBasis[UR].getY() - yVal);
     }
+    /**
+     * Sets the length of collisionBasis (hitbox) to newLength
+     * @param newLength
+     */
     public void setHitLength(double newLength)
     {
     	double currCenterY = collisionBasis[UL].getY() - getHitLength() / 2;
@@ -181,6 +197,10 @@ public class Positionable extends Point
     	collisionBasis[DR].setY(currCenterY - newLength / 2);
     	hitLength = newLength;
     }
+    /**
+     * sets the width of collisionBasis (hitbox) to hitWidth
+     * @param newWidth
+     */
     public void setHitWidth(double newWidth)
     {
     	double currCenterX = collisionBasis[UL].getX() - getHitLength() / 2;
@@ -190,12 +210,18 @@ public class Positionable extends Point
     	collisionBasis[DR].setX(currCenterX + newWidth / 2);
     	hitWidth = newWidth;
     }
+    /**
+     * sets position to (newX, newY)
+     */
     public void setPos(double newX, double newY)
     {
     	setX(newX);
     	setY(newY);
     }
-    
+    /**
+     * Sets the length of a character to newLength
+     * @param newLength
+     */
     public void setLength(double newLength) {
     	double lengthFrac = newLength / getLength();
         double collisionCenterY = (collisionBasis[DL].getY() + collisionBasis[UL].getY()) / 2;
@@ -233,6 +259,11 @@ public class Positionable extends Point
     public void setShowBasis(Point[] newBasis) {showBasis = newBasis;}
     public Point[] getShowBasis() {return showBasis;}
     public Point[] getCollisionBasis() {return collisionBasis;}
+    /**
+     * Comparison basis for determining order to be shown in
+     * @param otherObj
+     * @return {0 -> same, 1 -> this was lower on the screen, -1 -> this was higher on the screen}
+     */
     public int compareTo(Positionable otherObj)
     {
     	if (getY() - getLength() / 2 < otherObj.getY() - otherObj.getLength() / 2)
@@ -245,8 +276,8 @@ public class Positionable extends Point
     	}
     	return 0;
     }
-    public static int DL = 0;
-    public static int DR = 1;
-    public static int UR = 2;
-    public static int UL = 3;
+    public static final int DL = 0;
+    public static final int DR = 1;
+    public static final int UR = 2;
+    public static final int UL = 3;
 }

@@ -9,6 +9,7 @@ public class Image extends Positionable
     private Texture image;
     private float alpha;
     private double hitboxDown;
+    private boolean collides;
     
     public static boolean shouldRotate = true;
     public static boolean shouldNotRotate = false;
@@ -18,35 +19,27 @@ public class Image extends Positionable
         image = img;
         alpha = 255;
         hitboxDown = 0;
+        collides = false;
     }
     public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
         super(inX, inY, w, l, hitW, hitL);
         image = img;
         alpha = 255;
         hitboxDown = 0;
+        collides = false;
     }
     public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hbDown) {
         super(inX, inY, w, l, hitW, hitL, hbDown);
         image = img;
         alpha = 255;
+        collides = false;
     }
-    public int relPos(Positionable otherChar)
-    {
-    	return relPos(otherChar, hitboxDown);
-    }
-    
-    public void setAlpha(float newAlpha)
-    {
-    	alpha = newAlpha;
-    }
-    public float getAlpha()
-    {
-    	return alpha;
-    }
-    public void setImage(Texture newImg)
-    {
-    	image = newImg;
-    }
+    public int relPos(Positionable otherChar) {return relPos(otherChar, hitboxDown);}
+    public void setAlpha(float newAlpha) {alpha = newAlpha;}
+    public float getAlpha() {return alpha;}
+    public void setImage(Texture newImg) {image = newImg;}
+    public boolean collides() {return collides;}
+    public void setCollisionStatus(boolean newStatus) {collides = newStatus;}
     //displays the image + rotations if those end up being useful
     public void show(boolean shouldRotate) {
     	double screenX = getX() - Main.player.getX();

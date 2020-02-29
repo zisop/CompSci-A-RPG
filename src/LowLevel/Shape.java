@@ -24,6 +24,7 @@ public class Shape extends Image {
 		green = 255;
 		blue = 255;
 		alpha = 255;
+		setCollisionStatus(true);
 	}
 	public Shape(int ID, double x, double y, double width, double length, float r, float b, float g, float a)
 	{
@@ -32,6 +33,7 @@ public class Shape extends Image {
 		green = g;
 		blue = b;
 		alpha = a;
+		setCollisionStatus(true);
 	}
 	public void UIshow()
 	{
@@ -51,7 +53,7 @@ public class Shape extends Image {
 		green = newGreen;
 		blue = newBlue;
 	}
-	public static int square = 0;
-	public static int ellipse = 1;
-	public static int xButton = 2;
+	public static final int square = 0;
+	public static final int ellipse = 1;
+	public static final int xButton = 2;
 }

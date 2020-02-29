@@ -92,7 +92,7 @@ public class Main
         UI.playerBag.addItem(wand2, 0);
         UI.playerBag.addItem(ruby, 3);
         
-        MeleeMob slime = new MeleeMob(20, 20, Mob.slime);
+        
         
         
         
@@ -141,14 +141,13 @@ public class Main
             showVisibles();
             
             UI.showUI();
-            slime.show();
             
             
             
             glfwSwapBuffers(window);
             
             //30FPS
-            double wait = 1000/30.0 - (System.currentTimeMillis() - startTime);
+            double wait = 1000/90.0 - (System.currentTimeMillis() - startTime);
             if (wait > 0) {Thread.sleep((long)wait);}
             
             leftClickLastFrame = leftClick;
@@ -229,21 +228,21 @@ public class Main
     }
     
     public static void initRoom0() {
-        Image[] room = new Image[6];
-        Door door1 = new Door(Shape.shapes[0], 0, -300, 50, 100, 2);
-        Door door2 = new Door(Shape.shapes[0], 200, -100, 100, 50, 1);
+        Image[] room = new Image[7];
+        Door door1 = new Door(Shape.shapes[Shape.square], 0, -300, 50, 100, 2);
+        Door door2 = new Door(Shape.shapes[Shape.square], 200, -100, 100, 50, 1);
         room[0] = door1;
         room[1] = door2;
         door1.setLead(1);
         door2.setLead(2);
-        room[2] = new Image(Shape.shapes[0], -200, 200, 150, 150);
-        room[3] = new Image(Shape.shapes[0], 200, 200, 150, 150);
+        room[2] = new Shape(Shape.square, -200, 200, 150, 150);
+        room[3] = new Shape(Shape.square, 200, 200, 150, 150);
         
         int[] inIDs = new int[] {Item.ruby};
         int[] inQuantities = new int[] {6};
         ItemExchange exchange = new ItemExchange(inQuantities, inIDs, 0);
         Shop shop = new Shop(new ItemExchange[] {exchange});
-        ShopKeeper npc = new ShopKeeper(0, 200, -50, 40, 40, 0, 13, shop);
+        ShopKeeper npc = new ShopKeeper(NPC.cowboy, 200, -50, 40, 40, 0, 13, shop);
         
         npc.setAnim(ShopKeeper.cowboyUp);
         room[4] = npc;
@@ -251,6 +250,7 @@ public class Main
         Item wand = new Item(2);
         bag.addItem(wand, 1);
         room[5] = new Chest(0, 200, 50, 50, 50, 50, 40, bag);
+        room[6] = new MeleeMob(20, 20, Mob.slime);
         
         Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10, 80);
         Terrain test2 = Terrain.createTerrain(Tile.Grass, -200, 800, 10, 4, 80);
@@ -261,11 +261,11 @@ public class Main
     
     public static void initRoom1() {
         Image[] room = new Image[4];
-        Door theDoor = new Door(Shape.shapes[0], 0, 300, 50, 100, 0);
+        Door theDoor = new Door(Shape.shapes[Shape.square], 0, 300, 50, 100, 0);
         theDoor.setLead(0);
         room[0] = theDoor;
-        room[1] = new Image(Shape.shapes[0], -200, -200, 150, 150);
-        room[2] = new Image(Shape.shapes[0], 200, -200, 150, 150);
+        room[1] = new Shape(Shape.square, -200, -200, 150, 150);
+        room[2] = new Shape(Shape.square, 200, -200, 150, 150);
         NPC npc = new NPC(0, 100, 300, 40, 40, 1, 13);
         room[3] = npc;
         allRooms[1] = new Room(room, new Terrain[] {});
@@ -278,9 +278,9 @@ public class Main
         Door theDoor = new Door(Shape.shapes[0], 0, 300, 50, 100, 0);
         theDoor.setLead(0);
         room[0] = theDoor;
-        room[1] = new Image(Shape.shapes[0], -100, -200, 150, 150);
-        room[2] = new Image(Shape.shapes[0], 100, -200, 150, 150);
-        allRooms[2] = new Room(room, new Terrain[] {null});
+        room[1] = new Shape(Shape.square, -100, -200, 150, 150);
+        room[2] = new Shape(Shape.square, 100, -200, 150, 150);
+        allRooms[2] = new Room(room, new Terrain[] {});
         initted[2] = true;
     }
     

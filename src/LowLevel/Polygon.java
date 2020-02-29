@@ -47,6 +47,7 @@ public class Polygon extends Image{
 		}
 		setCollisionBasis(collBas);
 		r = 255; g = 255; b = 255; a = 255;
+		setCollisionStatus(true);
 	}
 	public Polygon(Point[] points, float red, float green, float blue, float alpha)
 	{
@@ -85,6 +86,7 @@ public class Polygon extends Image{
 		}
 		setCollisionBasis(collBas);
 		r = red; g = green; b = blue; a = alpha;
+		setCollisionStatus(true);
 	}
 	public void setWidth(double newWidth)
 	{

@@ -28,12 +28,12 @@ public class Tile extends Image{
 		tileTex[Dirt] = new Texture("Tiles/Dirt.PNG");
 	}
 
-	public static int Grass = 0;
-	public static int GrassDirtL = 1;
-	public static int GrassDirtR = 2;
-	public static int GrassDirtBL = 3;
-	public static int GrassDirtBR = 4;
-	public static int GrassDirtUL = 5;
-	public static int GrassDirtUR = 6;
-	public static int Dirt = 7;
+	public static final int Grass = 0;
+	public static final int GrassDirtL = 1;
+	public static final int GrassDirtR = 2;
+	public static final int GrassDirtBL = 3;
+	public static final int GrassDirtBR = 4;
+	public static final int GrassDirtUL = 5;
+	public static final int GrassDirtUR = 6;
+	public static final int Dirt = 7;
 }
