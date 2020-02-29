@@ -243,10 +243,10 @@ public abstract class Mob extends Movable{
 		shouldCreate = true;
 		switch (walkDirec)
 		{
-			case up: setImage(anims[uI]);
-			case right: setImage(anims[rI]);
-			case down: setImage(anims[dI]);
-			case left: setImage(anims[lI]);
+			case up: setImage(anims[uI]); break;
+			case right: setImage(anims[rI]); break;
+			case down: setImage(anims[dI]); break;
+			case left: setImage(anims[lI]); break;
 		}
 	}
 	private Audio playWalkSound()
@@ -279,11 +279,11 @@ public abstract class Mob extends Movable{
 	public static final int rI = 8;
 	public static final int rA = 9;
 	
-	public static int dW0 = 10;
-	public static int dW1 = 11;
-	public static int dW2 = 12;
-	public static int dI = 13;
-	public static int dA = 14;
+	public static final int dW0 = 10;
+	public static final int dW1 = 11;
+	public static final int dW2 = 12;
+	public static final int dI = 13;
+	public static final int dA = 14;
 	
 	public static final int lW0 = 15;
 	public static final int lW1 = 16;

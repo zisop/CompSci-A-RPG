@@ -1,5 +1,6 @@
 package LowLevel;
 
+import java.util.ArrayList;
 
 public class Geometry
 {
@@ -104,7 +105,6 @@ public class Geometry
     {
     	if (vertIntersec(p1_1, p1_2, p2_1, p2_2))
     	{
-    		
     		return true;
     	}
     	double m1 = (p1_2.getY() - p1_1.getY()) / (p1_2.getX() - p1_1.getX());
@@ -234,5 +234,88 @@ public class Geometry
     		}
     	}
     	return false;
+    }
+    /**
+     * DONT FUCKING ASK ME HOW THIS WORKS
+     * Make sure that your shapes are intersecting each other tangentially :)
+     * @param mainShape
+     * @param newShape
+     * @return Line array with new shape (lines are unordered)
+     */
+    public static Line[] addNewShape(Line[] mainShape, Line[] newShape)
+    {
+    	Line[] allLines = new Line[mainShape.length + newShape.length];
+    	int count = 0;
+    	for (int i = 0; i < mainShape.length; i++)
+    	{
+    		allLines[count] = mainShape[i];
+    		count++;
+    	}
+    	for (int i = 0; i < newShape.length; i++)
+    	{
+    		allLines[count] = newShape[i];
+    		count++;
+    	}
+    	for (int mInd = 0; mInd < mainShape.length; mInd++)
+    	{
+    		Line currMain = mainShape[mInd];
+    		for (int nInd = 0; nInd < newShape.length; nInd++)
+    		{
+    			Line currNew = newShape[nInd];
+    			boolean shouldDelete = false;
+    			if (currMain.overlapping(currNew))
+    			{
+    				currMain.eraseOverlap(currNew);
+    				shouldDelete = true;
+    			}
+    			else if (currMain.adjacent(currNew))
+    			{
+    				currMain.combine(currNew);
+    				shouldDelete = true;
+    			}
+    			if (shouldDelete) {
+    				
+    				currNew.delete();
+    				
+    			}
+    		}
+    	}
+    	Line[] adjustedLines = new Line[allLines.length];
+    	count = 0;
+    	for (int i = 0; i < allLines.length; i++)
+    	{
+    		if (!allLines[i].isDeleted())
+    		{
+    			adjustedLines[count] = allLines[i];
+    			count++;
+    		}
+    	}
+    	Line[] endLines = new Line[count];
+    	for (int i = 0; i < count; i++)
+    	{
+    		endLines[i] = adjustedLines[i];
+    	}
+    	return endLines;
+    }
+    public static Line[] createLines(Point[] points)
+    {
+    	Line[] lines = new Line[points.length];
+    	for (int i = 0; i < points.length; i++)
+    	{
+    		if (i == 0)
+    		{
+    			lines[i] = new Line(points[points.length - 1], points[0]);
+    		}
+    		else 
+    		{
+				lines[i] = new Line(points[i - 1], points[i]);
+			}
+    	}
+    	return lines;
+    }
+    public static Point[] createPoints(Line[] lines)
+    {
+    	
+    	return new Point[] {};
     }
 }

@@ -233,14 +233,13 @@ public class Positionable extends Point
     public void setShowBasis(Point[] newBasis) {showBasis = newBasis;}
     public Point[] getShowBasis() {return showBasis;}
     public Point[] getCollisionBasis() {return collisionBasis;}
-    public int compareTo(Object otherObj)
+    public int compareTo(Positionable otherObj)
     {
-    	Positionable k = (Positionable)otherObj;
-    	if (getY() - getLength() / 2 < k.getY() - k.getLength() / 2)
+    	if (getY() - getLength() / 2 < otherObj.getY() - otherObj.getLength() / 2)
     	{
     		return 1;
     	}
-    	if (getY() - getLength() / 2 > k.getY() - k.getLength() / 2)
+    	if (getY() - getLength() / 2 > otherObj.getY() - otherObj.getLength() / 2)
     	{
     		return -1;
     	}

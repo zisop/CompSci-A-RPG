@@ -5,38 +5,33 @@ public class Test {
 	{
 
 		
-		Point p1 = new Point(-25, 0);
-		Point p2 = new Point(0, -25);
-		Point p3 = new Point(25, 0);
-		Point p4 = new Point(0, 25);
+		Point p1 = new Point(0, 0);
+		Point p2 = new Point(1, 0);
+		Point p3 = new Point(1, 3);
+		Point p4 = new Point(0, 3);
 		
-		Point p5 = new Point(-12.5, 0);
-		Point p6 = new Point(0, -12.5);
-		Point p7 = new Point(12.5, 0);
-		Point p8 = new Point(0, 12.5);
-
-		Point[] shape1 = new Point[] {p1, p2, p3, p4};
-		Point[] shape2 = new Point[] {p5, p6, p7, p8};
+		Point p5 = new Point(1, 0);
+		Point p6 = new Point(2, 0);
+		Point p7 = new Point(2, 2);
+		Point p8 = new Point(1, 2);
 		
-		/**
-		 * didnt collide
-		P1_1: (118.5, -106.0) P1_2: (118.5, -116.0) P2_1: (150.0, -75.0) P2_2: (150.0, -125.0)
-		P1_1: (118.5, -106.0) P1_2: (118.5, -116.0) P2_1: (150.0, -125.0) P2_2: (250.0, -125.0)
-		P1_1: (118.5, -106.0) P1_2: (118.5, -116.0) P2_1: (250.0, -125.0) P2_2: (250.0, -75.0)
-		P1_1: (118.5, -106.0) P1_2: (118.5, -116.0) P2_1: (250.0, -75.0) P2_2: (150.0, -75.0)
-		P1_1: (118.5, -116.0) P1_2: (153.5, -116.0) P2_1: (150.0, -75.0) P2_2: (150.0, -125.0)
-		P1_1: (118.5, -116.0) P1_2: (153.5, -116.0) P2_1: (150.0, -125.0) P2_2: (250.0, -125.0)
-		P1_1: (118.5, -116.0) P1_2: (153.5, -116.0) P2_1: (250.0, -125.0) P2_2: (250.0, -75.0)
-		P1_1: (118.5, -116.0) P1_2: (153.5, -116.0) P2_1: (250.0, -75.0) P2_2: (150.0, -75.0)
-		P1_1: (153.5, -116.0) P1_2: (153.5, -106.0) P2_1: (150.0, -75.0) P2_2: (150.0, -125.0)
-		P1_1: (153.5, -116.0) P1_2: (153.5, -106.0) P2_1: (150.0, -125.0) P2_2: (250.0, -125.0)
-		P1_1: (153.5, -116.0) P1_2: (153.5, -106.0) P2_1: (250.0, -125.0) P2_2: (250.0, -75.0)
-		P1_1: (153.5, -116.0) P1_2: (153.5, -106.0) P2_1: (250.0, -75.0) P2_2: (150.0, -75.0)
-		P1_1: (153.5, -106.0) P1_2: (118.5, -106.0) P2_1: (150.0, -75.0) P2_2: (150.0, -125.0)
-		P1_1: (153.5, -106.0) P1_2: (118.5, -106.0) P2_1: (150.0, -125.0) P2_2: (250.0, -125.0)
-		P1_1: (153.5, -106.0) P1_2: (118.5, -106.0) P2_1: (250.0, -125.0) P2_2: (250.0, -75.0)
-		P1_1: (153.5, -106.0) P1_2: (118.5, -106.0) P2_1: (250.0, -75.0) P2_2: (150.0, -75.0)
-		*/
-		System.out.println(Geometry.colliding(shape1, shape2));
+		Point p9 = new Point(2, 0);
+		Point p10 = new Point(3, 0);
+		Point p11 = new Point(3, 3);
+		Point p12 = new Point(2, 3);
+		
+		Line[] shape1 = Geometry.createLines(new Point[] {p1, p2, p3, p4});
+		Line[] shape2 = Geometry.createLines(new Point[] {p5, p6, p7, p8});
+		Line[] shape3 = Geometry.createLines(new Point[] {p9, p10, p11, p12});
+		Line[] endShape = Geometry.addNewShape(shape1, shape2);
+		endShape = Geometry.addNewShape(endShape, shape3);
+		for (int i = 0; i < endShape.length; i++)
+		{
+			System.out.println("Line " + i + ": " + endShape[i].toString());
+		}
+	
+		//Line l1 = new Line(new Point(0, 2), new Point(0, 0));
+		//Line l2 = new Line(new Point(1, 4), new Point(1, 2));
+		//System.out.println(l1.adjacent(l2));
 	}
 }
