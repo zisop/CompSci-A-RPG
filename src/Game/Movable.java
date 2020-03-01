@@ -45,5 +45,51 @@ public class Movable extends Image{
     {
     	return speed;
     }
+
+	/**
+     * 
+     * @return boolean[] of movement capabilities {north, east, south, west}
+     */
+    public boolean[] getMovement()
+    {
+    	Image[] room = Main.allRooms[Main.currRoom].getImages();
+    	boolean[] movement = new boolean[]{true, true, true, true};
+        for (int i = 0; i < room.length; ++i) {
+            Image currChar = room[i];
+            if (currChar.collides()) {
+            	
+            	boolean shouldBreak = false;
+            	setY(getY() + getSpeed());
+            	if (collision(currChar))
+            	{
+            		movement[0] = false; 
+            		shouldBreak = true;
+            	}
+            	setPos(getX() + getSpeed(), getY() - getSpeed());
+            	if (collision(currChar))
+            	{
+            		movement[1] = false;
+            		shouldBreak = true;
+            	}
+            	setPos(getX() - getSpeed(), getY() - getSpeed());
+            	if (collision(currChar))
+            	{
+            		movement[2] = false;
+            		shouldBreak = true;
+            	}
+           		setPos(getX() - getSpeed(), getY() + getSpeed());
+            	if (collision(currChar))
+            	{
+            		movement[3] = false;
+            		shouldBreak = true;
+            	}
+            	setX(getX() + getSpeed());
+            	if (shouldBreak) {
+            		break;
+            	}
+            }
+        }
+        return movement;
+    }
     
 }

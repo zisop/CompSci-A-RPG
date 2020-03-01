@@ -2,9 +2,11 @@ package Mobs;
 
 
 
+import Game.Main;
 import Game.Movable;
 import Imported.Audio;
 import Imported.Texture;
+import LowLevel.Image;
 import LowLevel.Point;
 
 public abstract class Mob extends Movable{
@@ -17,22 +19,26 @@ public abstract class Mob extends Movable{
 	private double verticalMove;
 	private double horizontalMove;
 	private int stoppingFrame;
-	private int maxStoppingFrame;
+	private int longStoppingFrame;
+	private int shortStoppingStart;
 	private int deathAnimFrame;
 	private int maxDeathAnimFrame;
 	private int walkAnim;
 	private int walkFrame;
 	private int walkAnimSwitch;
-	private int walkDirec;
 	private int soundFXFrame;
 	private int soundFXSwitch;
 	private int firstSound;
+	private double attackRange;
 	private boolean shouldCreate;
 	
+	protected int walkDirec;
 	protected boolean startingHorizontal;
 	protected Point movementPoint;
 	protected boolean followingPlayer;
-	protected boolean attacking;
+	protected int attackFrame;
+	protected int attackMaxFrame;
+	protected double sightRange;
 	
 	public Mob(double x, double y, int ID)
 	{
@@ -43,7 +49,9 @@ public abstract class Mob extends Movable{
 			setWidth(50);
 			setLength(50);
 			setSpeed(MeleeMob.skeletonSpeed);
-			maxStoppingFrame = MeleeMob.skeletonStopFrames;
+			longStoppingFrame = MeleeMob.skeletonLongStop;
+			shortStoppingStart = longStoppingFrame - MeleeMob.skeletonShortStop;
+			attackMaxFrame = 20;
 			anims = getAnims(skelAnimInd, skelAnimInd + 19);
 			
 			walkSounds = getSounds(skelSoundInd, skelSoundInd + 1);
@@ -52,13 +60,16 @@ public abstract class Mob extends Movable{
 			walkAnimSwitch = 6;
 			hitBoxDown(20);
 			setHitLength(10);
+			attackRange = 70;
+			sightRange = 600;
 			break;
 
 		case slime:
 			setWidth(35);
 			setLength(35);
 			setSpeed(MeleeMob.slimeSpeed);
-			maxStoppingFrame = MeleeMob.slimeStopFrames;
+			longStoppingFrame = MeleeMob.slimeLongStop;
+			shortStoppingStart = longStoppingFrame - MeleeMob.slimeShortStop;
 			anims = getAnims(slimeAnimInd, slimeAnimInd + 19);
 			walkSounds = getSounds(slimeSoundInd, slimeSoundInd + 9);
 			soundFXSwitch = 20;
@@ -66,6 +77,9 @@ public abstract class Mob extends Movable{
 			walkAnimSwitch = 6;
 			hitBoxDown(10);
 			setHitLength(15);
+			attackRange = 200;
+			sightRange = 600;
+			attackMaxFrame = 15;
 			break;
 		}
 
@@ -84,17 +98,31 @@ public abstract class Mob extends Movable{
 		mobID = ID;
 		followingPlayer = false;
 		shouldCreate = true;
-		stoppingFrame = maxStoppingFrame;
+		stoppingFrame = longStoppingFrame;
 		walkAnim = resetWalk;
 		deathAnimFrame = 0;
 		soundFXFrame = 0;
 		walkFrame = 0;
+		attackFrame = attackMaxFrame;
 	}
 	
 	public void show()
 	{
+		if (attackFrame == attackMaxFrame) {
+			if (inAttackRange()) {attack();}
+			else {move();}
+		}
+		else {attackFrame++;}
 		super.show();
-		move();
+	}
+	public boolean inAttackRange()
+	{
+		//it's an optimization you fuck
+		double xSquared = Main.player.getX() - getX();
+		xSquared *= xSquared;
+		double ySquared = Main.player.getY() - getY();
+		ySquared *= ySquared;
+		return xSquared + ySquared < attackRange * attackRange;
 	}
 	/**
 	 * moves the mob towards its movement points<br>
@@ -102,7 +130,7 @@ public abstract class Mob extends Movable{
 	 */
 	public void move()
 	{
-		if (stoppingFrame != maxStoppingFrame) 
+		if (stoppingFrame != longStoppingFrame) 
 		{
 			stoppingFrame++;
 			return;
@@ -113,10 +141,18 @@ public abstract class Mob extends Movable{
 			shouldCreate = false;
 		}
 		int direc = findDirection();
-		if (direc == shouldStopWalk) {stopWalk(); return;}
+		if (direc == shouldStopWalk) {stopWalk(longStop); return;}
+		boolean[] movement = getMovement();
+		if (movement[direc] == false)
+		{
+			direc = shouldStopWalk;
+			stopWalk(shortStop);
+			return;
+		}
 		
 		super.move(direc);
 		if (walkDirec != direc) {walkAnim = resetWalk;}
+		
 		walkDirec = direc;
 		handleAnims();
 	}
@@ -247,12 +283,13 @@ public abstract class Mob extends Movable{
 		}
 		else {soundFXFrame++;}
 	}
-	private void stopWalk()
+	private void stopWalk(int durationModifier)
 	{
 		walkAnim = resetWalk;
 		walkFrame = 0;
 		soundFXFrame = 0;
-		stoppingFrame = 0;
+		if (durationModifier == shortStop) {stoppingFrame = shortStoppingStart;}
+		else {stoppingFrame = 0;}
 		shouldCreate = true;
 		switch (walkDirec)
 		{
@@ -269,7 +306,6 @@ public abstract class Mob extends Movable{
 	}
 	
 	public abstract void createMovementPoint();
-	public abstract boolean inAttackRange();
 	public abstract void attack();
 	
 	public static final int up = 0;
@@ -380,5 +416,7 @@ public abstract class Mob extends Movable{
 	private static final int shouldStopWalk = -1;
 	private static final int resetWalk = -1;
 	private static final int startWalking = 0;
+	private static final int shortStop = 0;
+	private static final int longStop = 1;
 	//private static int 
 }

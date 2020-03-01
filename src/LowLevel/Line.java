@@ -10,10 +10,6 @@ public class Line {
 	private double xMax;
 	private double yMin;
 	private double yMax;
-	private Point yMinPoint;
-	private Point yMaxPoint;
-	private Point xMinPoint;
-	private Point xMaxPoint;
 	public Line(Point p1, Point p2)
 	{
 		this.p1 = p1;
@@ -30,10 +26,8 @@ public class Line {
 		}
 		yMin = Math.min(p1.getY(), p2.getY());
 		yMax = Math.max(p1.getY(), p2.getY());
-		if (yMin == p1.getY()) {yMinPoint = p1; yMaxPoint = p2;} else {yMinPoint = p2; yMaxPoint = p1;}
 		xMin = Math.min(p1.getX(), p2.getX());
 		xMax = Math.max(p1.getX(), p2.getX());
-		if (xMin == p1.getX()) {xMinPoint = p1; xMaxPoint = p2;} else {xMinPoint = p2; xMaxPoint = p1;}
 	}
 	public boolean overlapping(Line otherLine)
 	{
@@ -156,10 +150,8 @@ public class Line {
 		}
 		yMin = Math.min(p1.getY(), p2.getY());
 		yMax = Math.max(p1.getY(), p2.getY());
-		if (yMin == p1.getY()) {yMinPoint = p1; yMaxPoint = p2;} else {yMinPoint = p2; yMaxPoint = p1;}
 		xMin = Math.min(p1.getX(), p2.getX());
 		xMax = Math.max(p1.getX(), p2.getX());
-		if (xMin == p1.getX()) {xMinPoint = p1; xMaxPoint = p2;} else {xMinPoint = p2; xMaxPoint = p1;}
 	}
 	public void setP2(Point newPoint)
 	{
@@ -176,10 +168,8 @@ public class Line {
 		}
 		yMin = Math.min(p1.getY(), p2.getY());
 		yMax = Math.max(p1.getY(), p2.getY());
-		if (yMin == p1.getY()) {yMinPoint = p1; yMaxPoint = p2;} else {yMinPoint = p2; yMaxPoint = p1;}
 		xMin = Math.min(p1.getX(), p2.getX());
 		xMax = Math.max(p1.getX(), p2.getX());
-		if (xMin == p1.getX()) {xMinPoint = p1; xMaxPoint = p2;} else {xMinPoint = p2; xMaxPoint = p1;}
 	}
 	public Point pointAt(double xVal) {return new Point(xVal, m * xVal + b);}
 	public boolean intersection(Line otherLine) {return Geometry.lineIntersection(getP1(), getP2(), otherLine.getP1(), otherLine.getP2());}

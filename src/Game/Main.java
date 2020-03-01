@@ -147,7 +147,7 @@ public class Main
             glfwSwapBuffers(window);
             
             //30FPS
-            double wait = 1000/90.0 - (System.currentTimeMillis() - startTime);
+            double wait = 1000/30.0 - (System.currentTimeMillis() - startTime);
             if (wait > 0) {Thread.sleep((long)wait);}
             
             leftClickLastFrame = leftClick;

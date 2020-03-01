@@ -14,7 +14,7 @@ public class Test {
 		Point p6 = new Point(2, 3);
 		Point p7 = new Point(2, 5);
 		Point p8 = new Point(1, 5);
-		Line[] shape2 = Geometry.createLines(new Point[] {p5, p6, p7, p8});
+		//Line[] shape2 = Geometry.createLines(new Point[] {p5, p6, p7, p8});
 		
 		Line line = new Line(new Point(-1, 2), new Point(2, 2));
 		System.out.println(Geometry.shapeIntersection(shape1, line));
