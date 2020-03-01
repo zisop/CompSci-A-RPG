@@ -1,6 +1,7 @@
 package Game;
 
 
+import Combat.Movable;
 import Imported.Texture;
 import LowLevel.Geometrical;
 import LowLevel.Shape;

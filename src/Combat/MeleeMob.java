@@ -1,4 +1,4 @@
-package Mobs;
+package Combat;
 
 import Game.Main;
 import LowLevel.Point;
@@ -15,6 +15,7 @@ public class MeleeMob extends Mob{
 	{
 		attackFrame = 0;
 		facePlayer();
+		handleAttackAnims();
 	}
 	private void facePlayer()
 	{
@@ -29,9 +30,11 @@ public class MeleeMob extends Mob{
 		else if ((angle >= 3 * Math.PI / 4 && angle <= Math.PI) || (angle >= -Math.PI && angle < -3 * Math.PI / 4)) {direc = left;}
 		else if (angle >= -3 * Math.PI / 4 && angle < -Math.PI / 4) {direc = down;}
 		else {direc = right;}
-		System.out.println(direc);
 		
 		walkDirec = direc;
+	}
+	private void handleAttackAnims()
+	{
 		switch (walkDirec)
 		{
 			case up: setImage(anims[uA]); break;

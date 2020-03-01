@@ -1,5 +1,6 @@
 package World;
 
+import Combat.Mob;
 import Game.Main;
 import Game.Projectile;
 import Imported.MergerSort;
@@ -8,7 +9,6 @@ import LowLevel.Image;
 import LowLevel.Line;
 import LowLevel.Point;
 import LowLevel.Positionable;
-import Mobs.Mob;
 
 public class Room extends Image{
 	private Line[] outline;

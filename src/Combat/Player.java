@@ -1,25 +1,20 @@
-package Game;
+package Combat;
 
 
 
 import java.util.ArrayList;
 
-import Imported.Audio;
+import Game.Main;
+import Game.Projectile;
 import Imported.Texture;
 import LowLevel.Geometry;
-import LowLevel.Image;
 import LowLevel.Point;
 import LowLevel.Positionable;
 
 public class Player extends Movable
 {
-	public static Texture[] loadedTex;
 	private static double xInteractionRadius = 20;
 	private static double clickInteractionRadius = 40;
-	private int walkFrame;
-	private int walkAnim;
-	private int soundFXFrame;
-	private int walkDirec;
 	private ArrayList<Projectile> allSpells;
 	private ArrayList<Projectile> orbit;
 	private double manaRegen;
@@ -30,6 +25,7 @@ public class Player extends Movable
 	private double maxMana;
 	private Point[] xInteractionPoints;
 	private Point[] clickInteractionPoints;
+	
     public Player(Texture img, int inX, int inY, double w, double l, double hitW, double hitL, double hbDown) {
         super(img, inX, inY, w, l, hitW, hitL, hbDown);
         Point[] collisionBasis = getCollisionBasis();
@@ -44,11 +40,8 @@ public class Player extends Movable
         p3 = new Point(collisionBasis[UR].getX() + clickInteractionRadius, collisionBasis[UR].getY() + clickInteractionRadius);
         p4 = new Point(collisionBasis[UL].getX() - clickInteractionRadius, collisionBasis[UL].getY() + clickInteractionRadius);
         clickInteractionPoints = new Point[] {p1, p2, p3, p4};
-        setSpeed(baseSpeed);
-        walkFrame = 0;
-        soundFXFrame = 0;
-        walkAnim = notWalking;
-        walkDirec = 0;
+        speed = baseSpeed;
+        
         allSpells = new ArrayList<Projectile>();
         orbit = new ArrayList<Projectile>();
         maxHealth = 100;
@@ -57,6 +50,16 @@ public class Player extends Movable
         mana = maxMana;
         manaRegen = .5;
         healthRegen = .5;
+        
+        walkFrame = 0;
+        soundFXFrame = 0;
+        walkAnim = notWalking;
+        walkDirec = down;
+        walkAnimSwitch = 6;
+        soundFXSwitch = 20;
+        anims = getAnims(playerAnimInd, playerAnimInd + 19);
+        walkSounds = getSounds(playerSoundInd, playerSoundInd + 0);
+        firstSound = 6;
     }
     public boolean xCollision(Positionable otherChar)
     {
@@ -217,93 +220,6 @@ public class Player extends Movable
     	}
     }
     
-    /**
-     * Moves the player and handles animations / sound effects on walk
-     */
-    public void move(int direc)
-    {
-    	super.move(direc);
-    	walkDirec = direc;
-    	walkFrame++;
-    	if (walkAnim == notWalking) {walkAnim = startWalking; walkFrame = 6;}
-    	if (walkFrame == 6)
-    	{
-    		walkAnim++;
-    		walkFrame = 0;
-    		switch (walkDirec)
-    		{
-    		case 0:
-    			switch (walkAnim)
-    			{
-    				case 1: setImage(Player.loadedTex[13]); break;
-    				case 2: setImage(Player.loadedTex[14]); break;
-    				case 3: setImage(Player.loadedTex[15]); break;
-    				case 4: setImage(Player.loadedTex[14]); break;
-    				case 5: walkAnim = 1; setImage(Player.loadedTex[13]); break;
-    			}
-    			break;
-    		
-    		case 1:
-    			switch (walkAnim)
-    			{
-    				case 1: setImage(Player.loadedTex[0]); break;
-    				case 2: setImage(Player.loadedTex[1]); break;
-    				case 3: setImage(Player.loadedTex[2]); break;
-    				case 4: setImage(Player.loadedTex[1]); break;
-    				case 5: walkAnim = 1; setImage(Player.loadedTex[0]); break;
-    			}
-    			break;
-    		case 2:
-    			switch (walkAnim)
-    			{
-    				case 1: setImage(Player.loadedTex[10]); break;
-    				case 2: setImage(Player.loadedTex[11]); break;
-    				case 3: setImage(Player.loadedTex[12]); break;
-    				case 4: setImage(Player.loadedTex[11]); break;
-    				case 5: walkAnim = 1; setImage(Player.loadedTex[10]); break;
-    			}
-    			break;
-    		case 3:
-    			switch (walkAnim)
-    			{
-    				case 1: setImage(Player.loadedTex[7]); break;
-    				case 2: setImage(Player.loadedTex[8]); break;
-    				case 3: setImage(Player.loadedTex[9]); break;
-    				case 4: setImage(Player.loadedTex[8]); break;
-    				case 5: walkAnim = 1; setImage(Player.loadedTex[7]); break;
-    			}
-    			break;
-    		}
-    		
-    	}
-    	if (soundFXFrame == 17 || soundFXFrame == 5)
-    	{
-    		soundFXFrame = 6;
-    		Audio.playSound("Move/Steps/foot2");
-    	}
-    	else 
-    	{
-			soundFXFrame++;
-		}
-    	
-    }
-    /**
-     * puts the player into Idle
-     */
-    public void stopWalk()
-    {
-    	walkFrame = 0;
-    	soundFXFrame = 0;
-    	walkAnim = notWalking;
-    	if (walkDirec == 0) {setImage(Player.loadedTex[3]);}
-    	if (walkDirec == 1) {setImage(Player.loadedTex[4]);}
-    	if (walkDirec == 2) {setImage(Player.loadedTex[5]);}
-    	if (walkDirec == 3) {setImage(Player.loadedTex[6]);}
-    }
-    public boolean collision(Positionable otherChar)
-    {
-    	return super.collision(otherChar);
-    }
     //Stats setters and getters
     public double getHealth() {return health;}
     public double getMaxHealth() {return maxHealth;}
@@ -313,28 +229,6 @@ public class Player extends Movable
     public void setMaxHealth(double newMax) {maxHealth = newMax;}
     public void setMana(double newMana) {mana = newMana;}
     public void setMaxMana(double newMax) {maxMana = newMax;}
-    
-  //Initializes all player textures / animations
-    public static void initTex()
-    {
-    	Player.loadedTex = new Texture[16];
-    	Player.loadedTex[0] = new Texture("WalkAnim/WalkRight/Right01.PNG");
-    	Player.loadedTex[1] = new Texture("WalkAnim/WalkRight/Right02.PNG");
-    	Player.loadedTex[2] = new Texture("WalkAnim/WalkRight/Right03.PNG");
-    	Player.loadedTex[3] = new Texture("IdleAnim/IdleUp.PNG");
-    	Player.loadedTex[4] = new Texture("IdleAnim/IdleRight.PNG");
-    	Player.loadedTex[5] = new Texture("IdleAnim/IdleDown.PNG");
-    	Player.loadedTex[6] = new Texture("IdleAnim/IdleLeft.PNG");
-    	Player.loadedTex[7] = new Texture("WalkAnim/WalkLeft/Left01.PNG");
-    	Player.loadedTex[8] = new Texture("WalkAnim/WalkLeft/Left02.PNG");
-    	Player.loadedTex[9] = new Texture("WalkAnim/WalkLeft/Left03.PNG");
-    	Player.loadedTex[10] = new Texture("WalkAnim/WalkDown/Down01.PNG");
-    	Player.loadedTex[11] = new Texture("WalkAnim/WalkDown/Down02.PNG");
-    	Player.loadedTex[12] = new Texture("WalkAnim/WalkDown/Down03.PNG");
-    	Player.loadedTex[13] = new Texture("WalkAnim/WalkUp/Up01.PNG");
-    	Player.loadedTex[14] = new Texture("WalkAnim/WalkUp/Up02.PNG");
-    	Player.loadedTex[15] = new Texture("WalkAnim/WalkUp/Up03.PNG");
-    }
     public final static double baseSpeed = 8;
     public final static int startWalking = 0;
     public final static int notWalking = -1;

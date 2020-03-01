@@ -3,7 +3,10 @@ package Game;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
-
+import Combat.MeleeMob;
+import Combat.Mob;
+import Combat.Movable;
+import Combat.Player;
 import Exchange.ItemExchange;
 import Exchange.Shop;
 import Exchange.ShopKeeper;
@@ -19,8 +22,6 @@ import static org.lwjgl.opengl.GL11.*;
 import java.util.ArrayList;
 
 import LowLevel.Shape;
-import Mobs.MeleeMob;
-import Mobs.Mob;
 import UI.Item;
 import UI.ItemBag;
 import UI.TextDisplay;
@@ -111,32 +112,32 @@ public class Main
             e = KeyInput.keys[GLFW_KEY_E];
             one = KeyInput.keys[GLFW_KEY_1];
             
-            //movement = {ability to move north, east, south, west}
             boolean[] movement = player.getMovement();
             boolean[] keysPressed = new boolean[4];
             //Stores W A S D presses in keysPressed
             // 0 = W, 1 = D, 2 = S, 3 = A
-            keysPressed[up] = KeyInput.keys[GLFW_KEY_W];
-            keysPressed[right] = KeyInput.keys[GLFW_KEY_D];
-            keysPressed[down] = KeyInput.keys[GLFW_KEY_S];
-            keysPressed[left] = KeyInput.keys[GLFW_KEY_A];
+            keysPressed[Movable.up] = KeyInput.keys[GLFW_KEY_W];
+            keysPressed[Movable.right] = KeyInput.keys[GLFW_KEY_D];
+            keysPressed[Movable.down] = KeyInput.keys[GLFW_KEY_S];
+            keysPressed[Movable.left] = KeyInput.keys[GLFW_KEY_A];
             //Makes player walk according to KeyPresses
             int moveDirec = notMoving;
             if (!alreadyInteracting) {
-                if (keysPressed[up] && movement[up] && (moveDirecLastFrame == up || moveDirecLastFrame == notMoving)) {
-                    moveDirec = up;
+                if (keysPressed[Movable.up] && movement[Movable.up] && (moveDirecLastFrame == Movable.up || moveDirecLastFrame == notMoving)) {
+                    moveDirec = Movable.up;
                 } 
-                else if (keysPressed[right] && movement[right] && (moveDirecLastFrame == right || moveDirecLastFrame == notMoving)) {
-                    moveDirec = right;
+                else if (keysPressed[Movable.right] && movement[Movable.right] && (moveDirecLastFrame == Movable.right || moveDirecLastFrame == notMoving)) {
+                    moveDirec = Movable.right;
                 } 
-                else if (keysPressed[down] && movement[down] && (moveDirecLastFrame == down || moveDirecLastFrame == notMoving)) {
-                    moveDirec = 2;
+                else if (keysPressed[Movable.down] && movement[Movable.down] && (moveDirecLastFrame == Movable.down || moveDirecLastFrame == notMoving)) {
+                    moveDirec = Movable.down;
                 } 
-                else if (keysPressed[left] && movement[left] && (moveDirecLastFrame == left || moveDirecLastFrame == notMoving)) {
-                    moveDirec = 3;
+                else if (keysPressed[Movable.left] && movement[Movable.left] && (moveDirecLastFrame == Movable.left || moveDirecLastFrame == notMoving)) {
+                    moveDirec = Movable.left;
                 }
             }
-            if (moveDirec != notMoving) {player.move(moveDirec);}
+            
+            if (moveDirec != notMoving) {player.setDirec(moveDirec); player.move();}
             else {player.stopWalk();}
             showVisibles();
             
@@ -298,7 +299,6 @@ public class Main
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
         
-        Player.initTex();
         Item.initItems();
         Chest.initChests();
         Projectile.initProj();
@@ -306,7 +306,7 @@ public class Main
         UI.init();
         TextDisplay.initText();
         Tile.initTex();
-        Mob.init();
+        Movable.init();
         NPC.initTex();
         glEnable(3553);
         glEnable(3042);
@@ -315,8 +315,4 @@ public class Main
     }
     
     private static int notMoving = -1;
-    private static int up = 0;
-    private static int right = 1;
-    private static int down = 2;
-    private static int left = 3;
 }
