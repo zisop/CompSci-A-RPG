@@ -22,29 +22,80 @@ public class Movable extends Image{
 	
 	protected String[] walkSounds;
 	protected Texture[] anims;
+	protected boolean[] movement;
 	
 	public Movable(Texture img, double inX, double inY, double w, double l) {
         super(img, inX, inY, w, l);
         hitStunFrames = maxHitStun;
+        movement = new boolean[] {true, true, true, true};
     }
     
     public Movable(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
         super(img, inX, inY, w, l, hitW, hitL);
         hitStunFrames = maxHitStun;
+        movement = new boolean[] {true, true, true, true};
     }
     public Movable(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hitboxDown) {
         super(img, inX, inY, w, l, hitW, hitL, hitboxDown);
         hitStunFrames = maxHitStun;
+        movement = new boolean[] {true, true, true, true};
     }
     public void move() {
-    	switch (walkDirec)
+    	if (hitStunFrames == maxHitStun)
     	{
-    	case up: setY(getY() + speed); break;
-    	case right: setX(getX() + speed); break;
-    	case down: setY(getY() - speed); break;
-    	case left: setX(getX() - speed); break;
+    		switch (walkDirec)
+    		{
+    			case up: setY(getY() + speed); break;
+    			case right: setX(getX() + speed); break;
+    			case down: setY(getY() - speed); break;
+    			case left: setX(getX() - speed); break;
+    		}
+    		handleAnims();
     	}
-        handleAnims();
+    }
+    public void show()
+    {
+    	if (hitStunFrames != maxHitStun)
+    	{
+    		boolean[] moveDirecs = findDirecs(hitAngle);
+    		boolean[] movement = getMovement();
+    		if (canMove(moveDirecs, movement))
+    		{
+    			double angle = Math.toRadians(hitAngle);
+    			double velocity = initialHitVelocity * (1 - (double)hitStunFrames / maxHitStun);
+    			setPos(getX() + Math.cos(angle) * velocity, getY() + Math.sin(angle) * velocity);
+    		}
+    		
+    		hitStunFrames++;
+    	}
+    	updateMovement();
+    	super.show();
+    }
+    private boolean[] findDirecs(double angle)
+    {
+    	boolean[] moveDirecs = new boolean[4];
+    	if (angle < 0) {angle += 360;}
+    	angle %= 360;
+    	if (angle == 0) {moveDirecs[right] = true;}
+    	else if (angle > 0 && angle < 90) {moveDirecs[right] = true; moveDirecs[up] = true;}
+    	else if (angle == 90) {moveDirecs[up] = true;}
+    	else if (angle > 90 && angle < 180) {moveDirecs[left] = true; moveDirecs[up] = true;}
+    	else if (angle == 180) {moveDirecs[left] = true;}
+    	else if (angle > 180 && angle < 270) {moveDirecs[down] = true; moveDirecs[left] = true;}
+    	else if (angle == 270) {moveDirecs[down] = true;}
+    	else {moveDirecs[down] = true; moveDirecs[right] = true;}
+    	return moveDirecs;
+    }
+    private boolean canMove(boolean[] moveDirecs, boolean[] movementCapabilities)
+    {
+    	for (int i = 0; i < moveDirecs.length; i++)
+    	{
+    		if (moveDirecs[i] && !movementCapabilities[i])
+    		{
+    			return false;
+    		}
+    	}
+    	return true;
     }
 
 	/**
@@ -53,8 +104,12 @@ public class Movable extends Image{
      */
     public boolean[] getMovement()
     {
+        return movement;
+    }
+    public void updateMovement()
+    {
     	Image[] room = Main.allRooms[Main.currRoom].getImages();
-    	boolean[] movement = new boolean[]{true, true, true, true};
+    	movement = new boolean[] {true, true, true, true};
         for (int i = 0; i < room.length; ++i) {
             Image currChar = room[i];
             if (currChar.collides()) {
@@ -90,11 +145,10 @@ public class Movable extends Image{
             	}
             }
         }
-        return movement;
     }
-    public void enterHitStun(double angle)
+    public void enterHitStun(double fromAngle)
     {
-    	hitAngle = angle;
+    	hitAngle = fromAngle + 180;
     	hitStunFrames = 0;
     }
     
@@ -323,7 +377,8 @@ public class Movable extends Image{
 	public static final int lI = 18;
 	public static final int lA = 19;
     
-    public static final int maxHitStun = 20;
+    public static final int maxHitStun = 8;
+    public static final int initialHitVelocity = 5;
     
     public void setDirec(int newDirec) {walkDirec = newDirec;}
     public int getDirec() {return walkDirec;}

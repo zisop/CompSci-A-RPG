@@ -134,7 +134,6 @@ public abstract class Mob extends Movable{
 		}
 		int direc = findDirection();
 		if (direc == shouldStopWalk) {stopWalk(longStop); return;}
-		boolean[] movement = getMovement();
 		if (movement[direc] == false)
 		{
 			direc = shouldStopWalk;

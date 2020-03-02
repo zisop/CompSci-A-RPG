@@ -1,5 +1,7 @@
 package LowLevel;
 
+import javafx.scene.control.Toggle;
+
 public class Point implements Comparable<Point>{
 	private double x;
 	private double y;
@@ -56,5 +58,16 @@ public class Point implements Comparable<Point>{
 	public boolean equals(Point other)
 	{
 		return compareTo(other) == 0;
+	}
+	public double angleTo(Point to)
+	{
+		double angle;
+		double xDiff = to.getX() - getX();
+		double yDiff = to.getY() - getY();
+		double hypoLen = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+		angle = Math.acos(xDiff / hypoLen);
+		if (yDiff < 0) {angle = 2 * Math.PI - angle;}
+		angle = Math.toDegrees(angle);
+		return angle;
 	}
 }

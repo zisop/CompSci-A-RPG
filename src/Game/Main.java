@@ -16,6 +16,7 @@ import Input.KeyInput;
 import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
+import LowLevel.Positionable;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -142,7 +143,10 @@ public class Main
             showVisibles();
             
             UI.showUI();
-            
+            if (rightClick && !rightClickLastFrame)
+            {
+            	player.enterHitStun(cursorAngle());
+            }
             
             
             glfwSwapBuffers(window);
@@ -254,6 +258,7 @@ public class Main
         room[6] = new MeleeMob(20, 20, Mob.slime);
         
         Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10, 80);
+        test.addRow(Tile.GrassDirtBR, Movable.down);
         Terrain test2 = Terrain.createTerrain(Tile.Grass, -200, 800, 10, 4, 80);
         
         allRooms[0] = new Room(room, new Terrain[] {test, test2});
