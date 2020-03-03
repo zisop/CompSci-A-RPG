@@ -8,13 +8,14 @@ import Imported.Texture;
 import LowLevel.Image;
 import LowLevel.Point;
 
-public abstract class Mob extends Movable{
+public abstract class Mob extends CombatChar{
 	
 	private double verticalMove;
 	private double horizontalMove;
 	private int longStoppingFrame;
 	private double attackRange;
 	private boolean shouldCreate;
+	private boolean dontFollow;
 	private int mobID;
 	private int deathAnimFrame;
 	private int deathAnimMaxFrame;
@@ -27,6 +28,7 @@ public abstract class Mob extends Movable{
 	protected int attackFrame;
 	protected int attackEnd;
 	protected int pauseEnd;
+	protected double damage;
 	protected double sightRange;
 	
 	public Mob(double x, double y, int ID)
@@ -37,40 +39,49 @@ public abstract class Mob extends Movable{
 		case skeleton:
 			setWidth(50);
 			setLength(50);
-			speed = MeleeMob.skeletonSpeed;
-			longStoppingFrame = MeleeMob.skeletonLongStop;
-			shortStoppingStart = longStoppingFrame - MeleeMob.skeletonShortStop;
-			attackEnd = 20;
-			pauseEnd = attackEnd + 60;
 			anims = getAnims(skelAnimInd, skelAnimInd + 19);
-			
 			walkSounds = getSounds(skelSoundInd, skelSoundInd + 1);
-			soundFXSwitch = 20;
+			
+			speed = 4;
+			longStoppingFrame = 40;
+			shortStoppingStart = longStoppingFrame - 5;
+			
+			damage = 10;
+			attackRange = 80;
+			sightRange = 600;
+			attackEnd = 20;
+			pauseEnd = attackEnd + 30;
+			
 			firstSound = 6;
 			walkAnimSwitch = 6;
+			soundFXSwitch = 20;
+			
 			hitBoxDown(20);
 			setHitLength(10);
-			attackRange = 120;
-			sightRange = 600;
 			break;
 
 		case slime:
 			setWidth(35);
 			setLength(35);
-			speed = MeleeMob.slimeSpeed;
-			longStoppingFrame = MeleeMob.slimeLongStop;
-			shortStoppingStart = longStoppingFrame - MeleeMob.slimeShortStop;
 			anims = getAnims(slimeAnimInd, slimeAnimInd + 19);
 			walkSounds = getSounds(slimeSoundInd, slimeSoundInd + 9);
-			soundFXSwitch = 20;
-			firstSound = 6;
-			walkAnimSwitch = 6;
-			hitBoxDown(10);
-			setHitLength(15);
-			attackRange = 120;
+			
+			speed = 6;
+			longStoppingFrame = 40;
+			shortStoppingStart = longStoppingFrame - 5;
+			
+			damage = 5;
+			attackRange = 45;
 			sightRange = 600;
 			attackEnd = 15;
-			pauseEnd = attackEnd + 60;
+			pauseEnd = attackEnd + 30;
+			
+			firstSound = 6;
+			walkAnimSwitch = 6;
+			soundFXSwitch = 20;
+			
+			hitBoxDown(10);
+			setHitLength(15);
 			break;
 		}
 
@@ -79,11 +90,12 @@ public abstract class Mob extends Movable{
 		
 		int which = (int)(Math.random() * 4);
 		walkDirec = which;
-		switch (which) {
-		case up: setImage(anims[uI]); break;
-		case right: setImage(anims[rI]); break;
-		case down: setImage(anims[dI]); break;
-		case left: setImage(anims[lI]); break;
+		switch (which)
+		{
+			case up: setImage(anims[uI]); break;
+			case right: setImage(anims[rI]); break;
+			case down: setImage(anims[dI]); break;
+			case left: setImage(anims[lI]); break;
 		}
 		
 		mobID = ID;
@@ -94,15 +106,18 @@ public abstract class Mob extends Movable{
 		deathAnimFrame = 0;
 		soundFXFrame = 0;
 		walkFrame = 0;
-		attackFrame = attackEnd;
+		attackFrame = pauseEnd;
 	}
 	
 	public void show()
 	{
-		
-		if (attackFrame == attackEnd) {
-			if (inAttackRange()) {attack();}
-			else {move();}
+		if (attackFrame >= attackEnd) {
+			if (attackFrame == pauseEnd)
+			{
+				if (inAttackRange() && Main.player.canBeAttacked()) {attack();}
+				else {move();}
+			}
+			else {attackFrame++;}
 		}
 		else {attackFrame++;}
 		super.show();
@@ -129,28 +144,50 @@ public abstract class Mob extends Movable{
 		}
 		if (shouldCreate)
 		{
+			if (seeingPlayer() && !dontFollow)
+			{
+				followingPlayer = true;
+			}
+			else {
+				followingPlayer = false;
+			}
 			createMovementPoints();
 			shouldCreate = false;
+			dontFollow = false;
 		}
 		int direc = findDirection();
-		if (direc == shouldStopWalk) {stopWalk(longStop); return;}
+		if (direc == shouldStopWalk) {
+			if (!followingPlayer) {stopWalk(longStop);}
+			else {stopWalk(noStop);}
+			return;
+		}
 		if (movement[direc] == false)
 		{
 			direc = shouldStopWalk;
 			stopWalk(shortStop);
+			if (followingPlayer) {dontFollow = true;}
 			return;
 		}
 		if (walkDirec != direc) {walkAnim = resetWalk;}
 		walkDirec = direc;
 		
 		super.move();
-		
+	}
+	public boolean seeingPlayer()
+	{
+		double xDiff = Main.player.getX() - getX();
+		double yDiff = Main.player.getY() - getY();
+		return xDiff * xDiff + yDiff * yDiff <= sightRange * sightRange;
 	}
 	public void stopWalk(int durationModifier)
 	{
 		super.stopWalk();
-		if (durationModifier == shortStop) {stoppingFrame = shortStoppingStart;}
-		else {stoppingFrame = 0;}
+		switch (durationModifier)
+		{
+			case noStop: stoppingFrame = longStoppingFrame; break;
+			case shortStop: stoppingFrame = shortStoppingStart; break;
+			case longStop: stoppingFrame = 0; break;
+		}
 		shouldCreate = true;
 	}
 	/**
@@ -219,7 +256,23 @@ public abstract class Mob extends Movable{
 		return absDist <= speed;
 	}
 	
-	public abstract void createMovementPoint();
+	protected void createMovementPoint()
+	{
+		if (followingPlayer) {pointToPlayer();}
+		else {pointRandomly();}
+	}
+	/**
+	 * Sends the mob in a direction toward the player <br>
+	 * Mob will start moving randomly if it collides with terrain <br>
+	 * This seems like a smart way to allow players to get away from mobs<br>
+	 * but really I just don't know how pathing algorithms work
+	 */
+	protected abstract void pointToPlayer();
+	/**
+	 * Sends the mob in a random direction with a random radius<br>
+	 * radius is bounded to individual
+	 */
+	protected abstract void pointRandomly();
 	public abstract void attack();
 	public final static int skeleton = 0;
 	public final static int slime = 1;

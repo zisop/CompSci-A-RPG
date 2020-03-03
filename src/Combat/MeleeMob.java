@@ -16,6 +16,12 @@ public class MeleeMob extends Mob{
 		attackFrame = 0;
 		facePlayer();
 		handleAttackAnims();
+		dealDamage();
+		Main.player.enterHitStun(Main.player.angleTo(this));
+	}
+	private void dealDamage()
+	{
+		Main.player.setHealth(Main.player.getHealth() - damage);
 	}
 	private void facePlayer()
 	{
@@ -44,20 +50,13 @@ public class MeleeMob extends Mob{
 		}
 	}
 	
-	public void createMovementPoint()
+	
+	protected void pointToPlayer()
 	{
-		if (followingPlayer) {pointToPlayer();}
-		else {pointRandomly();}
+		movementPoint = Main.player;
 	}
-	private void pointToPlayer()
-	{
-		//create point to player
-	}
-	/**
-	 * Sends the mob in a random direction with a random radius<br>
-	 * radius is bounded to individual
-	 */
-	private void pointRandomly()
+	
+	protected void pointRandomly()
 	{
 		Room currRoom = Main.allRooms[Main.currRoom];
 		double maxRadius = sightRange;
@@ -87,14 +86,4 @@ public class MeleeMob extends Mob{
 		}
 		movementPoint = testPoint;
 	}
-	public static double skeletonSpeed = 4;
-	public static int skeletonDeathFrames;
-	public static int skeletonLongStop = 40;
-	public static int skeletonShortStop = 5;
-	
-	public static double slimeSpeed = 6;
-	public static int slimeDeathFrames;
-	public static int slimeLongStop = 40;
-	public static int slimeShortStop = 5;
-	
 }

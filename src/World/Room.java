@@ -53,14 +53,20 @@ public class Room extends Image{
 	{
 		return terrains;
 	}
-	public boolean insideRoom(Point movementPoint)
+	public boolean strictCollision(Positionable otherChar)
 	{
-		for (int i = 0; i < terrains.length; i++)
-		{
-			if (terrains[i].insideTerrain(movementPoint))
-			{
-				return true;
-			}
+		return Geometry.strictCollision(outline, Geometry.createLines(otherChar.getCollisionBasis()));
+	}
+	/**
+	 * not implemented you fuck<br>
+	 * use strictCollision
+	 */
+	public boolean collision(Positionable otherChar)
+	{
+		try {
+			throw new Exception("Do not use collision; use strictCollision, for Room.java");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

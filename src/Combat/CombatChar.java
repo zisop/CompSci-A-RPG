@@ -4,8 +4,9 @@ import Game.Main;
 import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Image;
+import World.Room;
 
-public class Movable extends Image{
+public class CombatChar extends Image{
 	
 	
 	protected double speed;
@@ -24,24 +25,24 @@ public class Movable extends Image{
 	protected Texture[] anims;
 	protected boolean[] movement;
 	
-	public Movable(Texture img, double inX, double inY, double w, double l) {
+	public CombatChar(Texture img, double inX, double inY, double w, double l) {
         super(img, inX, inY, w, l);
-        hitStunFrames = maxHitStun;
+        hitStunFrames = maxInvulnerability;
         movement = new boolean[] {true, true, true, true};
     }
     
-    public Movable(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
+    public CombatChar(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
         super(img, inX, inY, w, l, hitW, hitL);
-        hitStunFrames = maxHitStun;
+        hitStunFrames = maxInvulnerability;
         movement = new boolean[] {true, true, true, true};
     }
-    public Movable(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hitboxDown) {
+    public CombatChar(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hitboxDown) {
         super(img, inX, inY, w, l, hitW, hitL, hitboxDown);
-        hitStunFrames = maxHitStun;
+        hitStunFrames = maxInvulnerability;
         movement = new boolean[] {true, true, true, true};
     }
     public void move() {
-    	if (hitStunFrames == maxHitStun)
+    	if (hitStunFrames >= maxHitStun)
     	{
     		switch (walkDirec)
     		{
@@ -55,21 +56,33 @@ public class Movable extends Image{
     }
     public void show()
     {
-    	if (hitStunFrames != maxHitStun)
+    	if (hitStunFrames < maxInvulnerability)
     	{
-    		boolean[] moveDirecs = findDirecs(hitAngle);
-    		boolean[] movement = getMovement();
-    		if (canMove(moveDirecs, movement))
+    		if (hitStunFrames < maxHitStun)
     		{
-    			double angle = Math.toRadians(hitAngle);
-    			double velocity = initialHitVelocity * (1 - (double)hitStunFrames / maxHitStun);
-    			setPos(getX() + Math.cos(angle) * velocity, getY() + Math.sin(angle) * velocity);
+    			boolean[] moveDirecs = findDirecs(hitAngle);
+    			boolean[] movement = getMovement();
+    			if (canMove(moveDirecs, movement))
+    			{
+    				double angle = Math.toRadians(hitAngle);
+    				double velocity = initialHitVelocity * (1 - (double)hitStunFrames / maxHitStun);
+    				setPos(getX() + Math.cos(angle) * velocity, getY() + Math.sin(angle) * velocity);
+    			}
     		}
-    		
+    		if (hitStunFrames % 8 == 0)
+    		{
+    			if (getAlpha() == 255) {setAlpha(100);}
+    			else {setAlpha(255);}
+    		}
     		hitStunFrames++;
     	}
+    	else {setAlpha(255);}
     	updateMovement();
     	super.show();
+    }
+    public boolean canBeAttacked()
+    {
+    	return hitStunFrames == maxInvulnerability;
     }
     private boolean[] findDirecs(double angle)
     {
@@ -108,40 +121,73 @@ public class Movable extends Image{
     }
     public void updateMovement()
     {
-    	Image[] room = Main.allRooms[Main.currRoom].getImages();
+    	Room currRoom = Main.allRooms[Main.currRoom];
+    	Image[] images = currRoom.getImages();
+    	
     	movement = new boolean[] {true, true, true, true};
-        for (int i = 0; i < room.length; ++i) {
-            Image currChar = room[i];
+    	boolean shouldEnd = false;
+    	
+    	if (this != Main.player)
+    	{
+    		setY(getY() + speed);
+    		if (currRoom.strictCollision(this))
+    		{
+    			movement[up] = false; 
+    			shouldEnd = true;
+    		}
+    		setPos(getX() + speed, getY() - speed);
+    		if (currRoom.strictCollision(this))
+    		{
+    			movement[right] = false;
+    			shouldEnd = true;
+    		}
+    		setPos(getX() - speed, getY() - speed);
+    		if (currRoom.strictCollision(this))
+    		{
+    			movement[down] = false;
+    			shouldEnd = true;
+    		}
+   			setPos(getX() - speed, getY() + speed);
+   			if (currRoom.strictCollision(this))
+    		{
+    			movement[left] = false;
+    			shouldEnd = true;
+    		}
+    		setX(getX() + speed);
+    		if (shouldEnd) {
+    			return;
+    		}
+    	}
+        for (int i = 0; i < images.length; ++i) {
+            Image currChar = images[i];
             if (currChar.collides()) {
-            	
-            	boolean shouldBreak = false;
             	setY(getY() + speed);
             	if (collision(currChar))
             	{
-            		movement[0] = false; 
-            		shouldBreak = true;
+            		movement[up] = false; 
+            		shouldEnd = true;
             	}
             	setPos(getX() + speed, getY() - speed);
             	if (collision(currChar))
             	{
-            		movement[1] = false;
-            		shouldBreak = true;
+            		movement[right] = false;
+            		shouldEnd = true;
             	}
             	setPos(getX() - speed, getY() - speed);
             	if (collision(currChar))
             	{
-            		movement[2] = false;
-            		shouldBreak = true;
+            		movement[down] = false;
+            		shouldEnd = true;
             	}
            		setPos(getX() - speed, getY() + speed);
             	if (collision(currChar))
             	{
-            		movement[3] = false;
-            		shouldBreak = true;
+            		movement[left] = false;
+            		shouldEnd = true;
             	}
             	setX(getX() + speed);
-            	if (shouldBreak) {
-            		break;
+            	if (shouldEnd) {
+            		return;
             	}
             }
         }
@@ -243,6 +289,7 @@ public class Movable extends Image{
 	}
     protected static final int shortStop = 0;
     protected static final int longStop = 1;
+    protected static final int noStop = 2;
     protected static final int resetWalk = -1;
     
     protected static Texture[] getAnims(int start, int end)
@@ -378,6 +425,7 @@ public class Movable extends Image{
 	public static final int lA = 19;
     
     public static final int maxHitStun = 8;
+    public static final int maxInvulnerability = maxHitStun + 40;
     public static final int initialHitVelocity = 5;
     
     public void setDirec(int newDirec) {walkDirec = newDirec;}

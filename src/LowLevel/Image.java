@@ -46,7 +46,7 @@ public class Image extends Positionable
     	double screenY = getY() - Main.player.getY();
     	if ((Math.abs(screenX) < monWid) && (Math.abs(screenY) < monLen))
     	{
-    		
+    		GL11.glColor4f(1, 1, 1, alpha / 255);
         	if (shouldRotate)
         	{
         		//Shows assuming that rotations are enabled for the image
@@ -84,6 +84,7 @@ public class Image extends Positionable
                 GL11.glVertex2f(((float)(screenX + getWidth() / 2) * 2.0f / monWid), ((float)(screenY - getLength() / 2) * 2.0f / monLen));
                 GL11.glEnd();
         	}
+        	GL11.glColor4f(1, 1, 1, 1);
             
     	}
     	

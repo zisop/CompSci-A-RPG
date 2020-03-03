@@ -11,7 +11,7 @@ import LowLevel.Geometry;
 import LowLevel.Point;
 import LowLevel.Positionable;
 
-public class Player extends Movable
+public class Player extends CombatChar
 {
 	private static double xInteractionRadius = 20;
 	private static double clickInteractionRadius = 40;
@@ -49,7 +49,7 @@ public class Player extends Movable
         health = maxHealth;
         mana = maxMana;
         manaRegen = .5;
-        healthRegen = .5;
+        healthRegen = .02;
         
         walkFrame = 0;
         soundFXFrame = 0;

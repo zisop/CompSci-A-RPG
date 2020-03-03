@@ -77,11 +77,20 @@ public class Positionable extends Point
     {
     	return interactsProj;
     }
-    
+    /**
+     * determines whether two characters' hitboxes intersect
+     * @param otherChar
+     * @return collision == true
+     */
     public boolean collision(Positionable otherChar) {
         Point[] otherCollisionBasis = otherChar.getCollisionBasis();
         return Geometry.colliding(collisionBasis, otherCollisionBasis);
     }
+    /**
+     * Determines whether two characters' hitbox LINES intersect; does not determine if this is inside of otherChar
+     * @param otherChar
+     * @return collision == true
+     */
     public boolean strictCollision(Positionable otherChar)
     {
     	Point[] otherCollisionBasis = otherChar.getCollisionBasis();

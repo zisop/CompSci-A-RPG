@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL;
 
 import Combat.MeleeMob;
 import Combat.Mob;
-import Combat.Movable;
+import Combat.CombatChar;
 import Combat.Player;
 import Exchange.ItemExchange;
 import Exchange.Shop;
@@ -117,28 +117,29 @@ public class Main
             boolean[] keysPressed = new boolean[4];
             //Stores W A S D presses in keysPressed
             // 0 = W, 1 = D, 2 = S, 3 = A
-            keysPressed[Movable.up] = KeyInput.keys[GLFW_KEY_W];
-            keysPressed[Movable.right] = KeyInput.keys[GLFW_KEY_D];
-            keysPressed[Movable.down] = KeyInput.keys[GLFW_KEY_S];
-            keysPressed[Movable.left] = KeyInput.keys[GLFW_KEY_A];
+            keysPressed[CombatChar.up] = KeyInput.keys[GLFW_KEY_W];
+            keysPressed[CombatChar.right] = KeyInput.keys[GLFW_KEY_D];
+            keysPressed[CombatChar.down] = KeyInput.keys[GLFW_KEY_S];
+            keysPressed[CombatChar.left] = KeyInput.keys[GLFW_KEY_A];
             //Makes player walk according to KeyPresses
             int moveDirec = notMoving;
             if (!alreadyInteracting) {
-                if (keysPressed[Movable.up] && movement[Movable.up] && (moveDirecLastFrame == Movable.up || moveDirecLastFrame == notMoving)) {
-                    moveDirec = Movable.up;
+                if (keysPressed[CombatChar.up] && movement[CombatChar.up] && (moveDirecLastFrame == CombatChar.up || moveDirecLastFrame == notMoving)) {
+                    moveDirec = CombatChar.up;
                 } 
-                else if (keysPressed[Movable.right] && movement[Movable.right] && (moveDirecLastFrame == Movable.right || moveDirecLastFrame == notMoving)) {
-                    moveDirec = Movable.right;
+                else if (keysPressed[CombatChar.right] && movement[CombatChar.right] && (moveDirecLastFrame == CombatChar.right || moveDirecLastFrame == notMoving)) {
+                    moveDirec = CombatChar.right;
                 } 
-                else if (keysPressed[Movable.down] && movement[Movable.down] && (moveDirecLastFrame == Movable.down || moveDirecLastFrame == notMoving)) {
-                    moveDirec = Movable.down;
+                else if (keysPressed[CombatChar.down] && movement[CombatChar.down] && (moveDirecLastFrame == CombatChar.down || moveDirecLastFrame == notMoving)) {
+                    moveDirec = CombatChar.down;
                 } 
-                else if (keysPressed[Movable.left] && movement[Movable.left] && (moveDirecLastFrame == Movable.left || moveDirecLastFrame == notMoving)) {
-                    moveDirec = Movable.left;
+                else if (keysPressed[CombatChar.left] && movement[CombatChar.left] && (moveDirecLastFrame == CombatChar.left || moveDirecLastFrame == notMoving)) {
+                    moveDirec = CombatChar.left;
                 }
             }
             
             if (moveDirec != notMoving) {player.setDirec(moveDirec); player.move();}
+            
             else {player.stopWalk();}
             showVisibles();
             
@@ -258,7 +259,7 @@ public class Main
         room[6] = new MeleeMob(20, 20, Mob.slime);
         
         Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10, 80);
-        test.addRow(Tile.GrassDirtBR, Movable.down);
+        test.addRow(Tile.GrassDirtBR, CombatChar.down);
         Terrain test2 = Terrain.createTerrain(Tile.Grass, -200, 800, 10, 4, 80);
         
         allRooms[0] = new Room(room, new Terrain[] {test, test2});
@@ -311,7 +312,7 @@ public class Main
         UI.init();
         TextDisplay.initText();
         Tile.initTex();
-        Movable.init();
+        CombatChar.init();
         NPC.initTex();
         glEnable(3553);
         glEnable(3042);

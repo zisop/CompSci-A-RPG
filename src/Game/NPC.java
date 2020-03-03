@@ -1,14 +1,14 @@
 package Game;
 
 
-import Combat.Movable;
+import Combat.CombatChar;
 import Imported.Texture;
 import LowLevel.Geometrical;
 import LowLevel.Shape;
 import UI.TextDisplay;
 import UI.UI;
 
-public class NPC extends Movable{
+public class NPC extends CombatChar{
 	//Put all raw dialogue for all NPCs in rawDialogue String[][][]
 	//Each NPC has one String[][] of dialogue
 	//Each String[][] of dialogue has a String[] for each questState
