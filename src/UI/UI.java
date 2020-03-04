@@ -203,10 +203,10 @@ public class UI {
     private static void showStats()
     {
    
-    	Image healthBar = playerStats.getShape(5);
-		Image manaBar = playerStats.getShape(6);
-		Image maxHealth = playerStats.getShape(3);
-		Image maxMana = playerStats.getShape(4);
+    	Image healthBar = playerStats.getShape(HP);
+		Image manaBar = playerStats.getShape(MN);
+		Image maxHealth = playerStats.getShape(maxHP);
+		Image maxMana = playerStats.getShape(maxMN);
 	    
 		double HP = Main.player.getHealth();
 		double maxHP = Main.player.getMaxHealth();
@@ -230,4 +230,8 @@ public class UI {
 	    
     	playerStats.UIshow();
     }
+    public static final int maxHP = 3;
+    public static final int maxMN = 4;
+    public static final int HP = 5;
+    public static final int MN = 6;
 }

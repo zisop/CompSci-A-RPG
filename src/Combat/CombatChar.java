@@ -3,11 +3,18 @@ package Combat;
 import Game.Main;
 import Imported.Audio;
 import Imported.Texture;
+import LowLevel.Geometrical;
 import LowLevel.Image;
 import World.Room;
 
 public class CombatChar extends Image{
 	
+	protected double manaRegen;
+	protected double mana;
+	protected double health;
+	protected double healthRegen;
+	protected double maxHealth;
+	protected double maxMana;
 	
 	protected double speed;
 	protected double hitAngle;
@@ -430,5 +437,13 @@ public class CombatChar extends Image{
     
     public void setDirec(int newDirec) {walkDirec = newDirec;}
     public int getDirec() {return walkDirec;}
+    public double getHealth() {return health;}
+    public double getMaxHealth() {return maxHealth;}
+    public double getMana() {return mana;}
+    public double getMaxMana() {return maxMana;}
+    public void setHealth(double newHealth) {health = newHealth;}
+    public void setMaxHealth(double newMax) {maxHealth = newMax;}
+    public void setMana(double newMana) {mana = newMana;}
+    public void setMaxMana(double newMax) {maxMana = newMax;}
     
 }

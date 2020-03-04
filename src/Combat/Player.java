@@ -17,12 +17,7 @@ public class Player extends CombatChar
 	private static double clickInteractionRadius = 40;
 	private ArrayList<Projectile> allSpells;
 	private ArrayList<Projectile> orbit;
-	private double manaRegen;
-	private double mana;
-	private double health;
-	private double healthRegen;
-	private double maxHealth;
-	private double maxMana;
+	
 	private Point[] xInteractionPoints;
 	private Point[] clickInteractionPoints;
 	
@@ -220,15 +215,7 @@ public class Player extends CombatChar
     	}
     }
     
-    //Stats setters and getters
-    public double getHealth() {return health;}
-    public double getMaxHealth() {return maxHealth;}
-    public double getMana() {return mana;}
-    public double getMaxMana() {return maxMana;}
-    public void setHealth(double newHealth) {health = newHealth;}
-    public void setMaxHealth(double newMax) {maxHealth = newMax;}
-    public void setMana(double newMana) {mana = newMana;}
-    public void setMaxMana(double newMax) {maxMana = newMax;}
+    
     public final static double baseSpeed = 8;
     public final static int startWalking = 0;
     public final static int notWalking = -1;

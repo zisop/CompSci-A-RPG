@@ -5,6 +5,8 @@ package Combat;
 import Game.Main;
 import Imported.Audio;
 import Imported.Texture;
+import LowLevel.Geometrical;
+import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
 
@@ -14,6 +16,13 @@ public abstract class Mob extends CombatChar{
 	private double horizontalMove;
 	private int longStoppingFrame;
 	private double attackRange;
+	
+	protected Geometrical stats;
+	protected Image MN;
+	protected Image maxMN;
+	protected Image HP;
+	protected Image maxHP;
+	
 	private boolean shouldCreate;
 	private boolean dontFollow;
 	private int mobID;
@@ -34,6 +43,8 @@ public abstract class Mob extends CombatChar{
 	public Mob(double x, double y, int ID)
 	{
 		super(null, x, y, 0, 0);
+		
+		
 
 		switch (ID) {
 		case skeleton:
@@ -107,6 +118,20 @@ public abstract class Mob extends CombatChar{
 		soundFXFrame = 0;
 		walkFrame = 0;
 		attackFrame = pauseEnd;
+		
+		
+	}
+	public void setX(double newX)
+	{
+		double xDiff = newX - getX();
+		stats.setX(stats.getX() + xDiff);
+		super.setX(newX);
+	}
+	public void setY(double newY)
+	{
+		double yDiff = newY - getY();
+		stats.setY(stats.getY() + yDiff);
+		super.setY(newY);
 	}
 	
 	public void show()
@@ -121,6 +146,7 @@ public abstract class Mob extends CombatChar{
 		}
 		else {attackFrame++;}
 		super.show();
+		stats.show();
 	}
 	public boolean inAttackRange()
 	{
@@ -273,7 +299,36 @@ public abstract class Mob extends CombatChar{
 	 * radius is bounded to individual
 	 */
 	protected abstract void pointRandomly();
-	public abstract void attack();
+	protected abstract void attack();
+	protected abstract void createStats();
+	
+	public void setHealth(double newHealth)
+	{
+		double HPVal = getHealth();
+		double maxHPVal = getMaxHealth();
+	    
+		double HPfrac1 = HP.getWidth() / maxHP.getWidth();
+		double HPfrac2 = Math.max(0, HPVal / maxHPVal);
+		double HPxDiff = (HPfrac2 - HPfrac1) / 2 * maxHP.getWidth();
+	    
+		HP.setWidth(maxHP.getWidth() * HPfrac2);
+		HP.setX(HP.getX() + HPxDiff);
+	    super.setHealth(newHealth);
+	}
+	public void setMana(double newMana)
+	{
+		double MNVal = getMana();
+		double maxMNVal = getMaxMana();
+	    
+		double MNfrac1 = MN.getWidth() / maxMN.getWidth();
+		double MNfrac2 = Math.max(0, MNVal / maxMNVal);
+		double MNxDiff = (MNfrac2 - MNfrac1) / 2 * maxMN.getWidth();
+	    
+		MN.setWidth(maxMN.getWidth() * MNfrac2);
+		MN.setX(MN.getX() + MNxDiff);
+	    super.setMana(newMana);
+	}
+	
 	public final static int skeleton = 0;
 	public final static int slime = 1;
 	public final static int zombie = 2;

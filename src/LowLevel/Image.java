@@ -41,12 +41,12 @@ public class Image extends Positionable
     public boolean collides() {return collides;}
     public void setCollisionStatus(boolean newStatus) {collides = newStatus;}
     //displays the image + rotations if those end up being useful
-    public void show(boolean shouldRotate) {
+    public void show(boolean shouldRotate, float r, float g, float b, float a) {
     	double screenX = getX() - Main.player.getX();
     	double screenY = getY() - Main.player.getY();
     	if ((Math.abs(screenX) < monWid) && (Math.abs(screenY) < monLen))
     	{
-    		GL11.glColor4f(1, 1, 1, alpha / 255);
+    		GL11.glColor4f(r / 255, g / 255, b / 255, a / 255);
         	if (shouldRotate)
         	{
         		//Shows assuming that rotations are enabled for the image
@@ -92,7 +92,13 @@ public class Image extends Positionable
         
     }
     public void show() {
-    	show(shouldNotRotate);
+    	show(shouldNotRotate, 255, 255, 255, alpha);
+    }
+    public void show(boolean shouldRotate) {
+    	show(shouldRotate, 255, 255, 255, alpha);
+    }
+    public void show(float r, float g, float b, float a) {
+    	show(shouldNotRotate, r, g, b, a);
     }
     public void UIshow(float r, float g, float b, float a) {
         double[] xVals = { -getWidth() / 2.0, -getWidth() / 2.0, getWidth() / 2.0f, getWidth() / 2.0f };

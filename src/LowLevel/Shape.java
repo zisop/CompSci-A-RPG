@@ -15,7 +15,6 @@ public class Shape extends Image {
     private float red;
     private float blue;
     private float green;
-    private float alpha;
     
     public Shape(int ID, double x, double y, double width, double length)
 	{
@@ -23,7 +22,6 @@ public class Shape extends Image {
 		red = 255;
 		green = 255;
 		blue = 255;
-		alpha = 255;
 		setCollisionStatus(true);
 	}
 	public Shape(int ID, double x, double y, double width, double length, float r, float b, float g, float a)
@@ -32,21 +30,23 @@ public class Shape extends Image {
 		red = r;
 		green = g;
 		blue = b;
-		alpha = a;
+		setAlpha(a);
 		setCollisionStatus(true);
 	}
 	public void UIshow()
 	{
-		super.UIshow(red, blue, green, alpha);
+		super.UIshow(red, blue, green, getAlpha());
+	}
+	public void show()
+	{
+		super.show(red, blue, green, getAlpha());
 	}
 	public float getRed() {return red;}
 	public float getBlue() {return blue;}
 	public float getGreen() {return green;}
-	public float getAlpha() {return alpha;}
 	public void setRed(float newRed) {red = newRed;}
 	public void setBlue(float newBlue) {blue = newBlue;}
 	public void setGreen(float newGreen) {green = newGreen;}
-	public void setAlpha(float newAlpha) {alpha = newAlpha;}
 	public void setRGB(float newRed, float newBlue, float newGreen)
 	{
 		red = newRed;
