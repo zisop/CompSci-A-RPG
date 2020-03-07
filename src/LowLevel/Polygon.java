@@ -151,7 +151,25 @@ public class Polygon extends Image{
     
     public void show()
     {
-    	System.out.println("show not implemented for class Polygon");
+    	Point[] showBasis = getShowBasis();
+        Point[] pointCords = new Point[showBasis.length];
+        for (int i = 0; i < pointCords.length; i++)
+        {
+        	Point adjustedPoint = new Point(showBasis[i].getX() - getX(), showBasis[i].getY() - getY());
+        	pointCords[i] = Geometry.rotatePoint(adjustedPoint, getAngle()); 
+        }
+        
+        image.bind();
+        GL11.glBegin(GL11.GL_POLYGON);
+        GL11.glColor4f(r / 255, g / 255, b / 255, a / 255);
+        for (int i = 0; i < pointCords.length; i++)
+        {
+        	float currX = (float)((pointCords[i].getX() + getX() - Main.player.getX()) * 2.0f / monWid);
+        	float currY = (float)((pointCords[i].getY() + getY() - Main.player.getY()) * 2.0f / monLen);
+        	GL11.glVertex2f(currX, currY);
+        }
+        GL11.glColor4f(1, 1, 1, 1);
+        GL11.glEnd();
     }
     public int relPos(Positionable otherChar)
     {

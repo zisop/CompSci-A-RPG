@@ -3,9 +3,13 @@ package Combat;
 
 import Imported.Audio;
 import Imported.Texture;
+import LowLevel.Geometry;
 import LowLevel.Image;
+import LowLevel.Point;
+import LowLevel.Shape;
 
 public class CombatChar extends Movable{
+	private Point[] projectileBasis;
 	
 	protected double manaRegen;
 	protected double mana;
@@ -17,6 +21,8 @@ public class CombatChar extends Movable{
 	protected double hitAngle;
 	
 	protected int hitStunFrames;
+	protected int invulnerabilityLength;
+	protected int stunLength;
 	protected int walkAnim;
 	protected int walkFrame;
 	protected int soundFXFrame;
@@ -30,11 +36,46 @@ public class CombatChar extends Movable{
 	
 	public CombatChar(Texture img, double inX, double inY, double w, double l) {
         super(img, inX, inY, w, l);
-        hitStunFrames = maxInvulnerability;
+        Point[] showBox = getShowBasis();
+        projectileBasis = new Point[4];
+        projectileBasis[DL] = new Point(showBox[DL].getX(), showBox[DL].getY());
+        projectileBasis[DR] = new Point(showBox[DR].getX(), showBox[DR].getY());
+        projectileBasis[UR] = new Point(showBox[UR].getX(), showBox[UR].getY());
+        projectileBasis[UL] = new Point(showBox[UL].getX(), showBox[UL].getY());
+        hitStunFrames = 0;
         setProjInteraction(true);
     }
+	public Point[] getProjectileBasis()
+	{
+		return projectileBasis;
+	}
+	public boolean projCollision(Projectile projectile)
+	{
+		Point[] projHitBox = projectile.getCollisionBasis();
+		Point[] temp = Geometry.rotatePoints(projHitBox, projectile, projectile.getAngle());
+		return Geometry.strictCollision(projectileBasis, temp);
+	}
+	public void setX(double newX)
+	{
+		double xDiff = newX - getX();
+		super.setX(newX);
+		for (int i = 0; i < projectileBasis.length; i++)
+		{
+			projectileBasis[i].setX(projectileBasis[i].getX() + xDiff);
+		}
+	}
+	public void setY(double newY)
+	{
+		double yDiff = newY - getY();
+		super.setY(newY);
+		for (int i = 0; i < projectileBasis.length; i++)
+		{
+			projectileBasis[i].setY(projectileBasis[i].getY() + yDiff);
+		}
+	}
+	
     public void move() {
-    	if (hitStunFrames >= maxHitStun)
+    	if (hitStunFrames <= invulnerabilityLength)
     	{
     		switch (walkDirec)
     		{
@@ -46,34 +87,48 @@ public class CombatChar extends Movable{
     		handleAnims();
     	}
     }
+    /**
+     * lengths are measured in pauses
+     * one pause = pauseLength (currently 8 frames)
+     * @param damage
+     * @param pauses
+     */
+    public void receiveHit(double damage, double fromAngle, int stunLen, int invulnLen)
+    {
+    	hitAngle = fromAngle + 180;
+    	invulnerabilityLength = invulnLen * pauseLength;
+    	stunLength = stunLen * pauseLength;
+    	hitStunFrames = invulnerabilityLength + stunLength;
+    	setHealth(getHealth() - damage);
+    }
     public void show()
     {
-    	if (hitStunFrames < maxInvulnerability)
+    	if (hitStunFrames > 0)
     	{
-    		if (hitStunFrames < maxHitStun)
+    		if (hitStunFrames - invulnerabilityLength > 0)
     		{
     			boolean[] moveDirecs = findDirecs(hitAngle);
     			boolean[] movement = getMovement();
     			if (canMove(moveDirecs, movement))
     			{
     				double angle = Math.toRadians(hitAngle);
-    				double velocity = initialHitVelocity * (1 - (double)hitStunFrames / maxHitStun);
+    				double velocity = initialHitVelocity * ((hitStunFrames - invulnerabilityLength) / (double)(stunLength));
     				setPos(getX() + Math.cos(angle) * velocity, getY() + Math.sin(angle) * velocity);
     			}
     		}
-    		if (hitStunFrames % 8 == 0)
+    		if (hitStunFrames % pauseLength == 0)
     		{
     			if (getAlpha() == 255) {setAlpha(100);}
     			else {setAlpha(255);}
     		}
-    		hitStunFrames++;
+    		hitStunFrames--;
     	}
     	else {setAlpha(255);}
     	super.show();
     }
     public boolean canBeAttacked()
     {
-    	return hitStunFrames == maxInvulnerability;
+    	return hitStunFrames == 0;
     }
     public boolean isEnemy(Image otherChar)
     {
@@ -107,13 +162,7 @@ public class CombatChar extends Movable{
     	}
     	return true;
     }
-
-	
-    public void enterHitStun(double fromAngle)
-    {
-    	hitAngle = fromAngle + 180;
-    	hitStunFrames = 0;
-    }
+    
     
     /**
 	 * handles walk animations and sounds
@@ -208,6 +257,23 @@ public class CombatChar extends Movable{
     protected static final int longStop = 1;
     protected static final int noStop = 2;
     protected static final int resetWalk = -1;
+    protected void handleCombatException()
+	{
+		if (health == 0) { try { throw new Exception("health for combatChar was 0");} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (maxHealth == 0) { try { throw new Exception("maxHealth for combatChar was 0");} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (soundFXSwitch == 0) { try { throw new Exception("soundFXSwitch for combatChar was 0");} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (walkAnimSwitch == 0) { try { throw new Exception("walkAnimSwitch for combatChar was 0");} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (firstSound == 0) { try { throw new Exception("firstSound for combatChar was 0");} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (walkSounds == null) { try { throw new Exception("walkSounds uninitialized for combatChar");} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (anims == null) { try { throw new Exception("anims uninitialized for combatChar");} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+	}
     
     protected static Texture[] getAnims(int start, int end)
 	{
@@ -260,11 +326,27 @@ public class CombatChar extends Movable{
 		
 		
 		loadedTex = new Texture[60];
-		loadedTex[skelAnimInd + uW0] = new Texture("Mobs/Skeleton/IdleDown.png");
-		for (int i = 1; i < 20; i++)
-		{
-			loadedTex[i] = loadedTex[0]; 
-		}
+		loadedTex[skelAnimInd + uW0] = new Texture("Mobs/Skeleton/IdleUp.png");
+		loadedTex[skelAnimInd + uW1] = new Texture("Mobs/Skeleton/IdleUp.png");
+		loadedTex[skelAnimInd + uW2] = new Texture("Mobs/Skeleton/IdleUp.png");
+		loadedTex[skelAnimInd + uA] = new Texture("Mobs/Skeleton/IdleUp.png");
+		loadedTex[skelAnimInd + uI] = new Texture("Mobs/Skeleton/IdleUp.png");
+		loadedTex[skelAnimInd + rW0] = new Texture("Mobs/Skeleton/IdleRight.png");
+		loadedTex[skelAnimInd + rW1] = new Texture("Mobs/Skeleton/IdleRight.png");
+		loadedTex[skelAnimInd + rW2] = new Texture("Mobs/Skeleton/IdleRight.png");
+		loadedTex[skelAnimInd + rA] = new Texture("Mobs/Skeleton/IdleRight.png");
+		loadedTex[skelAnimInd + rI] = new Texture("Mobs/Skeleton/IdleRight.png");
+		loadedTex[skelAnimInd + dW0] = new Texture("Mobs/Skeleton/IdleDown.png");
+		loadedTex[skelAnimInd + dW1] = new Texture("Mobs/Skeleton/IdleDown.png");
+		loadedTex[skelAnimInd + dW2] = new Texture("Mobs/Skeleton/IdleDown.png");
+		loadedTex[skelAnimInd + dA] = new Texture("Mobs/Skeleton/IdleDown.png");
+		loadedTex[skelAnimInd + dI] = new Texture("Mobs/Skeleton/IdleDown.png");
+		loadedTex[skelAnimInd + lW0] = new Texture("Mobs/Skeleton/IdleLeft.png");
+		loadedTex[skelAnimInd + lW1] = new Texture("Mobs/Skeleton/IdleLeft.png");
+		loadedTex[skelAnimInd + lW2] = new Texture("Mobs/Skeleton/IdleLeft.png");
+		loadedTex[skelAnimInd + lA] = new Texture("Mobs/Skeleton/IdleLeft.png");
+		loadedTex[skelAnimInd + lI] = new Texture("Mobs/Skeleton/IdleLeft.png");
+		
 		
 		loadedTex[slimeAnimInd + uW0] = new Texture("Mobs/Slime/IdleUp.png");
 		loadedTex[slimeAnimInd + uW1] = loadedTex[slimeAnimInd + uW0];
@@ -338,9 +420,8 @@ public class CombatChar extends Movable{
 	public static final int lI = 18;
 	public static final int lA = 19;
     
-    public static final int maxHitStun = 8;
-    public static final int maxInvulnerability = maxHitStun + 40;
     public static final int initialHitVelocity = 5;
+    private static final int pauseLength = 8;
     
     public void setDirec(int newDirec) {walkDirec = newDirec;}
     public int getDirec() {return walkDirec;}

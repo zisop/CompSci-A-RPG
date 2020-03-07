@@ -5,7 +5,10 @@ import java.util.ArrayList;
 
 import Game.Main;
 import Imported.Texture;
+import LowLevel.Geometry;
 import LowLevel.Image;
+import LowLevel.Point;
+import LowLevel.Positionable;
 import World.Room;
 
 public class Projectile extends Movable {
@@ -15,7 +18,7 @@ public class Projectile extends Movable {
 	private int endFrame;
 	private int numHits;
 	private int maxHits;
-	private int pauseFrame;
+	private ArrayList<Image> alreadyAttacked;
 	private double speed;
 	private double orbitRadius;
 	private boolean orbitting;
@@ -33,6 +36,7 @@ public class Projectile extends Movable {
 		super(null, x, y, width, length);
 		frameAnim = 0;
 		ID = inID;
+		alreadyAttacked = new ArrayList<Image>();
 		switch (ID) {
 			case fireball:
 				orbitAnims = getAnims(fireBallOrbit, fireBallOrbit + 3);
@@ -41,11 +45,13 @@ public class Projectile extends Movable {
 				endFrame = 90;
 				speed = 8;
 				maxHits = 4;
+				setHitLength(getLength() * 4 / 5);
+				setHitWidth(getWidth() * 4 / 5);
+				hitBoxDown(-5);
 		}
 		setAngle(angle);
 		orbitting = false;
 		orbitter = orbitChar;
-		pauseFrame = maxPauseFrame;
 		numHits = 0;
 		orbitAngle = 0;
 		framesShot = 0;
@@ -56,37 +62,42 @@ public class Projectile extends Movable {
 	//When a projectile shows, it'll add to its framecount and then show
 	public void show()
 	{
-		setImage(anims[(frameAnim / changeFrame) % anims.length]);
-		frameAnim++;
-		if (!orbitting)
+		if (!Main.alreadyInteracting)
 		{
-			framesShot++;
-		}
-		
-		if (pauseFrame == maxPauseFrame)
-		{
-			updateCollision();
-			
-			if (collidingChar != null && orbitter.isEnemy(collidingChar))
+			setImage(anims[(frameAnim / changeFrame) % anims.length]);
+			frameAnim++;
+			if (!orbitting)
 			{
-				
+				framesShot++;
+			}
+			
+			updateCollision();
+			if (!alreadyAttacked.contains(collidingChar) && collidingChar != null && orbitter.isEnemy(collidingChar))
+			{
+			
 				CombatChar coll = (CombatChar)collidingChar;
 				coll.setHealth(coll.getHealth() - damage);
-				if (!orbitting) {numHits++;}
-				pauseFrame = 0;
-			}	
+				if (!orbitting) {numHits++; alreadyAttacked.add(collidingChar);}
+			}
+			if (numHits == maxHits) {framesShot = endFrame;}
 		}
-		else {pauseFrame++;}
-		if (numHits == maxHits) {framesShot = endFrame;}
 		super.show();
 	}
-	public void setOrbit(boolean newOrbit)
+	public void setOrbit(boolean flag)
 	{
-		orbitting = newOrbit;
+		orbitting = flag;
 		if (orbitting) {anims = orbitAnims;}
 		else {anims = shotAnims;}
 		frameAnim = 0;
 		framesShot = 0;
+	}
+	public boolean collision(Positionable otherChar)
+	{
+		Point[] collBasis = getCollisionBasis();
+		Point[] projBasis = otherChar.getProjectileBasis();
+		Point[] temp = Geometry.rotatePoints(collBasis, this, getAngle());
+		//saves time to check only line intersections
+		return Geometry.strictCollision(projBasis, temp);
 	}
 	/**
 	 * sets orbit angle
@@ -109,10 +120,10 @@ public class Projectile extends Movable {
 	private void updateCollision()
 	{
 		Room currRoom = Main.allRooms[Main.currRoom];
-		Image[] images = currRoom.getImages();
-		for (int i = 0; i < images.length; i++)
+		ArrayList<Image> images = currRoom.getImages();
+		for (int i = 0; i < images.size(); i++)
 		{
-			Image currImg = images[i];
+			Image currImg = images.get(i);
 			if (currImg != orbitter && currImg.interactsProj() && collision(currImg))
 			{
 				
@@ -191,5 +202,4 @@ public class Projectile extends Movable {
 		visProj.forEach((proj) -> proj.show());
 		visProj.clear();
 	}
-	public static int maxPauseFrame = 30;
 }

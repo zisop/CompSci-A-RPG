@@ -20,12 +20,7 @@ public class MeleeMob extends Mob{
 		attackFrame = 0;
 		facePlayer();
 		handleAttackAnims();
-		dealDamage();
-		Main.player.enterHitStun(Main.player.angleTo(this));
-	}
-	private void dealDamage()
-	{
-		Main.player.setHealth(Main.player.getHealth() - damage);
+		Main.player.receiveHit(damage, Main.player.angleTo(this), attackStun, attackInvuln);
 	}
 	
 	private void handleAttackAnims()

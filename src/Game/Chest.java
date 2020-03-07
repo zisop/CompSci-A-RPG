@@ -14,16 +14,11 @@ public class Chest extends Image{
 
 	public Chest(int inChest, double x, double y, double width, double length, ItemBag inBag)
 	{
-		super(chestTex[inChest * 4], x, y, width, length, width, length * 4/5);
-		chestBag = inBag;
-		isOpen = false;
-		openFrame = 0;
-		whichChest = inChest;
-		setCollisionStatus(true);
+		this(inChest, x, y, width, length, width, length * 4 / 5, inBag);
 	}
 	public Chest(int inChest, double x, double y, double width, double length, double charWidth, double charLength, ItemBag inBag)
 	{
-		super(chestTex[inChest * 4], x, y, width, length, width, length * 4/5);
+		super(chestTex[inChest * 4], x, y, width, length, charWidth, charLength);
 		chestBag = inBag;
 		isOpen = false;
 		openFrame = 0;

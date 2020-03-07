@@ -37,7 +37,6 @@ public class Image extends Positionable
     }
     public void setEnemyState(int newState) {enemyState = newState;}
     public int enemyState() {return enemyState;}
-    public int relPos(Positionable otherChar) {return relPos(otherChar);}
     public void setAlpha(float newAlpha) {alpha = newAlpha;}
     public float getAlpha() {return alpha;}
     public void setImage(Texture newImg) {image = newImg;}

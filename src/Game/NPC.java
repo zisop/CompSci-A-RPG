@@ -47,16 +47,7 @@ public class NPC extends Image{
 	private int frameNum;
 	private Texture[] anims;
 	public NPC(int ID, double inX, double inY, double w, double l, int inDia, double font) {
-        super(null, inX, inY, w, l);
-        dialogue = allDialogue[inDia];
-        currText = notYetSpeaking;
-        fontSize = font;
-        frameNum = 0;
-        if (ID == cowboy)
-        {
-        	anims = getAnims(cowboyStart, cowboyEnd);
-        }
-        setAnim(0);
+        this(ID, inX, inY, w, l, w, l, inDia, font);
     }
     
     public NPC(int ID, double inX, double inY, double w, double l, double hitW, double hitL, int inDia, double font) {

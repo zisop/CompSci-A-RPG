@@ -2,10 +2,13 @@ package Combat;
 
 
 
+import java.util.ArrayList;
+
 import Game.Main;
 import LowLevel.Geometrical;
 import LowLevel.Image;
 import LowLevel.Point;
+import World.Room;
 
 public abstract class Mob extends CombatChar{
 	
@@ -36,6 +39,8 @@ public abstract class Mob extends CombatChar{
 	protected int pauseEnd;
 	protected double damage;
 	protected double sightRange;
+	protected int attackStun;
+	protected int attackInvuln;
 	
 	public Mob(double x, double y, int ID)
 	{
@@ -55,7 +60,7 @@ public abstract class Mob extends CombatChar{
 			shortStoppingStart = longStoppingFrame - 5;
 			
 			damage = 10;
-			attackRange = 80;
+			attackRange = 60;
 			sightRange = 600;
 			attackEnd = 20;
 			pauseEnd = attackEnd + 30;
@@ -63,8 +68,16 @@ public abstract class Mob extends CombatChar{
 			firstSound = 6;
 			walkAnimSwitch = 6;
 			soundFXSwitch = 20;
+			healthRegen = .05;
+			maxHealth = 30;
+			//one attack will affect the player for 40 frames
+			attackStun = 2;
+			attackInvuln = 3;
 			
 			setHitLength(10);
+			setProjectileLength(50);
+			setProjectileWidth(45);
+			setHitWidth(40);
 			hitBoxDown(20);
 			
 			break;
@@ -88,10 +101,14 @@ public abstract class Mob extends CombatChar{
 			firstSound = 6;
 			walkAnimSwitch = 6;
 			soundFXSwitch = 20;
-			healthRegen = .1;
+			healthRegen = .05;
 			maxHealth = 20;
+			//one attack will affect the player for 40 frames
+			attackStun = 2;
+			attackInvuln = 3;
 			
-			
+			setProjectileLength(35);
+			setProjectileWidth(35);
 			setHitLength(15);
 			hitBoxDown(10);
 			
@@ -115,6 +132,7 @@ public abstract class Mob extends CombatChar{
 		createStats();
 		health = maxHealth;
 		setEnemyState(bad);
+		handleMobException();
 	}
 	public void setX(double newX)
 	{
@@ -143,10 +161,11 @@ public abstract class Mob extends CombatChar{
 				else {attackFrame++;}
 			}
 			else {attackFrame++;}
+			setHealth(Math.min(getHealth() + healthRegen, maxHealth));
 		}
 		super.show();
 		stats.show();
-		setHealth(Math.min(getHealth() + healthRegen, maxHealth));
+		if (shouldDie()) {die();}
 	}
 	public boolean inAttackRange()
 	{
@@ -280,6 +299,27 @@ public abstract class Mob extends CombatChar{
 	{
 		double absDist = Math.abs(getY() - verticalMove);
 		return absDist <= speed;
+	}
+	private void handleMobException()
+	{
+		handleCombatException();
+		if (attackEnd == 0) { try { throw new Exception("attackEnd was 0 for Mob " + mobID);} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (pauseEnd == 0) { try { throw new Exception("pauseEnd was 0 for Mob " + mobID);} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (damage == 0) { try { throw new Exception("damage was 0 for Mob " + mobID);} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (sightRange == 0) { try { throw new Exception("sightRange was 0 for Mob " + mobID);} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+	}
+	public void die()
+	{
+		Room currRoom = Main.allRooms[Main.currRoom];
+		currRoom.removeChar(this);
+	}
+	protected boolean shouldDie()
+	{
+		return health <= 0;
 	}
 	
 	protected void createMovementPoint()

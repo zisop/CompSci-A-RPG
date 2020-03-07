@@ -1,5 +1,9 @@
 package World;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import Combat.Mob;
 import Combat.Projectile;
 import Game.Main;
@@ -13,24 +17,22 @@ import LowLevel.Positionable;
 public class Room extends Image{
 	private Line[] outline;
 	private Terrain[] terrains;
-	private Image[] images;
+	private ArrayList<Image> images;
+	private ArrayList<Image> toRemove;
 	//Terrain should all be rectangles; if you need to make complex polygons, split them into multiple rectangles
 	//Do not try to make diagonals out of squares you fucking idiots
-	public Room(Image[] inImages, Terrain[] inTerrains)
+	public Room(ArrayList<Image> inImages, Terrain[] inTerrains)
 	{
 		super(null, 0, 0, 0, 0);
 		terrains = inTerrains;
-		images = new Image[inImages.length + 1];
-		for (int i = 0; i < inImages.length; i++)
-		{
-			images[i] = inImages[i]; 
-		}
+		images = inImages;
+		images.add(Main.player);
 		if (terrains.length > 0) {outline = Geometry.createLines(terrains[0].getShowBasis());}
 		for (int i = 1; i < terrains.length; i++)
 		{
 			outline = Geometry.addNewShape(outline, Geometry.createLines(terrains[i].getShowBasis()));
 		}
-		images[inImages.length] = Main.player;
+		toRemove = new ArrayList<Image>();
 	}
 	public void show()
 	{
@@ -38,14 +40,23 @@ public class Room extends Image{
 		{
 			terrains[i].show();
 		}
-		images = MergerSort.mergeSort(images);
-		for (int i = 0; i < images.length; i++)
+		Image[] toArray = images.toArray(new Image[images.size()]);
+		toArray = MergerSort.mergeSort(toArray);
+		for (int i = 0; i < toArray.length; i++)
 		{
-			images[i].show();
+			toArray[i].show();
 		}
 		Projectile.showVisProjectiles();
+		
+		List<Image> temp = Arrays.asList(toArray);
+		images = new ArrayList<Image>(temp);
+		for (int i = toRemove.size() - 1; i >= 0; i--)
+		{
+			images.remove(images.indexOf(toRemove.get(i)));
+			toRemove.remove(i);
+		}
 	}
-	public Image[] getImages()
+	public ArrayList<Image> getImages()
 	{
 		return images;
 	}
@@ -102,6 +113,10 @@ public class Room extends Image{
 			return !collided;
 		}
 		return false;
+	}
+	public void removeChar(Image character)
+	{
+		toRemove.add(character);
 	}
 	public Line[] getOutline()
 	{

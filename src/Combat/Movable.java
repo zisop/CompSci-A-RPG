@@ -1,8 +1,14 @@
 package Combat;
 
+import LowLevel.Polygon;
+import java.util.ArrayList;
+
 import Game.Main;
 import Imported.Texture;
+import LowLevel.Geometry;
 import LowLevel.Image;
+import LowLevel.Point;
+import LowLevel.Shape;
 import World.Room;
 
 public abstract class Movable extends Image{
@@ -24,7 +30,7 @@ public abstract class Movable extends Image{
     public void updateMovement()
     {
     	Room currRoom = Main.allRooms[Main.currRoom];
-    	Image[] images = currRoom.getImages();
+    	ArrayList<Image> images = currRoom.getImages();
     	
     	movement = new boolean[] {true, true, true, true};
     	boolean shouldEnd = false;
@@ -63,8 +69,8 @@ public abstract class Movable extends Image{
     		}
     	}
     	
-        for (int i = 0; i < images.length; ++i) {
-            Image currChar = images[i];
+        for (int i = 0; i < images.size(); ++i) {
+            Image currChar = images.get(i);
             if (currChar.collides()) {
             	setY(getY() + speed);
             	if (collision(currChar))
@@ -97,6 +103,23 @@ public abstract class Movable extends Image{
             }
         }
     }
+    protected void setProjectileWidth(double newWidth)
+    {
+    	Point[] projBasis = getProjectileBasis();
+    	projBasis[DL].setX(projBasis[DL].getX() - newWidth / 2);
+    	projBasis[UL].setX(projBasis[UL].getX() - newWidth / 2);
+    	projBasis[UR].setX(projBasis[UR].getX() + newWidth / 2);
+    	projBasis[DR].setX(projBasis[DR].getX() + newWidth / 2);
+    }
+    protected void setProjectileLength(double newLength)
+    {
+    	Point[] projBasis = getProjectileBasis();
+    	projBasis[DL].setY(projBasis[DL].getY() - newLength / 2);
+    	projBasis[UL].setY(projBasis[UL].getY() + newLength / 2);
+    	projBasis[UR].setY(projBasis[UR].getY() + newLength / 2);
+    	projBasis[DR].setY(projBasis[DR].getY() - newLength / 2);
+    }
+    
     public abstract void move();
     public static final int up = 0;
 	public static final int right = 1;

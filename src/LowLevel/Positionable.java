@@ -15,46 +15,10 @@ public class Positionable extends Point
 
     
     public Positionable(double xVal, double yVal, double w, double l) {
-        super(xVal, yVal);
-        width = w;
-        length = l;
-        hitWidth = w;
-        hitLength = l;
-        angle = 0.0;
-        interactsProj = false;
-        Point p1 = new Point(xVal - w / 2, yVal - l / 2);
-        Point p2 = new Point(xVal + w / 2, yVal - l / 2);
-        Point p3 = new Point(xVal + w / 2, yVal + l / 2);
-        Point p4 = new Point(xVal - w / 2, yVal + l / 2);
-        showBasis = new Point[] {p1, p2, p3, p4};
-        p1 = new Point(xVal - w / 2, yVal - l / 2);
-        p2 = new Point(xVal + w / 2, yVal - l / 2);
-        p3 = new Point(xVal + w / 2, yVal + l / 2);
-        p4 = new Point(xVal - w / 2, yVal + l / 2);
-        collisionBasis = new Point[] {p1, p2, p3, p4};
-        shouldRotate = false;
-        hitboxDown = 0;
+        this(xVal, yVal, w, l, w, l);
     }
     public Positionable(double xVal, double yVal, double w, double l, double hitW, double hitL) {
-        super(xVal, yVal);
-        width = w;
-        length = l;
-        hitWidth = hitW;
-        hitLength = hitL;
-        angle = 0.0;
-        interactsProj = false;
-        Point p1 = new Point(xVal - w / 2, yVal - l / 2);
-        Point p2 = new Point(xVal + w / 2, yVal - l / 2);
-        Point p3 = new Point(xVal + w / 2, yVal + l / 2);
-        Point p4 = new Point(xVal - w / 2, yVal + l / 2);
-        showBasis = new Point[] {p1, p2, p3, p4};
-        p1 = new Point(xVal - hitW / 2, yVal - hitL / 2);
-        p2 = new Point(xVal + hitW / 2, yVal - hitL / 2);
-        p3 = new Point(xVal + hitW / 2, yVal + hitL / 2);
-        p4 = new Point(xVal - hitW / 2, yVal + hitL / 2);
-        collisionBasis = new Point[] {p1, p2, p3, p4};
-        hitboxDown = 0;
-        shouldRotate = false;
+        this(xVal, yVal, w, l, hitW, hitL, 0);
     }
     public Positionable(double xVal, double yVal, double w, double l, double hitW, double hitL, double hitboxDown) {
         super(xVal, yVal);
@@ -280,6 +244,29 @@ public class Positionable extends Point
         	hitLength = collisionBasis[UL].getY() - collisionBasis[DL].getY();
         }
     }
+    public void showShowBox()
+	{
+    	Point[] basis = getShowBasis();
+    	Point[] rotatedBasis = Geometry.rotatePoints(basis, this, getAngle());
+		Polygon temp = new Polygon(rotatedBasis);
+		temp.show();
+	}
+	public void showCollisionBox()
+	{
+		Point[] basis = getCollisionBasis();
+		Point myCenter = new Point(getX(), getY() - getHitDown());
+    	Point[] rotatedBasis = Geometry.rotatePoints(basis, myCenter, getAngle());
+		Polygon temp = new Polygon(rotatedBasis);
+		temp.show();
+	}
+	public void showProjectileBox()
+	{
+		Point[] basis = getProjectileBasis();
+		Point myCenter = new Point(getX(), getY() - getHitDown());
+    	Point[] rotatedBasis = Geometry.rotatePoints(basis, myCenter, getAngle());
+		Polygon temp = new Polygon(rotatedBasis);
+		temp.show();
+	}
     
     public void setAngle(double newAng) {angle = newAng;}
     public double getWidth() {return width;}
@@ -292,6 +279,7 @@ public class Positionable extends Point
     public void setShowBasis(Point[] newBasis) {showBasis = newBasis;}
     public Point[] getShowBasis() {return showBasis;}
     public Point[] getCollisionBasis() {return collisionBasis;}
+    public Point[] getProjectileBasis() {return collisionBasis;}
     /**
      * Comparison basis for determining order to be shown in
      * @param otherObj

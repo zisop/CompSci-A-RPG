@@ -58,6 +58,7 @@ public class Player extends CombatChar
         walkSounds = getSounds(playerSoundInd, playerSoundInd + 0);
         firstSound = 6;
         setEnemyState(good);
+        handleCombatException();
     }
     /**
      * Determines whether the character was within player's X button pressing collision radius
@@ -166,7 +167,7 @@ public class Player extends CombatChar
     {
     	for (int i = allSpells.size() - 1; i >= 0; i--)
     	{
-    		allSpells.get(i).move();
+    		if (!Main.alreadyInteracting) {allSpells.get(i).move();}
     		Projectile.visProj.add(allSpells.get(i));
     		if (allSpells.get(i).isEnded())
     		{
@@ -177,10 +178,13 @@ public class Player extends CombatChar
 
     public void show()
     {
-    	if (mana < maxMana) {mana += Math.min(manaRegen, maxMana - mana);}
-    	if (health < maxHealth) {health += Math.min(healthRegen, maxHealth - health);}
+    	if (!Main.alreadyInteracting)
+    	{
+    		if (mana < maxMana) {mana += Math.min(manaRegen, maxMana - mana);}
+    		if (health < maxHealth) {health += Math.min(healthRegen, maxHealth - health);}
     	
-    	manageProjectiles();
+    		manageProjectiles();
+    	}
     	showSpells();
     	
     	super.show();
@@ -224,7 +228,7 @@ public class Player extends CombatChar
     		currProj.setOrbit(true);
     		orbit.add(currProj);
     		allSpells.add(currProj);
-    		currProj.setDamage(1);
+    		currProj.setDamage(.2);
     	}
     	if (!Main.alreadyInteracting)
     	{
