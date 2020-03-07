@@ -1,8 +1,8 @@
 package World;
 
 import Combat.Mob;
+import Combat.Projectile;
 import Game.Main;
-import Game.Projectile;
 import Imported.MergerSort;
 import LowLevel.Geometry;
 import LowLevel.Image;
@@ -102,5 +102,9 @@ public class Room extends Image{
 			return !collided;
 		}
 		return false;
+	}
+	public Line[] getOutline()
+	{
+		return outline;
 	}
 }

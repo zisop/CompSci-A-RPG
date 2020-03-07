@@ -1,6 +1,5 @@
 package LowLevel;
 
-import javafx.scene.control.Toggle;
 
 public class Point implements Comparable<Point>{
 	private double x;

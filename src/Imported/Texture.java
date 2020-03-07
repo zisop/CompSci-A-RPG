@@ -23,7 +23,7 @@ public class Texture
             ByteBuffer pixels = BufferUtils.createByteBuffer(width * length * 4);
             for (int r = 0; r < width; ++r) {
                 for (int c = 0; c < length; ++c) {
-                    final int pixel = rawPix[r * width + c];
+                    final int pixel = rawPix[r * length + c];
                     pixels.put((byte)(pixel >> 16 & 0xFF));
                     pixels.put((byte)(pixel >> 8 & 0xFF));
                     pixels.put((byte)(pixel & 0xFF));

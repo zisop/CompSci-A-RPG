@@ -3,10 +3,12 @@ package Game;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
+
 import Combat.MeleeMob;
 import Combat.Mob;
 import Combat.CombatChar;
 import Combat.Player;
+import Combat.Projectile;
 import Exchange.ItemExchange;
 import Exchange.Shop;
 import Exchange.ShopKeeper;
@@ -15,6 +17,7 @@ import Input.CursorInput;
 import Input.KeyInput;
 import LowLevel.Geometry;
 import LowLevel.Image;
+import LowLevel.Line;
 import LowLevel.Point;
 import LowLevel.Positionable;
 
@@ -52,7 +55,6 @@ public class Main
     public static CursorInput cursor;
     
     
-    public static boolean[] movement;
     public static int moveDirecLastFrame;
     public static boolean interactionEvent;
     public static boolean alreadyInteracting;
@@ -97,7 +99,8 @@ public class Main
         
         
         
-        
+        Texture testTex = new Texture("Tiles/images.png");
+        Image img = new Image(testTex, 0, 0, 50, 50);
         
         while (!glfwWindowShouldClose(window)) {
         	double startTime = System.currentTimeMillis();
@@ -113,6 +116,7 @@ public class Main
             e = KeyInput.keys[GLFW_KEY_E];
             one = KeyInput.keys[GLFW_KEY_1];
             
+            player.updateMovement();
             boolean[] movement = player.getMovement();
             boolean[] keysPressed = new boolean[4];
             //Stores W A S D presses in keysPressed
@@ -144,11 +148,7 @@ public class Main
             showVisibles();
             
             UI.showUI();
-            if (rightClick && !rightClickLastFrame)
-            {
-            	player.enterHitStun(cursorAngle());
-            }
-            
+            img.show();
             
             glfwSwapBuffers(window);
             
@@ -203,7 +203,6 @@ public class Main
   //Shows all visible Displayables
     public static void showVisibles() {
         allRooms[currRoom].show();
-        Projectile.showVisProjectiles();
     }
     
     
@@ -232,11 +231,11 @@ public class Main
         }
         interactingChar = null;
     }
-    
     public static void initRoom0() {
         Image[] room = new Image[7];
         Door door1 = new Door(Shape.shapes[Shape.square], 0, -300, 50, 100, 2);
         Door door2 = new Door(Shape.shapes[Shape.square], 200, -100, 100, 50, 1);
+        door2.setCollisionStatus(true);
         room[0] = door1;
         room[1] = door2;
         door1.setLead(1);
@@ -262,7 +261,8 @@ public class Main
         test.addRow(Tile.GrassDirtBR, CombatChar.down);
         Terrain test2 = Terrain.createTerrain(Tile.Grass, -200, 800, 10, 4, 80);
         
-        allRooms[0] = new Room(room, new Terrain[] {test, test2});
+        Room newRoom = new Room(room, new Terrain[] {test, test2});
+        allRooms[0] = newRoom;
         initted[0] = true;
     }
     
@@ -310,6 +310,7 @@ public class Main
         Projectile.initProj();
         Shape.initShapes();
         UI.init();
+        Image.init(width, length);
         TextDisplay.initText();
         Tile.initTex();
         CombatChar.init();
@@ -320,5 +321,5 @@ public class Main
         glfwSetKeyCallback(window, events);
     }
     
-    private static int notMoving = -1;
+    private static final int notMoving = -1;
 }

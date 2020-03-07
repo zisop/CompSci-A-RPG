@@ -7,7 +7,9 @@ public class Positionable extends Point
     private double angle;
     private double hitWidth;
     private double hitLength;
+    private double hitboxDown;
     private boolean interactsProj;
+    private boolean shouldRotate;
     private Point[] showBasis;
     private Point[] collisionBasis;
 
@@ -19,7 +21,7 @@ public class Positionable extends Point
         hitWidth = w;
         hitLength = l;
         angle = 0.0;
-        interactsProj = true;
+        interactsProj = false;
         Point p1 = new Point(xVal - w / 2, yVal - l / 2);
         Point p2 = new Point(xVal + w / 2, yVal - l / 2);
         Point p3 = new Point(xVal + w / 2, yVal + l / 2);
@@ -30,6 +32,8 @@ public class Positionable extends Point
         p3 = new Point(xVal + w / 2, yVal + l / 2);
         p4 = new Point(xVal - w / 2, yVal + l / 2);
         collisionBasis = new Point[] {p1, p2, p3, p4};
+        shouldRotate = false;
+        hitboxDown = 0;
     }
     public Positionable(double xVal, double yVal, double w, double l, double hitW, double hitL) {
         super(xVal, yVal);
@@ -38,7 +42,7 @@ public class Positionable extends Point
         hitWidth = hitW;
         hitLength = hitL;
         angle = 0.0;
-        interactsProj = true;
+        interactsProj = false;
         Point p1 = new Point(xVal - w / 2, yVal - l / 2);
         Point p2 = new Point(xVal + w / 2, yVal - l / 2);
         Point p3 = new Point(xVal + w / 2, yVal + l / 2);
@@ -49,6 +53,8 @@ public class Positionable extends Point
         p3 = new Point(xVal + hitW / 2, yVal + hitL / 2);
         p4 = new Point(xVal - hitW / 2, yVal + hitL / 2);
         collisionBasis = new Point[] {p1, p2, p3, p4};
+        hitboxDown = 0;
+        shouldRotate = false;
     }
     public Positionable(double xVal, double yVal, double w, double l, double hitW, double hitL, double hitboxDown) {
         super(xVal, yVal);
@@ -57,7 +63,7 @@ public class Positionable extends Point
         hitWidth = hitW;
         hitLength = hitL;
         angle = 0.0;
-        interactsProj = true;
+        interactsProj = false;
         Point p1 = new Point(xVal - w / 2, yVal - l / 2);
         Point p2 = new Point(xVal + w / 2, yVal - l / 2);
         Point p3 = new Point(xVal + w / 2, yVal + l / 2);
@@ -68,23 +74,32 @@ public class Positionable extends Point
         p3 = new Point(xVal + hitW / 2, yVal + hitL / 2 - hitboxDown);
         p4 = new Point(xVal - hitW / 2, yVal + hitL / 2 - hitboxDown);
         collisionBasis = new Point[] {p1, p2, p3, p4};
+        this.hitboxDown = hitboxDown;
+        shouldRotate = false;
     }
-    public void setProjInteraction(boolean newInteraction)
-    {
-    	interactsProj = newInteraction;
-    }
-    public boolean getProjInteraction()
-    {
-    	return interactsProj;
-    }
+    public void setProjInteraction(boolean newInteraction) {interactsProj = newInteraction;}
+    public boolean shouldRotate() {return shouldRotate;}
+    public void setRotation(boolean newRotation) {shouldRotate = newRotation;}
+    public boolean interactsProj() {return interactsProj;}
     /**
      * determines whether two characters' hitboxes intersect
      * @param otherChar
      * @return collision == true
      */
     public boolean collision(Positionable otherChar) {
-        Point[] otherCollisionBasis = otherChar.getCollisionBasis();
-        return Geometry.colliding(collisionBasis, otherCollisionBasis);
+    	Point[] myCollBasis = getCollisionBasis();
+    	Point[] otherCollisionBasis = otherChar.getCollisionBasis();
+    	if (otherChar.shouldRotate())
+		{
+			Point otherCenter = new Point(otherChar.getX(), otherChar.getY() - otherChar.getHitDown());
+			otherCollisionBasis = Geometry.rotatePoints(otherCollisionBasis, otherCenter, otherChar.getAngle());
+		}
+    	if (shouldRotate())
+    	{
+    		Point myCenter = new Point(getX(), getY() - getHitDown());
+			myCollBasis = Geometry.rotatePoints(myCollBasis, myCenter, getAngle());
+    	}
+    	return Geometry.colliding(myCollBasis, otherCollisionBasis);
     }
     /**
      * Determines whether two characters' hitbox LINES intersect; does not determine if this is inside of otherChar
@@ -94,12 +109,23 @@ public class Positionable extends Point
     public boolean strictCollision(Positionable otherChar)
     {
     	Point[] otherCollisionBasis = otherChar.getCollisionBasis();
-    	return Geometry.strictCollision(collisionBasis, otherCollisionBasis);
+    	Point[] myCollBasis = getCollisionBasis();
+    	if (otherChar.shouldRotate())
+		{
+			Point otherCenter = new Point(otherChar.getX(), otherChar.getY() - otherChar.getHitDown());
+			otherCollisionBasis = Geometry.rotatePoints(otherCollisionBasis, otherCenter, otherChar.getAngle());
+		}
+    	if (shouldRotate())
+    	{
+    		Point myCenter = new Point(getX(), getY() - getHitDown());
+			myCollBasis = Geometry.rotatePoints(myCollBasis, myCenter, getAngle());
+    	}
+    	return Geometry.strictCollision(myCollBasis, otherCollisionBasis);
     }
     //Returns the direction of the collision with some otherChar
     //0 = other obj to north, 1 = other obj to south, 2 = other obj to east, 3 = other obj to west
     //0 = cant move north, 1 = cant move east, 2 = cant move south, 3 = cant move west
-    public int relPos(Positionable otherChar, double hitboxDown) {
+    public int relPos(Positionable otherChar) {
         double selfXMin = collisionBasis[UL].getX();
         double selfXMax = collisionBasis[UR].getX();
         double selfYMin = collisionBasis[DR].getY();
@@ -125,10 +151,6 @@ public class Positionable extends Point
             }
         }
         return 2;
-    }
-    public int relPos(Positionable otherChar) {
-    	
-        return relPos(otherChar, 0);
     }
     /**
      * adjusts width
@@ -188,6 +210,7 @@ public class Positionable extends Point
      */
     public void hitBoxDown(double yVal)
     {
+    	hitboxDown += yVal;
     	collisionBasis[DL].setY(collisionBasis[DL].getY() - yVal);
     	collisionBasis[UL].setY(collisionBasis[UL].getY() - yVal);
     	collisionBasis[DR].setY(collisionBasis[DR].getY() - yVal);
@@ -212,7 +235,7 @@ public class Positionable extends Point
      */
     public void setHitWidth(double newWidth)
     {
-    	double currCenterX = collisionBasis[UL].getX() - getHitLength() / 2;
+    	double currCenterX = collisionBasis[UL].getX() + getHitLength() / 2;
     	collisionBasis[UL].setX(currCenterX - newWidth / 2);
     	collisionBasis[DL].setX(currCenterX - newWidth / 2);
     	collisionBasis[UR].setX(currCenterX + newWidth / 2);
@@ -264,6 +287,7 @@ public class Positionable extends Point
     public double getHitWidth() {return hitWidth;}
     public double getHitLength() {return hitLength;}
     public double getAngle() {return angle;}
+    public double getHitDown() {return hitboxDown;}
     public void setCollisionBasis(Point[] newBasis) {collisionBasis = newBasis;}
     public void setShowBasis(Point[] newBasis) {showBasis = newBasis;}
     public Point[] getShowBasis() {return showBasis;}

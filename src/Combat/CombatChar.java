@@ -1,13 +1,11 @@
 package Combat;
 
-import Game.Main;
+
 import Imported.Audio;
 import Imported.Texture;
-import LowLevel.Geometrical;
 import LowLevel.Image;
-import World.Room;
 
-public class CombatChar extends Image{
+public class CombatChar extends Movable{
 	
 	protected double manaRegen;
 	protected double mana;
@@ -16,7 +14,6 @@ public class CombatChar extends Image{
 	protected double maxHealth;
 	protected double maxMana;
 	
-	protected double speed;
 	protected double hitAngle;
 	
 	protected int hitStunFrames;
@@ -30,23 +27,11 @@ public class CombatChar extends Image{
 	
 	protected String[] walkSounds;
 	protected Texture[] anims;
-	protected boolean[] movement;
 	
 	public CombatChar(Texture img, double inX, double inY, double w, double l) {
         super(img, inX, inY, w, l);
         hitStunFrames = maxInvulnerability;
-        movement = new boolean[] {true, true, true, true};
-    }
-    
-    public CombatChar(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
-        super(img, inX, inY, w, l, hitW, hitL);
-        hitStunFrames = maxInvulnerability;
-        movement = new boolean[] {true, true, true, true};
-    }
-    public CombatChar(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hitboxDown) {
-        super(img, inX, inY, w, l, hitW, hitL, hitboxDown);
-        hitStunFrames = maxInvulnerability;
-        movement = new boolean[] {true, true, true, true};
+        setProjInteraction(true);
     }
     public void move() {
     	if (hitStunFrames >= maxHitStun)
@@ -84,12 +69,17 @@ public class CombatChar extends Image{
     		hitStunFrames++;
     	}
     	else {setAlpha(255);}
-    	updateMovement();
     	super.show();
     }
     public boolean canBeAttacked()
     {
     	return hitStunFrames == maxInvulnerability;
+    }
+    public boolean isEnemy(Image otherChar)
+    {
+    	if (enemyState() == good && otherChar.enemyState() == bad) {return true;}
+    	if (enemyState() == bad && otherChar.enemyState() == good) {return true;}
+    	return false;
     }
     private boolean[] findDirecs(double angle)
     {
@@ -118,87 +108,7 @@ public class CombatChar extends Image{
     	return true;
     }
 
-	/**
-     * 
-     * @return boolean[] of movement capabilities {north, east, south, west}
-     */
-    public boolean[] getMovement()
-    {
-        return movement;
-    }
-    public void updateMovement()
-    {
-    	Room currRoom = Main.allRooms[Main.currRoom];
-    	Image[] images = currRoom.getImages();
-    	
-    	movement = new boolean[] {true, true, true, true};
-    	boolean shouldEnd = false;
-    	
-    	if (this != Main.player)
-    	{
-    		setY(getY() + speed);
-    		if (currRoom.strictCollision(this))
-    		{
-    			movement[up] = false; 
-    			shouldEnd = true;
-    		}
-    		setPos(getX() + speed, getY() - speed);
-    		if (currRoom.strictCollision(this))
-    		{
-    			movement[right] = false;
-    			shouldEnd = true;
-    		}
-    		setPos(getX() - speed, getY() - speed);
-    		if (currRoom.strictCollision(this))
-    		{
-    			movement[down] = false;
-    			shouldEnd = true;
-    		}
-   			setPos(getX() - speed, getY() + speed);
-   			if (currRoom.strictCollision(this))
-    		{
-    			movement[left] = false;
-    			shouldEnd = true;
-    		}
-    		setX(getX() + speed);
-    		if (shouldEnd) {
-    			return;
-    		}
-    	}
-        for (int i = 0; i < images.length; ++i) {
-            Image currChar = images[i];
-            if (currChar.collides()) {
-            	setY(getY() + speed);
-            	if (collision(currChar))
-            	{
-            		movement[up] = false; 
-            		shouldEnd = true;
-            	}
-            	setPos(getX() + speed, getY() - speed);
-            	if (collision(currChar))
-            	{
-            		movement[right] = false;
-            		shouldEnd = true;
-            	}
-            	setPos(getX() - speed, getY() - speed);
-            	if (collision(currChar))
-            	{
-            		movement[down] = false;
-            		shouldEnd = true;
-            	}
-           		setPos(getX() - speed, getY() + speed);
-            	if (collision(currChar))
-            	{
-            		movement[left] = false;
-            		shouldEnd = true;
-            	}
-            	setX(getX() + speed);
-            	if (shouldEnd) {
-            		return;
-            	}
-            }
-        }
-    }
+	
     public void enterHitStun(double fromAngle)
     {
     	hitAngle = fromAngle + 180;
@@ -399,10 +309,7 @@ public class CombatChar extends Image{
     	loadedTex[playerAnimInd + lA] = loadedTex[playerAnimInd + lI];
     }
     
-    public static final int up = 0;
-	public static final int right = 1;
-	public static final int down = 2;
-	public static final int left = 3;
+
 	
 	//uW0 = up walk 0
 	//uI = up idle

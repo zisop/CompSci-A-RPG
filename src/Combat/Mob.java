@@ -3,10 +3,7 @@ package Combat;
 
 
 import Game.Main;
-import Imported.Audio;
-import Imported.Texture;
 import LowLevel.Geometrical;
-import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
 
@@ -67,8 +64,9 @@ public abstract class Mob extends CombatChar{
 			walkAnimSwitch = 6;
 			soundFXSwitch = 20;
 			
-			hitBoxDown(20);
 			setHitLength(10);
+			hitBoxDown(20);
+			
 			break;
 
 		case slime:
@@ -90,24 +88,20 @@ public abstract class Mob extends CombatChar{
 			firstSound = 6;
 			walkAnimSwitch = 6;
 			soundFXSwitch = 20;
+			healthRegen = .1;
+			maxHealth = 20;
 			
-			hitBoxDown(10);
+			
 			setHitLength(15);
+			hitBoxDown(10);
+			
 			break;
 		}
 
 			
 		
 		
-		int which = (int)(Math.random() * 4);
-		walkDirec = which;
-		switch (which)
-		{
-			case up: setImage(anims[uI]); break;
-			case right: setImage(anims[rI]); break;
-			case down: setImage(anims[dI]); break;
-			case left: setImage(anims[lI]); break;
-		}
+		walkDirec = down;
 		
 		mobID = ID;
 		followingPlayer = false;
@@ -118,8 +112,9 @@ public abstract class Mob extends CombatChar{
 		soundFXFrame = 0;
 		walkFrame = 0;
 		attackFrame = pauseEnd;
-		
-		
+		createStats();
+		health = maxHealth;
+		setEnemyState(bad);
 	}
 	public void setX(double newX)
 	{
@@ -136,17 +131,22 @@ public abstract class Mob extends CombatChar{
 	
 	public void show()
 	{
-		if (attackFrame >= attackEnd) {
-			if (attackFrame == pauseEnd)
-			{
-				if (inAttackRange() && Main.player.canBeAttacked()) {attack();}
-				else {move();}
+		if (!Main.alreadyInteracting)
+		{
+			updateMovement();
+			if (attackFrame >= attackEnd) {
+				if (attackFrame == pauseEnd)
+				{
+					if (inAttackRange() && Main.player.canBeAttacked()) {attack();}
+					else {move();}
+				}
+				else {attackFrame++;}
 			}
 			else {attackFrame++;}
 		}
-		else {attackFrame++;}
 		super.show();
 		stats.show();
+		setHealth(Math.min(getHealth() + healthRegen, maxHealth));
 	}
 	public boolean inAttackRange()
 	{
@@ -286,6 +286,21 @@ public abstract class Mob extends CombatChar{
 	{
 		if (followingPlayer) {pointToPlayer();}
 		else {pointRandomly();}
+	}
+	protected void facePlayer()
+	{
+		int direc;
+		double xDist = Main.player.getX() - getX();
+		double yDist = Main.player.getY() - getY();
+		double hypoLen = xDist * xDist + yDist * yDist;
+		hypoLen = Math.sqrt(hypoLen);
+		double angle = Math.acos(xDist / hypoLen);
+		if (yDist < 0) {angle *= -1;}
+		if (angle >= Math.PI / 4 && angle < 3 * Math.PI / 4) {direc = up;}
+		else if ((angle >= 3 * Math.PI / 4 && angle <= Math.PI) || (angle >= -Math.PI && angle < -3 * Math.PI / 4)) {direc = left;}
+		else if (angle >= -3 * Math.PI / 4 && angle < -Math.PI / 4) {direc = down;}
+		else {direc = right;}
+		walkDirec = direc;
 	}
 	/**
 	 * Sends the mob in a direction toward the player <br>

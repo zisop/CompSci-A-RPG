@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
-import LowLevel.Positionable;
 
 public class Terrain extends Image {
 	private ArrayList<Tile> tiles;

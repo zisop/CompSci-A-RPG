@@ -8,8 +8,8 @@ public class Image extends Positionable
 {
     private Texture image;
     private float alpha;
-    private double hitboxDown;
     private boolean collides;
+    private int enemyState;
     
     public static boolean shouldRotate = true;
     public static boolean shouldNotRotate = false;
@@ -18,36 +18,39 @@ public class Image extends Positionable
         super(inX, inY, w, l);
         image = img;
         alpha = 255;
-        hitboxDown = 0;
         collides = false;
+        enemyState = neutral;
     }
     public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
         super(inX, inY, w, l, hitW, hitL);
         image = img;
         alpha = 255;
-        hitboxDown = 0;
         collides = false;
+        enemyState = neutral;
     }
     public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hbDown) {
         super(inX, inY, w, l, hitW, hitL, hbDown);
         image = img;
         alpha = 255;
         collides = false;
+        enemyState = neutral;
     }
-    public int relPos(Positionable otherChar) {return relPos(otherChar, hitboxDown);}
+    public void setEnemyState(int newState) {enemyState = newState;}
+    public int enemyState() {return enemyState;}
+    public int relPos(Positionable otherChar) {return relPos(otherChar);}
     public void setAlpha(float newAlpha) {alpha = newAlpha;}
     public float getAlpha() {return alpha;}
     public void setImage(Texture newImg) {image = newImg;}
     public boolean collides() {return collides;}
     public void setCollisionStatus(boolean newStatus) {collides = newStatus;}
     //displays the image + rotations if those end up being useful
-    public void show(boolean shouldRotate, float r, float g, float b, float a) {
+    public void show(float r, float g, float b, float a) {
     	double screenX = getX() - Main.player.getX();
     	double screenY = getY() - Main.player.getY();
     	if ((Math.abs(screenX) < monWid) && (Math.abs(screenY) < monLen))
     	{
     		GL11.glColor4f(r / 255, g / 255, b / 255, a / 255);
-        	if (shouldRotate)
+        	if (shouldRotate())
         	{
         		//Shows assuming that rotations are enabled for the image
         		Point[] pointCords = {new Point(-getWidth() / 2.0, -getLength() / 2.0), 
@@ -92,13 +95,7 @@ public class Image extends Positionable
         
     }
     public void show() {
-    	show(shouldNotRotate, 255, 255, 255, alpha);
-    }
-    public void show(boolean shouldRotate) {
-    	show(shouldRotate, 255, 255, 255, alpha);
-    }
-    public void show(float r, float g, float b, float a) {
-    	show(shouldNotRotate, r, g, b, a);
+    	show(255, 255, 255, alpha);
     }
     public void UIshow(float r, float g, float b, float a) {
         double[] xVals = { -getWidth() / 2.0, -getWidth() / 2.0, getWidth() / 2.0f, getWidth() / 2.0f };
@@ -126,6 +123,14 @@ public class Image extends Positionable
     	float r = 255, g = 255, b = 255;
         UIshow(r, g, b, alpha);
     }
-    private static int monLen = Main.length;
-    private static int monWid = Main.width;
+    public static void init(int width, int length)
+    {
+    	monWid = width;
+    	monLen = length;
+    }
+    public static int bad = 0;
+    public static int good = 1;
+    public static int neutral = 2;
+    private static int monLen;
+    private static int monWid;
 }

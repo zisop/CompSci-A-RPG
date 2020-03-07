@@ -23,6 +23,36 @@ public class Geometry
         final double newAngle = currAngle + angle;
         return new Point(Math.cos(newAngle) * hypoLen, Math.sin(newAngle) * hypoLen);
     }
+    public static Point[] rotatePoints(Point[] points, Point center, double angle)
+    {
+    	Point[] newPoints = new Point[points.length];
+    	for (int i = 0; i < newPoints.length; i++)
+    	{
+    		newPoints[i] = new Point(points[i].getX(), points[i].getY());
+    	}
+    	double centerX = center.getX();
+    	double centerY = center.getY();
+    	angle = Math.toRadians(angle);
+    	for (int i = 0; i < newPoints.length; i++)
+    	{
+    		Point curr = newPoints[i];
+    		curr.setPos(curr.getX() - centerX, curr.getY() - centerY);
+    		double x = curr.getX();
+    		
+        	double y = curr.getY();
+        	
+            
+            double hypoLen = Math.sqrt(x * x + y * y);
+            
+            double currAngle = Math.acos(x / hypoLen);
+            if (y < 0.0) {
+                currAngle = 6.283185307179586 - currAngle;
+            }
+            double newAngle = currAngle + angle;
+            curr.setPos(hypoLen * Math.cos(newAngle) + centerX, hypoLen * Math.sin(newAngle) + centerY);
+    	}
+    	return newPoints;
+    }
     /**
      * Creates a rectangle between two diagonal points
      * @param x1
@@ -37,7 +67,7 @@ public class Geometry
      */
     public static Shape createRect(double x1, double x2, double y1, double y2, float r, float g, float b, float a)
     {
-    	return new Shape(0, x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2, x2 - x1, y2 - y1, r, g, b, a);
+    	return new Shape(Shape.square, x1 + (x2 - x1) / 2, y1 + (y2 - y1) / 2, x2 - x1, y2 - y1, r, g, b, a);
     }
     private static boolean onLeft(Point l1, Point l2, Point point)
     {
@@ -58,30 +88,30 @@ public class Geometry
     	//small error of .00001 to adjust for double rounding
     	else {return point.getY() >= m * point.getX() + b - .00001;}
     }
-    //Checks for purely horizontal or vertical intersection
-    private static boolean vertIntersec(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
+    public static boolean vertIntersec(Line l1, Line l2)
     {
-    	
-    	double minYL1 = Math.min(p1_1.getY(), p1_2.getY());
-		double maxYL1 = Math.max(p1_1.getY(), p1_2.getY());
-		double minYL2 = Math.min(p2_1.getY(), p2_2.getY());
-		double maxYL2 = Math.max(p2_1.getY(), p2_2.getY());
-    	//line1 is vertical
-    	if (p1_1.getX() == p1_2.getX())
+    	double minYL1 = l1.getYMin();
+		double maxYL1 = l1.getYMax();
+		double minYL2 = l2.getYMin();
+		double maxYL2 = l2.getYMax();
+    	if (l1.isVertical())
     	{
-			//line2 is also vertical
-    		if (p2_1.getX() == p2_2.getX())
+    		if (l2.isVertical())
     		{
-    			
-    			return ((minYL1 <= minYL2 && maxYL1 >= minYL2) || (minYL2 <= minYL1 && maxYL2 >= minYL1)) && p1_1.getX() == p2_1.getX();
+    			double yCheck = l2.getYMin();
+    			boolean passed = l1.getYMin() <= yCheck && l1.getYMax() >= yCheck;
+    			yCheck = l2.getYMax();
+    			passed = l1.getYMin() <= yCheck && l1.getYMax() >= yCheck;
+    			return passed && Math.abs(l1.getXMin() - l2.getXMin()) <= .00001;
     		}
-    		double minXL2 = Math.min(p2_1.getX(), p2_2.getX());
-    		double maxXL2 = Math.max(p2_1.getX(), p2_2.getX());
+    		double minXL2 = l2.getXMin();
+    		double maxXL2 = l2.getXMax();
     		
-    		double m2 = (p2_2.getY() - p2_1.getY()) / (p2_2.getX() - p2_1.getX());
-    		double b2 = p2_2.getY() - m2 * p2_2.getX();
-    		double intersecY = p1_1.getX() * m2 + b2;
-    		double intersecX = p1_1.getX();
+    		double m2 = l2.getSlope();
+    		double b2 = l2.getB();
+    		Point intersection = l2.pointAt(l1.getXMin());
+    		double intersecY = intersection.getX() * m2 + b2;
+    		double intersecX = intersection.getX();
     		
     		boolean y1Bounded = intersecY >= minYL1 - .00001 && intersecY <= maxYL1 + .00001;
     		if (y1Bounded)
@@ -93,18 +123,18 @@ public class Geometry
     				return xBounded;
     			}
     		}
-    		return false;
     	}
-    	//line2 is vertical
-    	if (p2_1.getX() == p2_2.getX())
-    	{	
-			double minXL1 = Math.min(p1_1.getX(), p1_2.getX());
-    		double maxXL1 = Math.max(p1_1.getX(), p1_2.getX());
-			
-    		double m1 = (p1_2.getY() - p1_1.getY()) / (p1_2.getX() - p1_1.getX());
-    		double b1 = p1_2.getY() - m1 * p1_2.getX();
-    		double intersecY = p2_1.getX() * m1 + b1;
-    		double intersecX = p2_1.getX();
+    	//l2 is vertical, l1 is not
+    	else 
+    	{
+    		double minXL1 = l1.getXMin();
+    		double maxXL1 = l1.getXMax();
+    		
+    		double m1 = l1.getSlope();
+    		double b1 = l1.getB();
+    		Point intersection = l1.pointAt(l2.getXMin());
+    		double intersecY = intersection.getX() * m1 + b1;
+    		double intersecX = intersection.getX();
     		
     		boolean y1Bounded = intersecY >= minYL1 - .00001 && intersecY <= maxYL1 + .00001;
     		if (y1Bounded)
@@ -116,40 +146,25 @@ public class Geometry
     				return xBounded;
     			}
     		}
-    		return false;
-    	}
+		}
     	return false;
     }
-    /**
-     * determines if P1_1 -> P1_2 intersects P2_1 -> P2_2
-     * @param p1_1
-     * @param p1_2
-     * @param p2_1
-     * @param p2_2
-     * @return intersection == true
-     */
-    public static boolean lineIntersection(Point p1_1, Point p1_2, Point p2_1, Point p2_2)
+    public static boolean slantedIntersec(Line l1, Line l2)
     {
-    	if (vertIntersec(p1_1, p1_2, p2_1, p2_2))
-    	{
-    		return true;
-    	}
-    	double m1 = (p1_2.getY() - p1_1.getY()) / (p1_2.getX() - p1_1.getX());
-    	double m2 = (p2_2.getY() - p2_1.getY()) / (p2_2.getX() - p2_1.getX());
-    	double b1 = p1_2.getY() - m1 * p1_2.getX();
-    	double b2 = p2_2.getY() - m2 * p2_2.getX();
+    	double m1 = l1.getSlope();
+    	double m2 = l2.getSlope();
+    	double b1 = l1.getB();
+    	double b2 = l2.getB();
     	//y = m1x + b1
     	//y = m2x + b2
     	//m1x - m2x + b1 - b2 = 0
     	//x(m1 - m2) = b2 - b1
     	//x = (b2 - b1) / (m1 - m2)
     	double intersecX = (b2 - b1) / (m1 - m2);
-    	boolean insideFirst = (p1_1.getX() - .0001 <= intersecX && intersecX <= p1_2.getX() + .0001) 
-    			|| (p1_2.getX() - .0001 <= intersecX && intersecX <= p1_1.getX() + .0001);
+    	boolean insideFirst = l1.getXMin() - .00001 <= intersecX && intersecX <= l1.getXMax() + .00001;
     	if (insideFirst)
     	{
-    		boolean insideSecond = (p2_1.getX() - .0001 <= intersecX && intersecX <= p2_2.getX() + .0001) 
-    			|| (p2_2.getX() - .0001 <= intersecX && intersecX <= p2_1.getX() + .0001);
+    		boolean insideSecond = (l2.getXMin() - .00001 <= intersecX && intersecX <= l2.getXMax() + .00001);
     		return insideSecond;
     	}
     	return false;
@@ -162,7 +177,7 @@ public class Geometry
      */
     public static boolean lineIntersection(Line l1, Line l2)
     {
-    	return lineIntersection(l1.getP1(), l1.getP2(), l2.getP1(), l2.getP2());
+    	return vertIntersec(l1, l2) || slantedIntersec(l1, l2);
     }
     private static boolean onLeft(Point l1, Point l2, Point point, boolean checkBelow)
     {
@@ -257,38 +272,9 @@ public class Geometry
      */
     public static boolean strictCollision(Point[] shape1, Point[] shape2)
     {
-    	Point p1_1;
-		Point p1_2;
-		Point p2_1;
-		Point p2_2;
-    	for (int s1I = 0; s1I < shape1.length; s1I++)
-    	{
-    		if (s1I == 0) {
-				p1_1 = shape1[shape1.length - 1];
-				p1_2 = shape1[0];
-			}
-    		else {
-    			p1_1 = shape1[s1I - 1];
-    			p1_2 = shape1[s1I];
-    		}
-    		for (int s2I = 0; s2I < shape2.length; s2I++)
-    		{
-    			
-    			if (s2I == 0) {
-    				p2_1 = shape2[shape2.length - 1];
-    				p2_2 = shape2[0];
-    			}
-        		else {
-        			p2_1 = shape2[s2I - 1];
-        			p2_2 = shape2[s2I];
-        		}
-        		if (lineIntersection(p1_1, p1_2, p2_1, p2_2))
-        		{
-        			return true;
-        		}
-    		}
-    	}
-    	return false;
+    	Line[] lines1 = createLines(shape1);
+    	Line[] lines2 = createLines(shape2);
+    	return strictCollision(lines1, lines2);
     }
     /**
      * Determines if two sets of lines intersect

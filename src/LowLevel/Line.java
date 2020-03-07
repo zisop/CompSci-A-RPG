@@ -14,7 +14,8 @@ public class Line {
 	{
 		this.p1 = p1;
 		this.p2 = p2;
-		if (p1.getX() == p2.getX())
+		
+		if (Math.abs(p1.getX() - p2.getX()) <= .0001)
 		{
 			isVertical = true;
 		}
@@ -172,7 +173,7 @@ public class Line {
 		xMax = Math.max(p1.getX(), p2.getX());
 	}
 	public Point pointAt(double xVal) {return new Point(xVal, m * xVal + b);}
-	public boolean intersection(Line otherLine) {return Geometry.lineIntersection(getP1(), getP2(), otherLine.getP1(), otherLine.getP2());}
+	public boolean intersection(Line otherLine) {return Geometry.lineIntersection(this, otherLine);}
 	public void delete() {setP1(new Point(0, 0)); setP2(new Point(0, 0));}
 	public boolean isDeleted() {return p1.equals(p2);}
 	public Point getP1() {return p1;}

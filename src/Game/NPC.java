@@ -1,14 +1,15 @@
 package Game;
 
 
-import Combat.CombatChar;
+
 import Imported.Texture;
 import LowLevel.Geometrical;
+import LowLevel.Image;
 import LowLevel.Shape;
 import UI.TextDisplay;
 import UI.UI;
 
-public class NPC extends CombatChar{
+public class NPC extends Image{
 	//Put all raw dialogue for all NPCs in rawDialogue String[][][]
 	//Each NPC has one String[][] of dialogue
 	//Each String[][] of dialogue has a String[] for each questState
@@ -50,7 +51,6 @@ public class NPC extends CombatChar{
         dialogue = allDialogue[inDia];
         currText = notYetSpeaking;
         fontSize = font;
-        setProjInteraction(false);
         frameNum = 0;
         if (ID == cowboy)
         {
@@ -64,7 +64,6 @@ public class NPC extends CombatChar{
         dialogue = allDialogue[inDia];
         currText = notYetSpeaking;
         fontSize = font;
-        setProjInteraction(false);
         frameNum = 0;
         if (ID == cowboy)
         {
@@ -130,7 +129,9 @@ public class NPC extends CombatChar{
     public void show()
     {
     	handleText();
-    	if (showingText()) {UI.talkingNPCs.add(this);}
+    	if (showingText()) {
+    		UI.talkingNPCs.add(this);
+    	}
     	super.show();
     }
     public void handleText()

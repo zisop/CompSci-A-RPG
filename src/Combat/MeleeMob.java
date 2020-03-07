@@ -1,12 +1,13 @@
 package Combat;
 
+
+
 import Game.Main;
 import LowLevel.Geometrical;
 import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
 import World.Room;
-import World.Terrain;
 
 public class MeleeMob extends Mob{
 	
@@ -26,22 +27,7 @@ public class MeleeMob extends Mob{
 	{
 		Main.player.setHealth(Main.player.getHealth() - damage);
 	}
-	private void facePlayer()
-	{
-		int direc;
-		double xDist = Main.player.getX() - getX();
-		double yDist = Main.player.getY() - getY();
-		double hypoLen = xDist * xDist + yDist * yDist;
-		hypoLen = Math.sqrt(hypoLen);
-		double angle = Math.acos(xDist / hypoLen);
-		if (yDist < 0) {angle *= -1;}
-		if (angle >= Math.PI / 4 && angle < 3 * Math.PI / 4) {direc = up;}
-		else if ((angle >= 3 * Math.PI / 4 && angle <= Math.PI) || (angle >= -Math.PI && angle < -3 * Math.PI / 4)) {direc = left;}
-		else if (angle >= -3 * Math.PI / 4 && angle < -Math.PI / 4) {direc = down;}
-		else {direc = right;}
-		
-		walkDirec = direc;
-	}
+	
 	private void handleAttackAnims()
 	{
 		switch (walkDirec)
@@ -84,9 +70,14 @@ public class MeleeMob extends Mob{
 			numTries++;
 			if (numTries == 1000)
 			{
-				System.out.println("mob couldnt find where to move");
+				try {
+					throw new Exception("mob couldn't find path");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
+		
 		movementPoint = testPoint;
 	}
 	protected void createStats()
@@ -97,7 +88,7 @@ public class MeleeMob extends Mob{
 		stats = new Geometrical();
 		
 		
-		Image mainRect = Geometry.createRect(0, barWidth + 2 * offset, 0, 2 * barLength + 3 * offset, 100, 100, 100, 255);
+		Image mainRect = Geometry.createRect(0, barWidth + 2 * offset, barLength + offset, 2 * barLength + 3 * offset, 100, 100, 100, 255);
 		
 		//MN = Geometry.createRect(offset, barWidth + offset, offset, barLength + offset, 0, 0, 255, 255); maybe mages will use mana?
 		//maxMN = Geometry.createRect(offset, barWidth + offset, offset, barLength + offset, 0, 0, 150, 255); just leave this here

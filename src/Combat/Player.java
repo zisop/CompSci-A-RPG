@@ -5,7 +5,6 @@ package Combat;
 import java.util.ArrayList;
 
 import Game.Main;
-import Game.Projectile;
 import Imported.Texture;
 import LowLevel.Geometry;
 import LowLevel.Point;
@@ -22,7 +21,10 @@ public class Player extends CombatChar
 	private Point[] clickInteractionPoints;
 	
     public Player(Texture img, int inX, int inY, double w, double l, double hitW, double hitL, double hbDown) {
-        super(img, inX, inY, w, l, hitW, hitL, hbDown);
+        super(img, inX, inY, w, l);
+        setHitWidth(hitW);
+        setHitLength(hitL);
+        hitBoxDown(hbDown);
         Point[] collisionBasis = getCollisionBasis();
         Point p1 = new Point(collisionBasis[DL].getX() - xInteractionRadius, collisionBasis[DL].getY() - xInteractionRadius);
         Point p2 = new Point(collisionBasis[DR].getX() + xInteractionRadius, collisionBasis[DR].getY() - xInteractionRadius);
@@ -48,19 +50,30 @@ public class Player extends CombatChar
         
         walkFrame = 0;
         soundFXFrame = 0;
-        walkAnim = notWalking;
+        walkAnim = resetWalk;
         walkDirec = down;
         walkAnimSwitch = 6;
         soundFXSwitch = 20;
         anims = getAnims(playerAnimInd, playerAnimInd + 19);
         walkSounds = getSounds(playerSoundInd, playerSoundInd + 0);
         firstSound = 6;
+        setEnemyState(good);
     }
+    /**
+     * Determines whether the character was within player's X button pressing collision radius
+     * @param otherChar
+     * @return player can interact with the x button
+     */
     public boolean xCollision(Positionable otherChar)
     {
     	Point[] otherBasis = otherChar.getCollisionBasis();
     	return Geometry.colliding(xInteractionPoints, otherBasis);
     }
+    /**
+     * Determines whether the character was within player's click collision radius
+     * @param otherChar
+     * @return player can interact with click
+     */
     public boolean clickCollision(Positionable otherChar)
     {
     	Point[] otherBasis = otherChar.getCollisionBasis();
@@ -137,7 +150,12 @@ public class Player extends CombatChar
     		shot.setOrbit(false);
     		shot.setAngle(shotAngle);
     		orbit.remove(smallestInd);
-    		mana -= 33.34;
+    		mana -= fireBallCost;
+    		switch(ID)
+    		{
+    			case Projectile.fireball:
+    				shot.setDamage(10);
+    		}
     	}
     }
     /**
@@ -164,6 +182,7 @@ public class Player extends CombatChar
     	
     	manageProjectiles();
     	showSpells();
+    	
     	super.show();
     }
     /**
@@ -171,11 +190,11 @@ public class Player extends CombatChar
      */
     public void manageProjectiles()
     {
-    	int idealNum = (int)(mana / 33.33);
+    	int numProj = (int)(100 / fireBallCost);
+    	int idealNum = (int)(mana / fireBallCost);
     	if (orbit.size() < idealNum)
     	{
-    		//Figures out where to put it in the orbit (PLEASE MAKE THIS FASTER OR SOMETHING I KNOW IT SUCKS)
-    		double angle = new Double(0);
+    		double angle = 0;
     		if (orbit.size() > 0)
     		{
     			double[] angles = new double[orbit.size()];
@@ -191,32 +210,31 @@ public class Player extends CombatChar
     					minInd = i;
     				}
     			}
-    			angle = angles[minInd] + 120;
+    			angle = angles[minInd] + 360 / numProj;
     			for (int i = 0; i < angles.length; i++)
     			{
     				if (Math.abs(angle - angles[i]) <= .0001)
     				{
-    					angle += 120;
+    					angle += 360 / numProj;
     				}
     			}
     		}
-    		Projectile currProj = new Projectile(Projectile.fireball, 0, 0, 50, 50, 90, this);
+    		Projectile currProj = new Projectile(Projectile.fireball, 0, 0, 50, 50, Projectile.facingUp, this);
     		currProj.setOrbitAngle(angle);
     		currProj.setOrbit(true);
     		orbit.add(currProj);
     		allSpells.add(currProj);
+    		currProj.setDamage(1);
     	}
     	if (!Main.alreadyInteracting)
     	{
     		if (Main.one && !Main.oneLastFrame)
     		{
-    			shootProjectile(0, 20);
+    			shootProjectile(Projectile.fireball, 20);
     		}
     	}
     }
     
-    
+    private static final double fireBallCost = 25;
     public final static double baseSpeed = 8;
-    public final static int startWalking = 0;
-    public final static int notWalking = -1;
 }
