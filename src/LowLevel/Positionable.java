@@ -199,7 +199,7 @@ public class Positionable extends Point
      */
     public void setHitWidth(double newWidth)
     {
-    	double currCenterX = collisionBasis[UL].getX() + getHitLength() / 2;
+    	double currCenterX = collisionBasis[UL].getX() + getHitWidth() / 2;
     	collisionBasis[UL].setX(currCenterX - newWidth / 2);
     	collisionBasis[DL].setX(currCenterX - newWidth / 2);
     	collisionBasis[UR].setX(currCenterX + newWidth / 2);
@@ -259,6 +259,7 @@ public class Positionable extends Point
 		Polygon temp = new Polygon(rotatedBasis);
 		temp.show();
 	}
+	
 	public void showProjectileBox()
 	{
 		Point[] basis = getProjectileBasis();

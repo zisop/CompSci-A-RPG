@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL;
 
 import Combat.MeleeMob;
 import Combat.Mob;
+import Combat.AOE;
 import Combat.CombatChar;
 import Combat.Player;
 import Combat.Projectile;
@@ -66,10 +67,12 @@ public class Main
     public static boolean x = false;
     public static boolean leftClick = false;
     public static boolean one = false;
+    public static boolean two = false;
     public static boolean e = false;
     public static boolean rightClick = false;
     
     public static boolean eLastFrame = false;
+    public static boolean twoLastFrame = false;
     public static boolean leftClickLastFrame = false;
     public static boolean xLastFrame = false;
     public static boolean oneLastFrame = false;
@@ -78,7 +81,6 @@ public class Main
     
     public static void main(String[] args) throws InterruptedException {
         init();
-        glClearColor(.2f, .6f, 0, 1);
         Texture tex = new Texture("IdleAnim/IdleDown.PNG");
         player = new Player(tex, 0, 0, 70, 70, 35, 10, 25);
         initRoom(currRoom = 0);
@@ -113,6 +115,7 @@ public class Main
             x = KeyInput.keys[GLFW_KEY_X];
             e = KeyInput.keys[GLFW_KEY_E];
             one = KeyInput.keys[GLFW_KEY_1];
+            two = KeyInput.keys[GLFW_KEY_2];
             
             player.updateMovement();
             boolean[] movement = player.getMovement();
@@ -143,6 +146,8 @@ public class Main
             if (moveDirec != notMoving) {player.setDirec(moveDirec); player.move();}
             
             else {player.stopWalk();}
+            if (alreadyInteracting) {Image.colorMultiplier = .7f;}
+            else {Image.colorMultiplier = 1;}
             showVisibles();
             
             UI.showUI();
@@ -158,6 +163,7 @@ public class Main
             eLastFrame = e;
             moveDirecLastFrame = moveDirec;
             oneLastFrame = one;
+            twoLastFrame = two;
             rightClickLastFrame = rightClick;
             interactionEvent = false;
         }
@@ -312,6 +318,7 @@ public class Main
         Tile.initTex();
         CombatChar.init();
         NPC.initTex();
+        AOE.init();
         glEnable(3553);
         glEnable(3042);
         glBlendFunc(770, 771);

@@ -35,6 +35,12 @@ public class Image extends Positionable
         collides = false;
         enemyState = neutral;
     }
+    public boolean isEnemy(Image otherChar)
+    {
+    	if (enemyState() == good && otherChar.enemyState() == bad) {return true;}
+    	if (enemyState() == bad && otherChar.enemyState() == good) {return true;}
+    	return false;
+    }
     public void setEnemyState(int newState) {enemyState = newState;}
     public int enemyState() {return enemyState;}
     public void setAlpha(float newAlpha) {alpha = newAlpha;}
@@ -48,7 +54,7 @@ public class Image extends Positionable
     	double screenY = getY() - Main.player.getY();
     	if ((Math.abs(screenX) < monWid) && (Math.abs(screenY) < monLen))
     	{
-    		GL11.glColor4f(r / 255, g / 255, b / 255, a / 255);
+    		GL11.glColor4f(r * colorMultiplier / 255, g * colorMultiplier / 255, b * colorMultiplier / 255, a / 255);
         	if (shouldRotate())
         	{
         		//Shows assuming that rotations are enabled for the image
@@ -130,6 +136,7 @@ public class Image extends Positionable
     public static int bad = 0;
     public static int good = 1;
     public static int neutral = 2;
+    public static float colorMultiplier = 1;
     private static int monLen;
     private static int monWid;
 }

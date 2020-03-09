@@ -67,17 +67,18 @@ public abstract class Mob extends CombatChar{
 			
 			firstSound = 6;
 			walkAnimSwitch = 6;
-			soundFXSwitch = 20;
+			soundFXSwitch = 25;
+			walkVolume = .1;
 			healthRegen = .05;
 			maxHealth = 30;
 			//one attack will affect the player for 40 frames
-			attackStun = 2;
-			attackInvuln = 3;
+			attackStun = 16;
+			attackInvuln = 48;
 			
 			setHitLength(10);
 			setProjectileLength(50);
 			setProjectileWidth(45);
-			setHitWidth(40);
+			setHitWidth(35);
 			hitBoxDown(20);
 			
 			break;
@@ -104,8 +105,8 @@ public abstract class Mob extends CombatChar{
 			healthRegen = .05;
 			maxHealth = 20;
 			//one attack will affect the player for 40 frames
-			attackStun = 2;
-			attackInvuln = 3;
+			attackStun = 16;
+			attackInvuln = 48;
 			
 			setProjectileLength(35);
 			setProjectileWidth(35);

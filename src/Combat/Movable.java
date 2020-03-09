@@ -119,6 +119,8 @@ public abstract class Movable extends Image{
     	projBasis[UR].setY(projBasis[UR].getY() + newLength / 2);
     	projBasis[DR].setY(projBasis[DR].getY() - newLength / 2);
     }
+    public void setSpeed(double newSpeed) {speed = newSpeed;}
+    public double getSpeed() {return speed;}
     
     public abstract void move();
     public static final int up = 0;

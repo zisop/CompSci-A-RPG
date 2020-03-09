@@ -30,6 +30,7 @@ public class CombatChar extends Movable{
 	protected int walkAnimSwitch;
 	protected int soundFXSwitch;
 	protected int firstSound;
+	protected double walkVolume;
 	
 	protected String[] walkSounds;
 	protected Texture[] anims;
@@ -44,6 +45,7 @@ public class CombatChar extends Movable{
         projectileBasis[UL] = new Point(showBox[UL].getX(), showBox[UL].getY());
         hitStunFrames = 0;
         setProjInteraction(true);
+        walkVolume = .6;
     }
 	public Point[] getProjectileBasis()
 	{
@@ -88,16 +90,15 @@ public class CombatChar extends Movable{
     	}
     }
     /**
-     * lengths are measured in pauses
-     * one pause = pauseLength (currently 8 frames)
+     * one blink upon hit = pauseLength (currently 8 frames)
      * @param damage
      * @param pauses
      */
     public void receiveHit(double damage, double fromAngle, int stunLen, int invulnLen)
     {
     	hitAngle = fromAngle + 180;
-    	invulnerabilityLength = invulnLen * pauseLength;
-    	stunLength = stunLen * pauseLength;
+    	invulnerabilityLength = invulnLen;
+    	stunLength = stunLen;
     	hitStunFrames = invulnerabilityLength + stunLength;
     	setHealth(getHealth() - damage);
     }
@@ -130,12 +131,7 @@ public class CombatChar extends Movable{
     {
     	return hitStunFrames == 0;
     }
-    public boolean isEnemy(Image otherChar)
-    {
-    	if (enemyState() == good && otherChar.enemyState() == bad) {return true;}
-    	if (enemyState() == bad && otherChar.enemyState() == good) {return true;}
-    	return false;
-    }
+    
     private boolean[] findDirecs(double angle)
     {
     	boolean[] moveDirecs = new boolean[4];
@@ -234,7 +230,7 @@ public class CombatChar extends Movable{
 	protected Audio playWalkSound()
 	{
 		int which = (int)(Math.random() * walkSounds.length);
-		return Audio.playSound(walkSounds[which], .6);
+		return Audio.playSound(walkSounds[which], walkVolume);
 	}
 	
 	/**

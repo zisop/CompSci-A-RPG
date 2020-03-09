@@ -5,6 +5,7 @@ package Combat;
 import java.util.ArrayList;
 
 import Game.Main;
+import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Geometry;
 import LowLevel.Point;
@@ -14,11 +15,13 @@ public class Player extends CombatChar
 {
 	private static double xInteractionRadius = 20;
 	private static double clickInteractionRadius = 40;
-	private ArrayList<Projectile> allSpells;
 	private ArrayList<Projectile> orbit;
+	private ArrayList<AOE> allAOE;
 	
 	private Point[] xInteractionPoints;
 	private Point[] clickInteractionPoints;
+	private boolean casting;
+	private AOE cast;
 	
     public Player(Texture img, int inX, int inY, double w, double l, double hitW, double hitL, double hbDown) {
         super(img, inX, inY, w, l);
@@ -39,8 +42,8 @@ public class Player extends CombatChar
         clickInteractionPoints = new Point[] {p1, p2, p3, p4};
         speed = baseSpeed;
         
-        allSpells = new ArrayList<Projectile>();
         orbit = new ArrayList<Projectile>();
+        allAOE = new ArrayList<AOE>();
         maxHealth = 100;
         maxMana = 100;
         health = maxHealth;
@@ -54,11 +57,14 @@ public class Player extends CombatChar
         walkDirec = down;
         walkAnimSwitch = 6;
         soundFXSwitch = 20;
+        walkVolume = .2;
+        
         anims = getAnims(playerAnimInd, playerAnimInd + 19);
         walkSounds = getSounds(playerSoundInd, playerSoundInd + 0);
         firstSound = 6;
         setEnemyState(good);
         handleCombatException();
+        casting = false;
     }
     /**
      * Determines whether the character was within player's X button pressing collision radius
@@ -127,36 +133,51 @@ public class Player extends CombatChar
     	}
     }
     
-    public void shootProjectile(int ID, double speed)
+    private void castSpell(int ID)
     {
-    	if (orbit.size() > 0)
+    	switch(ID)
     	{
-    		double mouseAngle = Main.cursorAngle();
-    		int smallestInd = 0;
-    		for (int i = 1; i < orbit.size(); i++)
-    		{
-    			double smallestDist = Math.abs(orbit.get(smallestInd).getOrbitAngle() - mouseAngle);
-    			double currDist = Math.abs(orbit.get(i).getOrbitAngle() - mouseAngle);
-    			if (currDist < smallestDist)
+    		case Projectile.fireball:
+    			if (mana >= fireBallCost)
     			{
-    				smallestInd = i;
-    			}
-    		}
-    		Projectile shot = orbit.get(smallestInd);
-    		double xDiff = Main.cursor.getX() + getX() - shot.getX();
-    		double yDiff = Main.cursor.getY() + getY() - shot.getY();
-    		double hypoLen = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
-    		double shotAngle = Math.toDegrees(Math.acos(xDiff / hypoLen));
-    		if (yDiff < 0) {shotAngle *= -1;}
-    		shot.setOrbit(false);
-    		shot.setAngle(shotAngle);
-    		orbit.remove(smallestInd);
-    		mana -= fireBallCost;
-    		switch(ID)
-    		{
-    			case Projectile.fireball:
+    				double speed = this.speed * 5/4;
+    				double mouseAngle = Main.cursorAngle();
+    				int smallestInd = 0;
+    				for (int i = 1; i < orbit.size(); i++)
+    				{
+    					double smallestDist = Math.abs(orbit.get(smallestInd).getOrbitAngle() - mouseAngle);
+    					double currDist = Math.abs(orbit.get(i).getOrbitAngle() - mouseAngle);
+    					if (currDist < smallestDist)
+    					{
+    						smallestInd = i;
+    					}	
+    				}
+    				Projectile shot = orbit.get(smallestInd);
+    				orbit.remove(smallestInd);
+    				double xDiff = Main.cursor.getX() + getX() - shot.getX();
+    				double yDiff = Main.cursor.getY() + getY() - shot.getY();
+    				double hypoLen = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+    				double shotAngle = Math.toDegrees(Math.acos(xDiff / hypoLen));
+    				if (yDiff < 0) {shotAngle *= -1;}
+    				shot.setOrbit(false);
+    				shot.setAngle(shotAngle);
+    				shot.setSpeed(speed);
+    				mana -= fireBallCost;
     				shot.setDamage(10);
-    		}
+    				shot.setInvuln(8);
+    				shot.setStun(8);
+    				Audio.playSound("Batt/fireball", .12);
+    				Main.allRooms[Main.currRoom].permaShow(shot);
+    			}
+    			break;
+    		case AOE.poison:
+    			if (mana >= poisonCost)
+    			{
+    				cast = new AOE(AOE.poison, this);
+    				System.out.println(ID);
+    				updateCastState(true);
+    			}
+    			break;
     	}
     }
     /**
@@ -165,15 +186,36 @@ public class Player extends CombatChar
      */
     public void showSpells()
     {
-    	for (int i = allSpells.size() - 1; i >= 0; i--)
+    	for (int i = orbit.size() - 1; i >= 0; i--)
     	{
-    		if (!Main.alreadyInteracting) {allSpells.get(i).move();}
-    		Projectile.visProj.add(allSpells.get(i));
-    		if (allSpells.get(i).isEnded())
+    		Projectile curr = orbit.get(i);
+    		Main.allRooms[Main.currRoom].tempShow(curr);
+    	}
+    	if (casting) 
+    	{
+    		cast.setPos(Main.cursor.getX() + Main.player.getX(), Main.cursor.getY() + Main.player.getY());
+    		Main.allRooms[Main.currRoom].tempShow(cast);
+    		if (Main.leftClick && !Main.leftClickLastFrame)
     		{
-    			allSpells.remove(i);
+    			cast.place();
+    			updateCastState(false);
+    			int ID = cast.getID();
+    			switch(ID)
+    			{
+    				case AOE.poison:
+    					mana -= poisonCost;
+    			}
+    		}
+    		else if (Main.rightClick && !Main.rightClickLastFrame)
+    		{
+    			updateCastState(false);
     		}
     	}
+    }
+    private void updateCastState(boolean flag)
+    {
+    	casting = flag;
+    	Main.alreadyInteracting = flag;
     }
 
     public void show()
@@ -185,6 +227,7 @@ public class Player extends CombatChar
     	
     		manageProjectiles();
     	}
+    	manageSpells();
     	showSpells();
     	
     	super.show();
@@ -226,19 +269,27 @@ public class Player extends CombatChar
     		Projectile currProj = new Projectile(Projectile.fireball, 0, 0, 50, 50, Projectile.facingUp, this);
     		currProj.setOrbitAngle(angle);
     		currProj.setOrbit(true);
+    		
     		orbit.add(currProj);
-    		allSpells.add(currProj);
     		currProj.setDamage(.2);
     	}
+    }
+    private void manageSpells()
+    {
     	if (!Main.alreadyInteracting)
     	{
     		if (Main.one && !Main.oneLastFrame)
     		{
-    			shootProjectile(Projectile.fireball, 20);
+    			castSpell(Projectile.fireball);
+    		}
+    		else if (Main.two && !Main.twoLastFrame)
+    		{
+    			castSpell(AOE.poison);
     		}
     	}
     }
     
     private static final double fireBallCost = 25;
+    private static final double poisonCost = 30;
     public final static double baseSpeed = 8;
 }

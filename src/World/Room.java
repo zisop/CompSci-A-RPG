@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import Combat.AOE;
 import Combat.Mob;
 import Combat.Projectile;
 import Game.Main;
@@ -18,6 +19,10 @@ public class Room extends Image{
 	private Line[] outline;
 	private Terrain[] terrains;
 	private ArrayList<Image> images;
+	private ArrayList<Projectile> orbitProj;
+	private ArrayList<Projectile> shotProj;
+	private ArrayList<AOE> uncasted;
+	private ArrayList<AOE> casted;
 	private ArrayList<Image> toRemove;
 	//Terrain should all be rectangles; if you need to make complex polygons, split them into multiple rectangles
 	//Do not try to make diagonals out of squares you fucking idiots
@@ -33,6 +38,10 @@ public class Room extends Image{
 			outline = Geometry.addNewShape(outline, Geometry.createLines(terrains[i].getShowBasis()));
 		}
 		toRemove = new ArrayList<Image>();
+		orbitProj = new ArrayList<Projectile>();
+		shotProj = new ArrayList<Projectile>();
+		uncasted = new ArrayList<AOE>();
+		casted = new ArrayList<AOE>();
 	}
 	public void show()
 	{
@@ -46,7 +55,36 @@ public class Room extends Image{
 		{
 			toArray[i].show();
 		}
-		Projectile.showVisProjectiles();
+		
+		for (int i = casted.size() - 1; i >= 0; i--)
+		{
+			AOE curr = casted.get(i);
+			curr.show();
+			if (curr.isEnded())
+			{
+				casted.remove(i);
+			}
+		}
+		
+		for (int i = shotProj.size() - 1; i >= 0; i--)
+		{
+			Projectile curr = shotProj.get(i);
+			curr.show();
+			if (curr.isEnded())
+			{
+				shotProj.remove(i);
+			}
+		}
+		orbitProj.forEach((orbitProj) -> orbitProj.show());
+		orbitProj.clear();
+		
+		uncasted.forEach((aoe) -> aoe.show());
+		uncasted.clear();
+		
+		
+		
+		
+		
 		
 		List<Image> temp = Arrays.asList(toArray);
 		images = new ArrayList<Image>(temp);
@@ -56,15 +94,14 @@ public class Room extends Image{
 			toRemove.remove(i);
 		}
 	}
-	public ArrayList<Image> getImages()
-	{
-		return images;
-	}
-	public Terrain[] getTerrain()
-	{
-		return terrains;
-	}
-	public boolean strictCollision(Positionable otherChar)
+	public void tempShow(AOE aoe) {uncasted.add(aoe);}
+	public void permaShow(AOE aoe) {casted.add(aoe);}
+	public void tempShow(Projectile proj) {orbitProj.add(proj);}
+	public void permaShow(Projectile proj) {shotProj.add(proj);}
+	
+	public ArrayList<Image> getImages() {return images;}
+	public Terrain[] getTerrain() {return terrains;}
+	public boolean strictCollision(Positionable otherChar) 
 	{
 		return Geometry.strictCollision(outline, Geometry.createLines(otherChar.getCollisionBasis()));
 	}

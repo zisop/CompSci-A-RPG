@@ -19,11 +19,12 @@ public class Projectile extends Movable {
 	private int numHits;
 	private int maxHits;
 	private ArrayList<Image> alreadyAttacked;
-	private double speed;
 	private double orbitRadius;
 	private boolean orbitting;
 	private double damage;
 	private int changeFrame;
+	private int attackStun;
+	private int attackInvulnerability;
 	private Image collidingChar;
 	//All the animations (anims[0] should be frame 1, anims[7] should be frame 8 etc)
 	private Texture[] orbitAnims;
@@ -43,11 +44,12 @@ public class Projectile extends Movable {
 				shotAnims = getAnims(fireBallShot, fireBallShot + 1);
 				changeFrame = 3;
 				endFrame = 90;
-				speed = 8;
 				maxHits = 4;
 				setHitLength(getLength() * 4 / 5);
 				setHitWidth(getWidth() * 4 / 5);
 				hitBoxDown(-5);
+				attackStun = 0;
+				attackInvulnerability = 0;
 		}
 		setAngle(angle);
 		orbitting = false;
@@ -72,14 +74,16 @@ public class Projectile extends Movable {
 			}
 			
 			updateCollision();
-			if (!alreadyAttacked.contains(collidingChar) && collidingChar != null && orbitter.isEnemy(collidingChar))
+			CombatChar coll = (CombatChar)collidingChar;
+			if (collidingChar != null && coll.canBeAttacked() && !alreadyAttacked.contains(collidingChar) && orbitter.isEnemy(collidingChar))
 			{
-			
-				CombatChar coll = (CombatChar)collidingChar;
-				coll.setHealth(coll.getHealth() - damage);
-				if (!orbitting) {numHits++; alreadyAttacked.add(collidingChar);}
+				coll.receiveHit(damage, coll.angleTo(this), attackStun, attackInvulnerability);
+				if (!orbitting) {
+					numHits++; alreadyAttacked.add(collidingChar);
+					if (numHits == maxHits) {framesShot = endFrame;}
+				}
 			}
-			if (numHits == maxHits) {framesShot = endFrame;}
+			move();
 		}
 		super.show();
 	}
@@ -117,6 +121,8 @@ public class Projectile extends Movable {
 	}
 	public double getDamage() {return damage;}
 	public void setDamage(double newDamage) {damage = newDamage;}
+	public void setStun(int newStun) {attackStun = newStun;}
+	public void setInvuln(int newInvuln) {attackInvulnerability = newInvuln;}
 	private void updateCollision()
 	{
 		Room currRoom = Main.allRooms[Main.currRoom];
@@ -126,7 +132,6 @@ public class Projectile extends Movable {
 			Image currImg = images.get(i);
 			if (currImg != orbitter && currImg.interactsProj() && collision(currImg))
 			{
-				
 				collidingChar = currImg;
 				return;
 			}
@@ -140,6 +145,10 @@ public class Projectile extends Movable {
 	public boolean isEnded()
 	{
 		return framesShot == endFrame;
+	}
+	public boolean isOrbitting()
+	{
+		return orbitting;
 	}
 	/**
 	 * moves projectile where it should false
@@ -167,7 +176,6 @@ public class Projectile extends Movable {
 	public static final int fireBallShot = 4; 
 	public static final int fireball = 0;
 	public static final double facingUp = 90;
-	public static ArrayList<Projectile> visProj = new ArrayList<Projectile>();
 	public static Texture[] projTex = new Texture[6];
 	/**
 	 * init
@@ -196,10 +204,5 @@ public class Projectile extends Movable {
 			anims[i - startInd] = projTex[i]; 
 		}
 		return anims;
-	}
-	public static void showVisProjectiles()
-	{
-		visProj.forEach((proj) -> proj.show());
-		visProj.clear();
 	}
 }
