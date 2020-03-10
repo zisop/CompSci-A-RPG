@@ -175,6 +175,7 @@ public class Projectile extends Movable {
 	public static final int fireBallOrbit = 0;
 	public static final int fireBallShot = 4; 
 	public static final int fireball = 0;
+	public static final int arrow = 2;
 	public static final double facingUp = 90;
 	public static Texture[] projTex = new Texture[6];
 	/**

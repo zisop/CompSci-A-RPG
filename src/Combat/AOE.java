@@ -3,6 +3,7 @@ package Combat;
 import java.util.ArrayList;
 
 import Game.Main;
+import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Image;
 import LowLevel.Positionable;
@@ -22,6 +23,7 @@ public class AOE extends Image{
 	private Texture[] anims;
 	private Texture[] startAnims;
 	private Texture[] activeAnims;
+	private String[] sounds;
 	public AOE(int inID, CombatChar inOwner)
 	{
 		super(null, 0, 0, 0, 0);
@@ -34,11 +36,12 @@ public class AOE extends Image{
 				invulnFrames = 32;
 				stunFrames = 16;
 				damage = 5;
+				sounds = getSounds(poisonSoundInd, poisonSoundInd + 0);
 				startAnims = getAnims(poisonStartInd, poisonStartInd + 14);
 				activeAnims = getAnims(poisonStartInd, poisonStartInd + 27);
 				anims = startAnims;
 				animSwitch = 2;
-				maxFrames = animSwitch * activeAnims.length * 5 - animSwitch;
+				maxFrames = animSwitch * (activeAnims.length * 5 - 1);
 				existenceFrames = 0;
 				break;
 		}
@@ -78,6 +81,8 @@ public class AOE extends Image{
 		anims = activeAnims;
 		existenceFrames = 0;
 		Main.allRooms[Main.currRoom].permaShow(this);
+		int which = (int)(Math.random() * sounds.length);
+		Audio.playSound(sounds[which], .2);
 	}
 	public boolean isEnded()
 	{
@@ -111,7 +116,17 @@ public class AOE extends Image{
 		}
 		return anims;
 	}
+	public static String[] getSounds(int start, int end)
+	{
+		String[] sounds = new String[end - start + 1];
+		for (int i = 0; i < sounds.length; i++)
+		{
+			sounds[i] = allSounds[i + start];
+		}
+		return sounds;
+	}
 	public static Texture[] allAnims;
+	public static String[] allSounds;
 	public static void init()
 	{
 		allAnims = new Texture[28];
@@ -143,8 +158,11 @@ public class AOE extends Image{
 		allAnims[poisonActiveInd + 10] = new Texture("Projectiles/Poison/active10.png");
 		allAnims[poisonActiveInd + 11] = new Texture("Projectiles/Poison/active11.png");
 		allAnims[poisonActiveInd + 12] = new Texture("Projectiles/Poison/active12.png");
+		
+		allSounds = new String[1];
+		allSounds[poisonSoundInd + 0] = "Batt/energy";
 	}
-	
+	private static int poisonSoundInd = 0;
 	private static int poisonStartInd = 0;
 	private static int poisonActiveInd = poisonStartInd + 15;
 

@@ -174,7 +174,6 @@ public class Player extends CombatChar
     			if (mana >= poisonCost)
     			{
     				cast = new AOE(AOE.poison, this);
-    				System.out.println(ID);
     				updateCastState(true);
     			}
     			break;

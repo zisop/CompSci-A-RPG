@@ -23,58 +23,16 @@ public class MeleeMob extends Mob{
 		Main.player.receiveHit(damage, Main.player.angleTo(this), attackStun, attackInvuln);
 	}
 	
-	private void handleAttackAnims()
-	{
-		switch (walkDirec)
-		{
-			case up: setImage(anims[uA]); break;
-			case right: setImage(anims[rA]); break;
-			case down: setImage(anims[dA]); break;
-			case left: setImage(anims[lA]); break;
-		}
-	}
+	
 	
 	
 	protected void pointToPlayer()
 	{
+		startingHorizontal = Math.random() < .5;
 		movementPoint = Main.player;
 	}
 	
-	protected void pointRandomly()
-	{
-		Room currRoom = Main.allRooms[Main.currRoom];
-		double maxRadius = sightRange;
-		
-		//Cubic graph results in a tendency to move far, rather than not far
-		//there are exactly 0 words that mean not far you fuck
-		double cube = Math.pow(maxRadius, 3);
-		double radius = Math.pow(cube * Math.random(), 1/3.0);
-		
-		
-		double angle = 2 * Math.PI * Math.random();
-		startingHorizontal = Math.random() < .5;
-		Point testPoint = new Point(getX() + Math.cos(angle) * radius, getY() + Math.sin(angle) * radius);
-		int numTries = 0;
-		while (!currRoom.pathPossible(this, testPoint))
-		{
-			startingHorizontal = Math.random() < .5;
-			radius = Math.pow(cube * Math.random(), 1/3.0);
-			angle = 2 * Math.PI * Math.random();
-			
-			testPoint = new Point(getX() + Math.cos(angle) * radius, getY() + Math.sin(angle) * radius);
-			numTries++;
-			if (numTries == 1000)
-			{
-				try {
-					throw new Exception("mob couldn't find path");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		movementPoint = testPoint;
-	}
+	
 	protected void createStats()
 	{
 		double barWidth = 30;

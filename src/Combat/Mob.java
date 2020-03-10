@@ -343,6 +343,16 @@ public abstract class Mob extends CombatChar{
 		else {direc = right;}
 		walkDirec = direc;
 	}
+	protected void handleAttackAnims()
+	{
+		switch (walkDirec)
+		{
+			case up: setImage(anims[uA]); break;
+			case right: setImage(anims[rA]); break;
+			case down: setImage(anims[dA]); break;
+			case left: setImage(anims[lA]); break;
+		}
+	}
 	/**
 	 * Sends the mob in a direction toward the player <br>
 	 * Mob will start moving randomly if it collides with terrain <br>
@@ -354,8 +364,49 @@ public abstract class Mob extends CombatChar{
 	 * Sends the mob in a random direction with a random radius<br>
 	 * radius is bounded to individual
 	 */
-	protected abstract void pointRandomly();
+	protected void pointRandomly()
+	{
+		
+		double maxRadius = sightRange;
+		
+		//Cubic graph results in a tendency to move far, rather than not far
+		//there are exactly 0 words that mean not far you fuck
+		double cube = Math.pow(maxRadius, 3);
+		double radius = Math.pow(cube * Math.random(), 1/3.0);
+		
+		
+		double angle = 2 * Math.PI * Math.random();
+		startingHorizontal = Math.random() < .5;
+		Point testPoint = new Point(getX() + Math.cos(angle) * radius, getY() + Math.sin(angle) * radius);
+		int numTries = 0;
+		Room currRoom = Main.allRooms[Main.currRoom];
+		while (!currRoom.pathPossible(this, testPoint))
+		{
+			startingHorizontal = Math.random() < .5;
+			radius = Math.pow(cube * Math.random(), 1/3.0);
+			angle = 2 * Math.PI * Math.random();
+			
+			testPoint = new Point(getX() + Math.cos(angle) * radius, getY() + Math.sin(angle) * radius);
+			numTries++;
+			if (numTries == 1000)
+			{
+				try {
+					throw new Exception("mob couldn't find path");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		movementPoint = testPoint;
+	}
+	/**
+	 * makes the mob attack
+	 */
 	protected abstract void attack();
+	/**
+	 * creates the mob's stat display (health, mana)
+	 */
 	protected abstract void createStats();
 	
 	public void setHealth(double newHealth)
@@ -388,6 +439,7 @@ public abstract class Mob extends CombatChar{
 	public final static int skeleton = 0;
 	public final static int slime = 1;
 	public final static int zombie = 2;
+	public final static int archer = 3;
 
 	private static final int skelSoundInd = 0;
 	private static final int skelAnimInd = 0;
