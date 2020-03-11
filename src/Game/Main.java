@@ -110,8 +110,8 @@ public class Main
             toInit.forEach((room) -> initRoom(room));
             toInit.clear();
             
-            leftClick = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == 1;
-            rightClick = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == 1;
+            leftClick = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_TRUE;
+            rightClick = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2) == GLFW_TRUE;
             x = KeyInput.keys[GLFW_KEY_X];
             e = KeyInput.keys[GLFW_KEY_E];
             one = KeyInput.keys[GLFW_KEY_1];

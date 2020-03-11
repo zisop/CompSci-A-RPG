@@ -6,8 +6,6 @@ import Game.Main;
 import LowLevel.Geometrical;
 import LowLevel.Geometry;
 import LowLevel.Image;
-import LowLevel.Point;
-import World.Room;
 
 public class MeleeMob extends Mob{
 	

@@ -62,6 +62,7 @@ public class Chest extends Image{
 			Main.interactionEvent = true;
 		}
 		//Animation garbage
+		int initFrame = openFrame;
 		if (isOpen && openFrame != 3)
 		{
 			openFrame++;
@@ -72,7 +73,7 @@ public class Chest extends Image{
 			openFrame--;
 			setImage(chestTex[whichChest * 4 + openFrame]);
 		}
-		if (openFrame == 3 || openFrame == 0)
+		if (openFrame != initFrame && (openFrame == 3 || openFrame == 0))
 		{
 			boolean initVisibility = chestBag.getVisibility();
 			chestBag.setVisibility(isOpen);

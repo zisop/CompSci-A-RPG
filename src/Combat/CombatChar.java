@@ -4,9 +4,7 @@ package Combat;
 import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Geometry;
-import LowLevel.Image;
 import LowLevel.Point;
-import LowLevel.Shape;
 
 public class CombatChar extends Movable{
 	private Point[] projectileBasis;

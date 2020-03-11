@@ -173,7 +173,7 @@ public class UI {
     {
     	if (Main.e && !Main.eLastFrame)
         {
-        	playerBag.setVisibility(!UI.playerBag.getVisibility());
+        	playerBag.setVisibility(!playerBag.getVisibility());
         	armorBag.setVisibility(playerBag.getVisibility());
         }
     	for (int i = 0; i < allBags.size(); i++)
