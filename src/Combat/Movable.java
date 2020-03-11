@@ -1,14 +1,12 @@
 package Combat;
 
-import LowLevel.Polygon;
+
 import java.util.ArrayList;
 
 import Game.Main;
 import Imported.Texture;
-import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
-import LowLevel.Shape;
 import World.Room;
 
 public abstract class Movable extends Image{

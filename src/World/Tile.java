@@ -1,7 +1,6 @@
 package World;
 
 import Imported.Texture;
-import LowLevel.Geometrical;
 import LowLevel.Image;
 
 public class Tile extends Image{

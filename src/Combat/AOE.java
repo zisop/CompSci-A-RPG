@@ -6,7 +6,6 @@ import Game.Main;
 import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Image;
-import LowLevel.Positionable;
 import World.Room;
 
 public class AOE extends Image{
