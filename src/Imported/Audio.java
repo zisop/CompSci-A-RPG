@@ -10,7 +10,7 @@ import javax.swing.*;
 public class Audio extends JFrame {
 
 	
-	public static double baseVolume = .8;
+	public static double baseVolume = .2;
 	private static double volume = baseVolume;
 	private Clip clip;
 	public Audio(String file){

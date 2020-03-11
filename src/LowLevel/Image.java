@@ -55,41 +55,37 @@ public class Image extends Positionable
     	if ((Math.abs(screenX) < monWid) && (Math.abs(screenY) < monLen))
     	{
     		GL11.glColor4f(r * colorMultiplier / 255, g * colorMultiplier / 255, b * colorMultiplier / 255, a / 255);
+    		Point[] pointCords;
         	if (shouldRotate())
         	{
         		//Shows assuming that rotations are enabled for the image
-        		Point[] pointCords = {new Point(-getWidth() / 2.0, -getLength() / 2.0), 
-                        new Point(-getWidth() / 2.0, getLength() / 2.0), 
-                        new Point(getWidth() / 2.0f, getLength() / 2.0), 
-                        new Point(getWidth() / 2.0f, -getLength() / 2.0)};
-        		pointCords = new Point[]{Geometry.rotatePoint(pointCords[0], getAngle()), 
-        				                Geometry.rotatePoint(pointCords[1], this.getAngle()), 
-        				                Geometry.rotatePoint(pointCords[2], this.getAngle()), 
-        				                Geometry.rotatePoint(pointCords[3], this.getAngle())};
+        		//DL, UL, UR, DR
+        		pointCords = Geometry.rotatePoints(getShowBasis(), this, getAngle());
         		image.bind();
-                GL11.glBegin(7);
+                GL11.glBegin(GL11.GL_QUADS);
                 GL11.glTexCoord2f(0.0f, 1.0f);
-                GL11.glVertex2f(((float)(pointCords[0].getX() + screenX) * 2.0f / monWid), ((float)(pointCords[0].getY() + screenY) * 2.0f / monLen));
+                GL11.glVertex2f(((float)(pointCords[DL].getX() - Main.player.getX()) * 2.0f / monWid), ((float)(pointCords[DL].getY() - Main.player.getY()) * 2.0f / monLen));
                 GL11.glTexCoord2f(0.0f, 0.0f);
-                GL11.glVertex2f(((float)(pointCords[1].getX() + screenX) * 2.0f / monWid), ((float)(pointCords[1].getY() + screenY) * 2.0f / monLen));
+                GL11.glVertex2f(((float)(pointCords[UL].getX() - Main.player.getX()) * 2.0f / monWid), ((float)(pointCords[UL].getY() - Main.player.getY()) * 2.0f / monLen));
                 GL11.glTexCoord2f(1.0f, 0.0f);
-                GL11.glVertex2f(((float)(pointCords[2].getX() + screenX) * 2.0f / monWid), ((float)(pointCords[2].getY() + screenY) * 2.0f / monLen));
+                GL11.glVertex2f(((float)(pointCords[UR].getX() - Main.player.getX()) * 2.0f / monWid), ((float)(pointCords[UR].getY() - Main.player.getY()) * 2.0f / monLen));
                 GL11.glTexCoord2f(1.0f, 1.0f);
-                GL11.glVertex2f(((float)(pointCords[3].getX() + screenX) * 2.0f / monWid), ((float)(pointCords[3].getY() + screenY) * 2.0f / monLen));
+                GL11.glVertex2f(((float)(pointCords[DR].getX() - Main.player.getX()) * 2.0f / monWid), ((float)(pointCords[DR].getY() - Main.player.getY()) * 2.0f / monLen));
                 GL11.glEnd();
         	}
         	else {
         		//Takes less time than show if shouldRotate; time optimization
+        		pointCords = getShowBasis();
         		image.bind();
-                GL11.glBegin(7);
+        		GL11.glBegin(GL11.GL_QUADS);
                 GL11.glTexCoord2f(0.0f, 1.0f);
-                GL11.glVertex2f(((float)(screenX - getWidth() / 2) * 2.0f / monWid), ((float)(screenY - getLength() / 2) * 2.0f / monLen));
+                GL11.glVertex2f(((float)(pointCords[DL].getX() - Main.player.getX()) * 2.0f / monWid), ((float)(pointCords[DL].getY() - Main.player.getY()) * 2.0f / monLen));
                 GL11.glTexCoord2f(0.0f, 0.0f);
-                GL11.glVertex2f(((float)(screenX - getWidth() / 2) * 2.0f / monWid), ((float)(screenY + getLength() / 2) * 2.0f / monLen));
+                GL11.glVertex2f(((float)(pointCords[UL].getX() - Main.player.getX()) * 2.0f / monWid), ((float)(pointCords[UL].getY() - Main.player.getY()) * 2.0f / monLen));
                 GL11.glTexCoord2f(1.0f, 0.0f);
-                GL11.glVertex2f(((float)(screenX + getWidth() / 2) * 2.0f / monWid), ((float)(screenY + getLength() / 2) * 2.0f / monLen));
+                GL11.glVertex2f(((float)(pointCords[UR].getX() - Main.player.getX()) * 2.0f / monWid), ((float)(pointCords[UR].getY() - Main.player.getY()) * 2.0f / monLen));
                 GL11.glTexCoord2f(1.0f, 1.0f);
-                GL11.glVertex2f(((float)(screenX + getWidth() / 2) * 2.0f / monWid), ((float)(screenY - getLength() / 2) * 2.0f / monLen));
+                GL11.glVertex2f(((float)(pointCords[DR].getX() - Main.player.getX()) * 2.0f / monWid), ((float)(pointCords[DR].getY() - Main.player.getY()) * 2.0f / monLen));
                 GL11.glEnd();
         	}
         	GL11.glColor4f(1, 1, 1, 1);
@@ -103,24 +99,19 @@ public class Image extends Positionable
     	show(255, 255, 255, alpha);
     }
     public void UIshow(float r, float g, float b, float a) {
-        double[] xVals = { -getWidth() / 2.0, -getWidth() / 2.0, getWidth() / 2.0f, getWidth() / 2.0f };
-        double[] yVals = { -getLength() / 2.0, getLength() / 2.0, getLength() / 2.0, -getLength() / 2.0 };
-        Point[] pointCords = { Geometry.rotatePoint(new Point(xVals[0], yVals[0]), getAngle()), 
-        		Geometry.rotatePoint(new Point(xVals[1], yVals[1]), this.getAngle()), 
-        		Geometry.rotatePoint(new Point(xVals[2], yVals[2]), this.getAngle()), 
-        		Geometry.rotatePoint(new Point(xVals[3], yVals[3]), this.getAngle())};
+        Point[] pointCords = Geometry.rotatePoints(getShowBasis(), this, getAngle());
         
         image.bind();
-        GL11.glBegin(7);
+        GL11.glBegin(GL11.GL_QUADS);
         GL11.glColor4f(r / 255, g / 255, b / 255, a / 255);
         GL11.glTexCoord2f(0.0f, 1.0f);
-        GL11.glVertex2f(((float)pointCords[0].getX() + (float)getX()) * 2.0f / monWid, ((float)pointCords[0].getY() + (float)getY()) * 2.0f / monLen);
+        GL11.glVertex2f(((float)pointCords[DL].getX()) * 2.0f / monWid, ((float)pointCords[DL].getY()) * 2.0f / monLen);
         GL11.glTexCoord2f(0.0f, 0.0f);
-        GL11.glVertex2f(((float)pointCords[1].getX() + (float)getX()) * 2.0f / monWid, ((float)pointCords[1].getY() + (float)getY()) * 2.0f / monLen);
+        GL11.glVertex2f(((float)pointCords[UL].getX()) * 2.0f / monWid, ((float)pointCords[UL].getY()) * 2.0f / monLen);
         GL11.glTexCoord2f(1.0f, 0.0f);
-        GL11.glVertex2f(((float)pointCords[2].getX() + (float)getX()) * 2.0f / monWid, ((float)pointCords[2].getY() + (float)getY()) * 2.0f / monLen);
+        GL11.glVertex2f(((float)pointCords[UR].getX()) * 2.0f / monWid, ((float)pointCords[UR].getY()) * 2.0f / monLen);
         GL11.glTexCoord2f(1.0f, 1.0f);
-        GL11.glVertex2f(((float)pointCords[3].getX() + (float)getX()) * 2.0f / monWid, ((float)pointCords[3].getY() + (float)getY()) * 2.0f / monLen);
+        GL11.glVertex2f(((float)pointCords[DR].getX()) * 2.0f / monWid, ((float)pointCords[DR].getY()) * 2.0f / monLen);
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glEnd();
     }

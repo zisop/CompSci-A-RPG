@@ -11,6 +11,12 @@ import LowLevel.Shape;
 public class CombatChar extends Movable{
 	private Point[] projectileBasis;
 	
+	private Texture[] particleAnims;
+	private Image particleEffect;
+	private int particleFrames;
+	private int particleAnim;
+	private int particleSwitch;
+	
 	protected double manaRegen;
 	protected double mana;
 	protected double health;
@@ -126,10 +132,40 @@ public class CombatChar extends Movable{
     	}
     	else {setAlpha(255);}
     	super.show();
+    	if (particleFrames != 0) {
+    		if (particleFrames % particleSwitch == 0) {
+    			particleAnim += 1;
+    			particleEffect.setImage(particleAnims[particleAnim]);
+    		}
+    		particleEffect.setPos(getX(), getY());
+    		particleEffect.show();
+    		particleFrames--;
+    	}
+    	else if (particleFrames < 0)
+    	{
+    		try {
+				throw new Exception("Particle frames shouldn't have been lower than 0");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+    	}
     }
     public boolean canBeAttacked()
     {
     	return hitStunFrames == 0;
+    }
+    public void createParticles(int ID)
+    {
+    	switch (ID) {
+		case heal:
+			particleAnims = getAnims(healAnimInd, healAnimInd + 21);
+			particleEffect = new Image(null, 0, 0, getWidth(), getLength());
+			particleEffect.setAlpha(150);
+			particleSwitch = 2;
+			particleAnim = startParticles;
+			break;
+		}
+    	particleFrames = (particleAnims.length - 1) * particleSwitch;
     }
     
     private boolean[] findDirecs(double angle)
@@ -296,12 +332,11 @@ public class CombatChar extends Movable{
 	protected static final int skelAnimInd = 0;
 	protected static final int slimeAnimInd = 20;
 	protected static final int playerAnimInd = 40;
+	protected static final int healAnimInd = playerAnimInd + 20;
 	
 	protected static final int skelSoundInd = 0;
 	protected static final int slimeSoundInd = 2;
 	protected static final int playerSoundInd = 12;
-	
-	
 	
     public static void init ()
     {
@@ -321,7 +356,7 @@ public class CombatChar extends Movable{
 		loadedSounds[playerSoundInd + 0] = "Move/Steps/foot2";
 		
 		
-		loadedTex = new Texture[60];
+		loadedTex = new Texture[82];
 		loadedTex[skelAnimInd + uW0] = new Texture("Mobs/Skeleton/IdleUp.png");
 		loadedTex[skelAnimInd + uW1] = new Texture("Mobs/Skeleton/IdleUp.png");
 		loadedTex[skelAnimInd + uW2] = new Texture("Mobs/Skeleton/IdleUp.png");
@@ -385,6 +420,29 @@ public class CombatChar extends Movable{
     	loadedTex[playerAnimInd + lW2] = new Texture("WalkAnim/WalkLeft/Left03.PNG");
     	loadedTex[playerAnimInd + lI] = new Texture("IdleAnim/IdleLeft.PNG");
     	loadedTex[playerAnimInd + lA] = loadedTex[playerAnimInd + lI];
+    	
+    	loadedTex[healAnimInd + 0] = new Texture("Particles/heal0.png");
+    	loadedTex[healAnimInd + 1] = new Texture("Particles/heal1.png");
+    	loadedTex[healAnimInd + 2] = new Texture("Particles/heal2.png");
+    	loadedTex[healAnimInd + 3] = new Texture("Particles/heal3.png");
+    	loadedTex[healAnimInd + 4] = new Texture("Particles/heal4.png");
+    	loadedTex[healAnimInd + 5] = new Texture("Particles/heal5.png");
+    	loadedTex[healAnimInd + 6] = new Texture("Particles/heal6.png");
+    	loadedTex[healAnimInd + 7] = new Texture("Particles/heal7.png");
+    	loadedTex[healAnimInd + 8] = new Texture("Particles/heal8.png");
+    	loadedTex[healAnimInd + 9] = new Texture("Particles/heal9.png");
+    	loadedTex[healAnimInd + 10] = new Texture("Particles/heal10.png");
+    	loadedTex[healAnimInd + 11] = new Texture("Particles/heal11.png");
+    	loadedTex[healAnimInd + 12] = new Texture("Particles/heal12.png");
+    	loadedTex[healAnimInd + 13] = new Texture("Particles/heal13.png");
+    	loadedTex[healAnimInd + 14] = new Texture("Particles/heal14.png");
+    	loadedTex[healAnimInd + 15] = new Texture("Particles/heal15.png");
+    	loadedTex[healAnimInd + 16] = new Texture("Particles/heal16.png");
+    	loadedTex[healAnimInd + 17] = new Texture("Particles/heal17.png");
+    	loadedTex[healAnimInd + 18] = new Texture("Particles/heal18.png");
+    	loadedTex[healAnimInd + 19] = new Texture("Particles/heal19.png");
+    	loadedTex[healAnimInd + 20] = new Texture("Particles/heal20.png");
+    	loadedTex[healAnimInd + 21] = new Texture("Particles/heal21.png");
     }
     
 
@@ -416,8 +474,9 @@ public class CombatChar extends Movable{
 	public static final int lI = 18;
 	public static final int lA = 19;
     
-    public static final int initialHitVelocity = 5;
+    private static final int initialHitVelocity = 5;
     private static final int pauseLength = 8;
+    private static final int startParticles = -1;
     
     public void setDirec(int newDirec) {walkDirec = newDirec;}
     public int getDirec() {return walkDirec;}
@@ -430,4 +489,5 @@ public class CombatChar extends Movable{
     public void setMana(double newMana) {mana = newMana;}
     public void setMaxMana(double newMax) {maxMana = newMax;}
     
+    public static final int heal = 2;
 }

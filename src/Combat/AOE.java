@@ -6,7 +6,6 @@ import Game.Main;
 import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Image;
-import LowLevel.Positionable;
 import World.Room;
 
 public class AOE extends Image{
@@ -33,8 +32,8 @@ public class AOE extends Image{
 			case poison:
 				setWidth(150);
 				setLength(150);
-				invulnFrames = 32;
-				stunFrames = 16;
+				invulnFrames = 16;
+				stunFrames = 12;
 				damage = 5;
 				sounds = getSounds(poisonSoundInd, poisonSoundInd + 0);
 				startAnims = getAnims(poisonStartInd, poisonStartInd + 14);
@@ -82,7 +81,7 @@ public class AOE extends Image{
 		existenceFrames = 0;
 		Main.allRooms[Main.currRoom].permaShow(this);
 		int which = (int)(Math.random() * sounds.length);
-		Audio.playSound(sounds[which], .2);
+		Audio.playSound(sounds[which], .5);
 	}
 	public boolean isEnded()
 	{

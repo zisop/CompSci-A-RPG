@@ -8,6 +8,7 @@ import Game.Main;
 import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Geometry;
+import LowLevel.Image;
 import LowLevel.Point;
 import LowLevel.Positionable;
 
@@ -17,6 +18,7 @@ public class Player extends CombatChar
 	private static double clickInteractionRadius = 40;
 	private ArrayList<Projectile> orbit;
 	private ArrayList<AOE> allAOE;
+	
 	
 	private Point[] xInteractionPoints;
 	private Point[] clickInteractionPoints;
@@ -166,7 +168,7 @@ public class Player extends CombatChar
     				shot.setDamage(10);
     				shot.setInvuln(8);
     				shot.setStun(8);
-    				Audio.playSound("Batt/fireball", .12);
+    				Audio.playSound("Batt/fireball", .48);
     				Main.allRooms[Main.currRoom].permaShow(shot);
     			}
     			break;
@@ -175,6 +177,16 @@ public class Player extends CombatChar
     			{
     				cast = new AOE(AOE.poison, this);
     				updateCastState(true);
+    			}
+    			break;
+    		case heal:
+    			if (mana >= healCost && health < maxHealth)
+    			{
+    				double conversionRatio = .2;
+    				setHealth(Math.min(maxHealth, getHealth() + healCost * conversionRatio));
+    				setMana(getMana() - healCost);
+    				createParticles(heal);
+    				Audio.playSound("Spells/blessing2", .3);
     			}
     			break;
     	}
@@ -285,10 +297,15 @@ public class Player extends CombatChar
     		{
     			castSpell(AOE.poison);
     		}
+    		else if (Main.three && !Main.threeLastFrame)
+    		{
+    			castSpell(CombatChar.heal);
+    		}
     	}
     }
     
     private static final double fireBallCost = 25;
     private static final double poisonCost = 30;
+    private static final double healCost = 50;
     public final static double baseSpeed = 8;
 }

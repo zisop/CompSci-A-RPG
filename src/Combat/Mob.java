@@ -68,7 +68,7 @@ public abstract class Mob extends CombatChar{
 			firstSound = 6;
 			walkAnimSwitch = 6;
 			soundFXSwitch = 25;
-			walkVolume = .1;
+			walkVolume = .4;
 			healthRegen = .05;
 			maxHealth = 30;
 			//one attack will affect the player for 40 frames

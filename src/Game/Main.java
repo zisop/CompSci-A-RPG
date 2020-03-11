@@ -18,9 +18,7 @@ import Input.CursorInput;
 import Input.KeyInput;
 import LowLevel.Geometry;
 import LowLevel.Image;
-import LowLevel.Line;
 import LowLevel.Point;
-import LowLevel.Positionable;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -68,14 +66,16 @@ public class Main
     public static boolean leftClick = false;
     public static boolean one = false;
     public static boolean two = false;
+    public static boolean three = false;
     public static boolean e = false;
     public static boolean rightClick = false;
-    
+   
     public static boolean eLastFrame = false;
-    public static boolean twoLastFrame = false;
     public static boolean leftClickLastFrame = false;
     public static boolean xLastFrame = false;
     public static boolean oneLastFrame = false;
+    public static boolean twoLastFrame = false;
+    public static boolean threeLastFrame = false;
     public static boolean rightClickLastFrame = false;
     
     
@@ -116,6 +116,7 @@ public class Main
             e = KeyInput.keys[GLFW_KEY_E];
             one = KeyInput.keys[GLFW_KEY_1];
             two = KeyInput.keys[GLFW_KEY_2];
+            three = KeyInput.keys[GLFW_KEY_3];
             
             player.updateMovement();
             boolean[] movement = player.getMovement();
@@ -164,6 +165,7 @@ public class Main
             moveDirecLastFrame = moveDirec;
             oneLastFrame = one;
             twoLastFrame = two;
+            threeLastFrame = three;
             rightClickLastFrame = rightClick;
             interactionEvent = false;
         }
