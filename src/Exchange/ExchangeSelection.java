@@ -148,16 +148,22 @@ public class ExchangeSelection extends Image{
 			}
 		}
 	}
-	public void setPos(double newX, double newY)
-	{
-		System.out.println("ExchangeSelection setPos not implemented");
-	}
 	public void setX(double newX)
 	{
-		System.out.println("ExchangeSelection setX not implemented");
+		try {
+			throw new Exception("ExchangeSelection setX not implemented");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
 	}
 	public void setY(double newY)
 	{
-		System.out.println("ExchangeSelection setY not implemented");
+		try {
+			throw new Exception("ExchangeSelection setY not implemented");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
 	}
 }

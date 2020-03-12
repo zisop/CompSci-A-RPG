@@ -29,7 +29,7 @@ public class AOE extends Image{
 		animNum = -1;
 		ID = inID;
 		switch (ID) {
-			case poison:
+			case damageCloud:
 				setWidth(150);
 				setLength(150);
 				invulnFrames = 16;
@@ -99,7 +99,14 @@ public class AOE extends Image{
 				CombatChar toAffect = (CombatChar)(curr);
 				if (toAffect.canBeAttacked() && collision(toAffect))
 				{
-					toAffect.receiveHit(damage, toAffect.angleTo(this), stunFrames, invulnFrames);
+					double[] damageInfo = new double[4];
+					damageInfo[Effect.hitDamage] = damage;
+					damageInfo[Effect.fromAngle] = toAffect.angleTo(this);
+					damageInfo[Effect.stunFrames] = stunFrames;
+					damageInfo[Effect.invulnFrames] = invulnFrames;
+					
+					Effect damage = new Effect(Effect.damage, damageInfo, owner);
+					toAffect.receiveEffect(damage);
 				}
 			}
 		}
@@ -165,5 +172,6 @@ public class AOE extends Image{
 	private static int poisonStartInd = 0;
 	private static int poisonActiveInd = poisonStartInd + 15;
 
-	public static final int poison = 1;
+	public static final int damageCloud = 1;
+	public static final int poisonCloud = 4;
 }

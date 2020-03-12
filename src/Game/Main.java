@@ -67,6 +67,7 @@ public class Main
     public static boolean one = false;
     public static boolean two = false;
     public static boolean three = false;
+    public static boolean four = false;
     public static boolean e = false;
     public static boolean rightClick = false;
    
@@ -76,6 +77,7 @@ public class Main
     public static boolean oneLastFrame = false;
     public static boolean twoLastFrame = false;
     public static boolean threeLastFrame = false;
+    public static boolean fourLastFrame = false;
     public static boolean rightClickLastFrame = false;
     
     
@@ -91,12 +93,15 @@ public class Main
         
         Item wand = new Item(Item.wand0);
         Item ruby = new Item(Item.ruby);
-        ruby.setQuantity(40);
+        Item ruby2 = new Item(Item.ruby);
+        ruby2.setQuantity(64);
+        ruby.setQuantity(64);
         Item wand2 = new Item(Item.wand1);
         
         UI.playerBag.addItem(wand, 8);
         UI.playerBag.addItem(wand2, 0);
         UI.playerBag.addItem(ruby, 3);
+        UI.playerBag.addItem(ruby2, 4);
         
         
         
@@ -117,6 +122,7 @@ public class Main
             one = KeyInput.keys[GLFW_KEY_1];
             two = KeyInput.keys[GLFW_KEY_2];
             three = KeyInput.keys[GLFW_KEY_3];
+            four = KeyInput.keys[GLFW_KEY_4];
             
             player.updateMovement();
             boolean[] movement = player.getMovement();
@@ -166,6 +172,7 @@ public class Main
             oneLastFrame = one;
             twoLastFrame = two;
             threeLastFrame = three;
+            fourLastFrame = four;
             rightClickLastFrame = rightClick;
             interactionEvent = false;
         }

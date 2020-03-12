@@ -15,10 +15,17 @@ public class MeleeMob extends Mob{
 	}
 	public void attack()
 	{
+		
 		attackFrame = 0;
 		facePlayer();
 		handleAttackAnims();
-		Main.player.receiveHit(damage, Main.player.angleTo(this), attackStun, attackInvuln);
+		double[] damageInfo = new double[4];
+		damageInfo[Effect.hitDamage] = damage;
+		damageInfo[Effect.fromAngle] = Main.player.angleTo(this);
+		damageInfo[Effect.stunFrames] = attackStun;
+		damageInfo[Effect.invulnFrames] = attackInvuln;
+		Effect damage = new Effect(Effect.damage, damageInfo, this);
+		Main.player.receiveEffect(damage);
 	}
 	
 	

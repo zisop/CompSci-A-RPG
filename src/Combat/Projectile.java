@@ -77,7 +77,13 @@ public class Projectile extends Movable {
 			CombatChar coll = (CombatChar)collidingChar;
 			if (collidingChar != null && coll.canBeAttacked() && !alreadyAttacked.contains(collidingChar) && orbitter.isEnemy(collidingChar))
 			{
-				coll.receiveHit(damage, coll.angleTo(this), attackStun, attackInvulnerability);
+				double[] damageInfo = new double[4];
+				damageInfo[Effect.hitDamage] = damage;
+				damageInfo[Effect.fromAngle] = coll.angleTo(this);
+				damageInfo[Effect.stunFrames] = attackStun;
+				damageInfo[Effect.invulnFrames] = attackInvulnerability;
+				Effect damage = new Effect(Effect.damage, damageInfo, orbitter);
+				coll.receiveEffect(damage);
 				if (!orbitting) {
 					numHits++; alreadyAttacked.add(collidingChar);
 					if (numHits == maxHits) {framesShot = endFrame;}

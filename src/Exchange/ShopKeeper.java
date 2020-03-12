@@ -164,14 +164,34 @@ public class ShopKeeper extends NPC{
     		setFrameNum(0);
     	}
     }
-	
+	/**
+	 * Empties shop items into player bag
+	 * Also empties held item
+	 */
 	private void emptyItems()
 	{
 		//it empties the crafting box's input items don't fucking ask
 		//emptied items are sent to the player's bag or deleted if the player's bag is full
 		//this code is either unreadable because i'm horrible at code or because dealing with the exceptions is supposed to suck
+		
 		ItemBag inputBag = shop.getBox().getInput();
-		ItemSlot[] inputSlots = inputBag.getSlots();
+		ItemSlot[] prevSlots = inputBag.getSlots();
+		ItemSlot[] inputSlots;
+		
+		if (ItemBag.holdingItem)
+		{
+			inputSlots = new ItemSlot[prevSlots.length + 1];
+			for (int i = 0; i < prevSlots.length; i++)
+			{
+				inputSlots[i] = prevSlots[i];
+			}
+			inputSlots[prevSlots.length] = new ItemSlot(0, 0, 0, 0, Item.acceptAll);
+			inputSlots[prevSlots.length].setItem(ItemBag.heldItem);
+		}
+		else 
+		{
+			inputSlots = prevSlots;
+		}
 		for (int inputInd = 0; inputInd < inputSlots.length; inputInd++)
 		{
 			Item inputItem = inputSlots[inputInd].getItem();
@@ -229,9 +249,11 @@ public class ShopKeeper extends NPC{
 					}
 				}
 				if (shouldDelete) {inputItem.setSlot(Item.destroyItem);}
-				inputBag.removeItem(inputInd);
+				if (inputInd != prevSlots.length) {inputBag.removeItem(inputInd);}
+				else {ItemBag.heldItem.unStick();}
 			}
 		}
+		
 	}
 	
 	//NPC's shouldInteract function, but only if the shopkeeper is in its talking state

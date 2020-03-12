@@ -1,15 +1,20 @@
 package Combat;
 
 
+import java.util.ArrayList;
+
 import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Geometry;
+import LowLevel.Image;
 import LowLevel.Point;
 
 public class CombatChar extends Movable{
 	private Point[] projectileBasis;
 	
 	private Texture[] particleAnims;
+	private ArrayList<Effect> currentEffects;
+	
 	private Image particleEffect;
 	private int particleFrames;
 	private int particleAnim;
@@ -36,6 +41,8 @@ public class CombatChar extends Movable{
 	protected int firstSound;
 	protected double walkVolume;
 	
+	protected double damageMultiplier;
+	
 	protected String[] walkSounds;
 	protected Texture[] anims;
 	
@@ -50,6 +57,8 @@ public class CombatChar extends Movable{
         hitStunFrames = 0;
         setProjInteraction(true);
         walkVolume = .6;
+        currentEffects = new ArrayList<Effect>();
+        damageMultiplier = 1;
     }
 	public Point[] getProjectileBasis()
 	{
@@ -98,13 +107,91 @@ public class CombatChar extends Movable{
      * @param damage
      * @param pauses
      */
-    public void receiveHit(double damage, double fromAngle, int stunLen, int invulnLen)
+    public void receiveEffect(Effect effect)
     {
-    	hitAngle = fromAngle + 180;
-    	invulnerabilityLength = invulnLen;
-    	stunLength = stunLen;
-    	hitStunFrames = invulnerabilityLength + stunLength;
-    	setHealth(getHealth() - damage);
+    	int type = effect.getType();
+    	double[] information = effect.getInformation();
+    	switch(type)
+    	{
+    		case Effect.damage:
+    			double fromAngle = information[Effect.fromAngle];
+    			int invulnLen = (int)information[Effect.invulnFrames];
+    			int stunLen = (int)information[Effect.stunFrames];
+    			double damage = information[Effect.hitDamage];
+    			hitAngle = fromAngle + 180;
+    			invulnerabilityLength = invulnLen;
+    			stunLength = stunLen;
+    			hitStunFrames = invulnerabilityLength + stunLength;
+    			setHealth(getHealth() - damage);
+    			break;
+    		case Effect.heal:
+    			createParticles(Effect.heal);
+    			currentEffects.add(effect);
+    			
+    			break;
+    		case Effect.poison:
+    			createParticles(Effect.poison);
+    			currentEffects.add(effect);
+    			
+    			break;
+    		case Effect.frost:
+    			createParticles(Effect.frost);
+    			currentEffects.add(effect);
+    			setSpeed(information[Effect.speedMultipier] * getSpeed());
+    			break;
+    		case Effect.powerUp:
+    			createParticles(Effect.powerUp);
+    			currentEffects.add(effect);
+    			setDamageMultiplier(effect.getInformation()[Effect.powerMultiplier]);
+    			break;
+    	}
+    }
+    private void receiveStuckEffects()
+    {
+    	
+    	for (int i = currentEffects.size() - 1; i >= 0; i--)
+    	{
+    		
+    		Effect currEffect = currentEffects.get(i);
+    		currEffect.updateFrame();
+    		int type = currEffect.getType();
+    		int frame = currEffect.getFrame();
+    		double[] information = currEffect.getInformation();
+    		switch(type)
+    		{
+    			case Effect.poison:
+    				if (frame % (int)information[Effect.tickFrame] == 0)
+    				{
+    					//Ticks the health down on the tickframe
+    					setHealth(getHealth() - information[Effect.poisonTick]);
+    					
+    				}
+    				break;
+    			case Effect.heal:
+    				if (frame % (int)information[Effect.tickFrame] == 0)
+    				{
+    					//Ticks the health up on the tickframe
+    					setHealth(getHealth() + information[Effect.healTick]);
+    				}
+    				break;
+    		}
+    		if (currEffect.isEnded()) {
+    			currentEffects.remove(i);
+    			switch (type) {
+				case Effect.poison:
+					setRGBA(getRed() / poisonMult[0], getGreen() / poisonMult[1], getBlue() / poisonMult[2], getAlpha() / poisonMult[3]);
+					break;
+				case Effect.frost:
+					setRGBA(getRed() / frostMult[0], getGreen() / frostMult[1], getBlue() / frostMult[2], getAlpha() / frostMult[3]);
+					setSpeed(getSpeed() / information[Effect.speedMultipier]);
+					break;
+				case Effect.powerUp:
+					setRGBA(getRed() / powerMult[0], getGreen() / powerMult[1], getBlue() / powerMult[2], getAlpha() / powerMult[3]);
+					setDamageMultiplier(getDamageMultiplier() / information[Effect.powerMultiplier]);
+					break;
+				}
+    		}
+    	}
     }
     public void show()
     {
@@ -130,6 +217,7 @@ public class CombatChar extends Movable{
     	}
     	else {setAlpha(255);}
     	super.show();
+    	receiveStuckEffects();
     	if (particleFrames != 0) {
     		if (particleFrames % particleSwitch == 0) {
     			particleAnim += 1;
@@ -145,6 +233,7 @@ public class CombatChar extends Movable{
 				throw new Exception("Particle frames shouldn't have been lower than 0");
 			} catch (Exception e) {
 				e.printStackTrace();
+				System.exit(0);
 			}
     	}
     }
@@ -154,16 +243,40 @@ public class CombatChar extends Movable{
     }
     public void createParticles(int ID)
     {
+    	boolean shouldError = true;
     	switch (ID) {
-		case heal:
+		case Effect.heal:
 			particleAnims = getAnims(healAnimInd, healAnimInd + 21);
 			particleEffect = new Image(null, 0, 0, getWidth(), getLength());
 			particleEffect.setAlpha(150);
 			particleSwitch = 2;
 			particleAnim = startParticles;
+			particleFrames = (particleAnims.length - 1) * particleSwitch;
+			shouldError = false;
+			break;
+		case Effect.poison:
+			setRGBA(getRed() * poisonMult[0], getGreen() * poisonMult[1], getBlue() * poisonMult[2], getAlpha() * poisonMult[3]);
+			shouldError = false;
+			break;
+		case Effect.frost:
+			setRGBA(getRed() * frostMult[0], getGreen() * frostMult[1], getBlue() * frostMult[2], getAlpha() * frostMult[3]);
+			shouldError = false;
+			break;
+		case Effect.powerUp:
+			setRGBA(getRed() * powerMult[0], getGreen() * powerMult[1], getBlue() * powerMult[2], getAlpha() * powerMult[3]);
+			shouldError = false;
 			break;
 		}
-    	particleFrames = (particleAnims.length - 1) * particleSwitch;
+    	
+    	if (shouldError)
+    	{
+    		try {
+				throw new Exception("Particles weren't configured for effect " + ID);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(0);
+			}
+    	}
     }
     
     private boolean[] findDirecs(double angle)
@@ -477,15 +590,30 @@ public class CombatChar extends Movable{
     private static final int startParticles = -1;
     
     public void setDirec(int newDirec) {walkDirec = newDirec;}
+    public void setDamageMultiplier(double newMultiplier) {damageMultiplier = newMultiplier;}
     public int getDirec() {return walkDirec;}
     public double getHealth() {return health;}
     public double getMaxHealth() {return maxHealth;}
     public double getMana() {return mana;}
     public double getMaxMana() {return maxMana;}
-    public void setHealth(double newHealth) {health = newHealth;}
+    public double getDamageMultiplier() {return damageMultiplier;}
+    /**
+     * sets health and accounts for overflow
+     * @param newHealth
+     */
+    public void setHealth(double newHealth) {health = Math.min(newHealth, maxHealth);}
     public void setMaxHealth(double newMax) {maxHealth = newMax;}
-    public void setMana(double newMana) {mana = newMana;}
+    /**
+     * sets mana and accounts for overflow
+     * @param newMana
+     */
+    public void setMana(double newMana) {mana = Math.min(newMana, maxMana);}
     public void setMaxMana(double newMax) {maxMana = newMax;}
     
     public static final int heal = 2;
+    public static final int powerUp = 3;
+    
+    public static final float[] poisonMult = new float[] {50f/255, 255f/255, 50f/255, 255f/255};
+    public static final float[] frostMult = new float[] {50f/255, 50f/255, 255f/255, 255f/255};
+    public static final float[] powerMult = new float[] {255f/255, 150f/255, 150f/255, 255f/255};
 }

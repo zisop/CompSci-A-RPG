@@ -162,7 +162,7 @@ public abstract class Mob extends CombatChar{
 				else {attackFrame++;}
 			}
 			else {attackFrame++;}
-			setHealth(Math.min(getHealth() + healthRegen, maxHealth));
+			setHealth(getHealth() + healthRegen);
 		}
 		super.show();
 		stats.show();

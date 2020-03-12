@@ -8,6 +8,9 @@ public class Image extends Positionable
 {
     private Texture image;
     private float alpha;
+    private float red;
+    private float green;
+    private float blue;
     private boolean collides;
     private int enemyState;
     
@@ -15,26 +18,28 @@ public class Image extends Positionable
     public static boolean shouldNotRotate = false;
     
     public Image(Texture img, double inX, double inY, double w, double l) {
-        super(inX, inY, w, l);
-        image = img;
-        alpha = 255;
-        collides = false;
-        enemyState = neutral;
+        this(img, inX, inY, w, l, w, l);
     }
     public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL) {
-        super(inX, inY, w, l, hitW, hitL);
-        image = img;
-        alpha = 255;
-        collides = false;
-        enemyState = neutral;
+        this(img, inX, inY, w, l, hitW, hitL, 0);
     }
     public Image(Texture img, double inX, double inY, double w, double l, double hitW, double hitL, double hbDown) {
         super(inX, inY, w, l, hitW, hitL, hbDown);
         image = img;
+        red = 255;
+        green = 255;
+        blue = 255;
         alpha = 255;
         collides = false;
         enemyState = neutral;
     }
+    public void setRGBA(float newR, float newG, float newB, float newA)
+    {
+    	red = newR; green = newG; blue = newB; alpha = newA;
+    }
+    public float getRed() {return red;}
+    public float getGreen() {return green;}
+    public float getBlue() {return blue;}
     public boolean isEnemy(Image otherChar)
     {
     	if (enemyState() == good && otherChar.enemyState() == bad) {return true;}
@@ -96,7 +101,7 @@ public class Image extends Positionable
         
     }
     public void show() {
-    	show(255, 255, 255, alpha);
+    	show(red, green, blue, alpha);
     }
     public void UIshow(float r, float g, float b, float a) {
         Point[] pointCords = Geometry.rotatePoints(getShowBasis(), this, getAngle());
@@ -116,8 +121,7 @@ public class Image extends Positionable
         GL11.glEnd();
     }
     public void UIshow() {
-    	float r = 255, g = 255, b = 255;
-        UIshow(r, g, b, alpha);
+        UIshow(red, green, blue, alpha);
     }
     public static void init(int width, int length)
     {

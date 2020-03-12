@@ -62,13 +62,11 @@ public class ItemBag extends Positionable {
 	}
 	public void setVisibility(boolean visibility)
 	{
-		System.out.println(heldItem);
 		if (!visibility)
 		{
 			
-			if (holdingItem && heldItem.getBag() == this)
+			if (holdingItem && heldBag == this)
 			{
-				
 				if (heldItem.getSlot() != Item.destroyItem)
 				{
 					Item temp = getItem(heldItem.getSlot());
