@@ -268,6 +268,7 @@ public class Main
         bag.addItem(wand, 1);
         room.add(new Chest(0, 200, 50, 50, 50, 50, 40, bag));
         room.add(new MeleeMob(10, 20, Mob.skeleton));
+        room.add(new MeleeMob(10, 20, Mob.skeleton));
         
         Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10, 80);
         test.addRow(Tile.GrassDirtBR, CombatChar.down);

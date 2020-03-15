@@ -12,6 +12,7 @@ public class AOE extends Image{
 	private CombatChar owner;
 	private double damage;
 	private boolean placed;
+	private double volume;
 	private int animNum;
 	private int animSwitch;
 	private int existenceFrames;
@@ -41,9 +42,32 @@ public class AOE extends Image{
 				anims = startAnims;
 				animSwitch = 2;
 				maxFrames = animSwitch * (activeAnims.length * 5 - 1);
-				existenceFrames = 0;
+				volume = .5;
 				break;
+			case lightning:
+				setWidth(50);
+				setLength(150);
+				
+				damage = 10;
+				sounds = getSounds(lightningSoundInd, lightningSoundInd + 2);
+				activeAnims = getAnims(lightningInd, lightningInd + 14);
+				anims = activeAnims;
+				animSwitch = 1;
+				maxFrames = animSwitch * (activeAnims.length * 1 - 1);
+				invulnFrames = maxFrames;
+				stunFrames = maxFrames;
+				volume = .2;
+				setRotation(true);
+				break;
+			default:
+				try {
+					throw new Exception("AOE ID: " + ID + " didn't exist");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(0);
+				}
 		}
+		existenceFrames = 0;
 		owner = inOwner;
 	}
 	public void show()
@@ -81,7 +105,7 @@ public class AOE extends Image{
 		existenceFrames = 0;
 		Main.allRooms[Main.currRoom].permaShow(this);
 		int which = (int)(Math.random() * sounds.length);
-		Audio.playSound(sounds[which], .5);
+		Audio.playSound(sounds[which], volume);
 	}
 	public boolean isEnded()
 	{
@@ -135,7 +159,8 @@ public class AOE extends Image{
 	public static String[] allSounds;
 	public static void init()
 	{
-		allAnims = new Texture[28];
+		allAnims = new Texture[43];
+		
 		allAnims[poisonStartInd + 0] = new Texture("Projectiles/Poison/startUp0.png");
 		allAnims[poisonStartInd + 1] = new Texture("Projectiles/Poison/startUp1.png");
 		allAnims[poisonStartInd + 2] = new Texture("Projectiles/Poison/startUp2.png");
@@ -151,6 +176,7 @@ public class AOE extends Image{
 		allAnims[poisonStartInd + 12] = new Texture("Projectiles/Poison/startUp12.png");
 		allAnims[poisonStartInd + 13] = new Texture("Projectiles/Poison/startUp13.png");
 		allAnims[poisonStartInd + 14] = new Texture("Projectiles/Poison/startUp14.png");
+		
 		allAnims[poisonActiveInd + 0] = new Texture("Projectiles/Poison/active0.png");
 		allAnims[poisonActiveInd + 1] = new Texture("Projectiles/Poison/active1.png");
 		allAnims[poisonActiveInd + 2] = new Texture("Projectiles/Poison/active2.png");
@@ -165,13 +191,34 @@ public class AOE extends Image{
 		allAnims[poisonActiveInd + 11] = new Texture("Projectiles/Poison/active11.png");
 		allAnims[poisonActiveInd + 12] = new Texture("Projectiles/Poison/active12.png");
 		
-		allSounds = new String[1];
+		allAnims[lightningInd + 0] = new Texture("Projectiles/lightning/lightning0.png");
+		allAnims[lightningInd + 1] = new Texture("Projectiles/lightning/lightning1.png");
+		allAnims[lightningInd + 2] = new Texture("Projectiles/lightning/lightning2.png");
+		allAnims[lightningInd + 3] = new Texture("Projectiles/lightning/lightning3.png");
+		allAnims[lightningInd + 4] = new Texture("Projectiles/lightning/lightning4.png");
+		allAnims[lightningInd + 5] = new Texture("Projectiles/lightning/lightning5.png");
+		allAnims[lightningInd + 6] = new Texture("Projectiles/lightning/lightning6.png");
+		allAnims[lightningInd + 7] = new Texture("Projectiles/lightning/lightning7.png");
+		allAnims[lightningInd + 8] = new Texture("Projectiles/lightning/lightning8.png");
+		allAnims[lightningInd + 9] = new Texture("Projectiles/lightning/lightning9.png");
+		allAnims[lightningInd + 10] = new Texture("Projectiles/lightning/lightning10.png");
+		allAnims[lightningInd + 11] = new Texture("Projectiles/lightning/lightning11.png");
+		allAnims[lightningInd + 12] = new Texture("Projectiles/lightning/lightning12.png");
+		allAnims[lightningInd + 13] = new Texture("Projectiles/lightning/lightning13.png");
+		allAnims[lightningInd + 14] = new Texture("Projectiles/lightning/lightning14.png");
+		
+		allSounds = new String[4];
 		allSounds[poisonSoundInd + 0] = "Batt/energy";
+		allSounds[lightningSoundInd + 0] = "Spells/lightning1";
+		allSounds[lightningSoundInd + 1] = "Spells/lightning2";
+		allSounds[lightningSoundInd + 2] = "Spells/lightning2";
 	}
-	private static int poisonSoundInd = 0;
-	private static int poisonStartInd = 0;
-	private static int poisonActiveInd = poisonStartInd + 15;
+	private static final int poisonSoundInd = 0;
+	private static final int poisonStartInd = 0;
+	private static final int poisonActiveInd = poisonStartInd + 15;
+	private static final int lightningInd = poisonActiveInd + 13;
+	private static final int lightningSoundInd = poisonSoundInd + 1;
 
 	public static final int damageCloud = 1;
-	public static final int poisonCloud = 4;
+	public static final int lightning = 4;
 }

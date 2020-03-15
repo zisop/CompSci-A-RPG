@@ -64,7 +64,7 @@ public class Player extends CombatChar
         setEnemyState(good);
         handleCombatException();
         casting = false;
-        bindedSpells = new int[] {Projectile.fireball, AOE.damageCloud, CombatChar.heal, CombatChar.powerUp};
+        bindedSpells = new int[] {Projectile.fireball, AOE.damageCloud, CombatChar.heal, AOE.lightning};
     }
     
     public void show()
@@ -195,6 +195,19 @@ public class Player extends CombatChar
     				Effect effect = new Effect(Effect.powerUp, effectInfo, this);
     				receiveEffect(effect);
     				mana -= powerUpCost;
+    			}
+    			return;
+    		case AOE.lightning:
+    			if (mana >= lightningCost)
+    			{
+    				AOE lightning = new AOE(AOE.lightning, this);
+    				double angle = Main.cursorAngle();
+    				double radius = lightning.getLength() * 3 / 4;
+    				lightning.setAngle(angle - 90);
+    				angle = Math.toRadians(angle);
+    				lightning.setPos(getX() + radius * Math.cos(angle), getY() + radius * Math.sin(angle));
+    				lightning.place();
+    				mana -= lightningCost;
     			}
     			return;
     	}
@@ -338,6 +351,7 @@ public class Player extends CombatChar
     	}
     }
     
+    private static final double lightningCost = 30;
     private static final double fireBallCost = 25;
     private static final double poisonCost = 30;
     private static final double healCost = 40;
