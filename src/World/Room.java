@@ -94,6 +94,11 @@ public class Room extends Image{
 			toRemove.remove(i);
 		}
 	}
+	public void clear()
+	{
+		casted.clear();
+		shotProj.clear();
+	}
 	public void tempShow(AOE aoe) {uncasted.add(aoe);}
 	public void permaShow(AOE aoe) {casted.add(aoe);}
 	public void tempShow(Projectile proj) {orbitProj.add(proj);}

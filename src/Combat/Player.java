@@ -202,7 +202,7 @@ public class Player extends CombatChar
     			{
     				AOE lightning = new AOE(AOE.lightning, this);
     				double angle = Main.cursorAngle();
-    				double radius = lightning.getLength() * 3 / 4;
+    				double radius = lightning.getLength() / 2 + getWidth() / 2;
     				lightning.setAngle(angle - 90);
     				angle = Math.toRadians(angle);
     				lightning.setPos(getX() + radius * Math.cos(angle), getY() + radius * Math.sin(angle));

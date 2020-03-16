@@ -27,11 +27,16 @@ public abstract class Movable extends Image{
     }
     public void updateMovement()
     {
+    	updateMovement(speed);
+    }
+    public void updateMovement(double atSpeed)
+    {
     	Room currRoom = Main.allRooms[Main.currRoom];
     	ArrayList<Image> images = currRoom.getImages();
     	
     	movement = new boolean[] {true, true, true, true};
     	boolean shouldEnd = false;
+    	double speed = atSpeed;
     	
     	//for testing purposes; will be removed in final game
     	//this first test essentially is just checking that you're staying inside the room

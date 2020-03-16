@@ -22,6 +22,8 @@ public class Projectile extends Movable {
 	private double orbitRadius;
 	private boolean orbitting;
 	private double damage;
+	
+	private double initialVelocity;
 	private int changeFrame;
 	private int attackStun;
 	private int attackInvulnerability;
@@ -30,9 +32,9 @@ public class Projectile extends Movable {
 	private Texture[] orbitAnims;
 	private Texture[] shotAnims;
 	private Texture[] anims;
-	private CombatChar orbitter;
+	private CombatChar owner;
 	private double orbitAngle;
-	public Projectile(int inID, double x, double y, double width, double length, double angle, CombatChar orbitChar)
+	public Projectile(int inID, double x, double y, double width, double length, double angle, CombatChar ownChar)
 	{
 		super(null, x, y, width, length);
 		frameAnim = 0;
@@ -50,14 +52,15 @@ public class Projectile extends Movable {
 				hitBoxDown(-5);
 				attackStun = 0;
 				attackInvulnerability = 0;
+				initialVelocity = 10;
 		}
 		setAngle(angle);
 		orbitting = false;
-		orbitter = orbitChar;
+		owner = ownChar;
 		numHits = 0;
 		orbitAngle = 0;
 		framesShot = 0;
-		orbitRadius = Math.max(orbitter.getHitWidth(), orbitter.getHitLength()) * 1.6;
+		orbitRadius = Math.max(owner.getHitWidth(), owner.getHitLength()) * 1.6;
 		setRotation(true);
 	}
 	
@@ -75,14 +78,15 @@ public class Projectile extends Movable {
 			
 			updateCollision();
 			CombatChar coll = (CombatChar)collidingChar;
-			if (collidingChar != null && coll.canBeAttacked() && !alreadyAttacked.contains(collidingChar) && orbitter.isEnemy(collidingChar))
+			if (collidingChar != null && coll.canBeAttacked() && !alreadyAttacked.contains(collidingChar) && owner.isEnemy(collidingChar))
 			{
-				double[] damageInfo = new double[4];
-				damageInfo[Effect.hitDamage] = damage;
-				damageInfo[Effect.fromAngle] = coll.angleTo(this);
-				damageInfo[Effect.stunFrames] = attackStun;
-				damageInfo[Effect.invulnFrames] = attackInvulnerability;
-				Effect damage = new Effect(Effect.damage, damageInfo, orbitter);
+				double[] damageInfo = new double[5];
+				damageInfo[Effect.damageDamage] = damage;
+				damageInfo[Effect.damageFromAngle] = coll.angleTo(owner);
+				damageInfo[Effect.damageStunFrames] = attackStun;
+				damageInfo[Effect.damageInvulnFrames] = attackInvulnerability;
+				damageInfo[Effect.damageInitialVelocity] = initialVelocity;
+				Effect damage = new Effect(Effect.damage, damageInfo, owner);
 				coll.receiveEffect(damage);
 				if (!orbitting) {
 					numHits++; alreadyAttacked.add(collidingChar);
@@ -136,7 +140,7 @@ public class Projectile extends Movable {
 		for (int i = 0; i < images.size(); i++)
 		{
 			Image currImg = images.get(i);
-			if (currImg != orbitter && currImg.interactsProj() && collision(currImg))
+			if (currImg != owner && currImg.interactsProj() && collision(currImg))
 			{
 				collidingChar = currImg;
 				return;
@@ -175,7 +179,7 @@ public class Projectile extends Movable {
 			double mathAngle = Math.toRadians(orbitAngle);
 			double xDist = orbitRadius * Math.cos(mathAngle);
 			double yDist = orbitRadius * Math.sin(mathAngle);
-			setPos(orbitter.getX() + xDist, orbitter.getY() + yDist);
+			setPos(owner.getX() + xDist, owner.getY() + yDist);
 		}
 	}
 	public static final int fireBallOrbit = 0;

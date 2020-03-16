@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import LowLevel.Shape;
 import UI.Item;
 import UI.ItemBag;
+import UI.SpellSlot;
 import UI.TextDisplay;
 import UI.UI;
 import World.Room;
@@ -220,6 +221,7 @@ public class Main
     
     //Initializes a room given a roomNumber, or doesn't if already initialized
     public static void initRoom(int roomNum) {
+    	if (allRooms[currRoom] != null) {allRooms[currRoom].clear();}
     	Main.currRoom = roomNum;
         if (!Main.initted[roomNum]) {
             if (roomNum == 0) {
@@ -323,6 +325,7 @@ public class Main
         Projectile.initProj();
         Shape.initShapes();
         UI.init();
+        SpellSlot.init();
         Image.init(width, length);
         TextDisplay.initText();
         Tile.initTex();

@@ -27,11 +27,12 @@ public class CombatChar extends Movable{
 	protected double maxHealth;
 	protected double maxMana;
 	
-	protected double hitAngle;
-	
 	protected int hitStunFrames;
 	protected int invulnerabilityLength;
 	protected int stunLength;
+	protected double initialVelocity;
+	protected double hitAngle;
+	
 	protected int walkAnim;
 	protected int walkFrame;
 	protected int soundFXFrame;
@@ -114,14 +115,15 @@ public class CombatChar extends Movable{
     	switch(type)
     	{
     		case Effect.damage:
-    			double fromAngle = information[Effect.fromAngle];
-    			int invulnLen = (int)information[Effect.invulnFrames];
-    			int stunLen = (int)information[Effect.stunFrames];
-    			double damage = information[Effect.hitDamage];
+    			double fromAngle = information[Effect.damageFromAngle];
+    			int invulnLen = (int)information[Effect.damageInvulnFrames];
+    			int stunLen = (int)information[Effect.damageStunFrames];
+    			double damage = information[Effect.damageDamage];
     			hitAngle = fromAngle + 180;
     			invulnerabilityLength = invulnLen;
     			stunLength = stunLen;
     			hitStunFrames = invulnerabilityLength + stunLength;
+    			initialVelocity = information[Effect.damageInitialVelocity];
     			setHealth(getHealth() - damage);
     			break;
     		case Effect.heal:
@@ -200,11 +202,12 @@ public class CombatChar extends Movable{
     		if (hitStunFrames - invulnerabilityLength > 0)
     		{
     			boolean[] moveDirecs = findDirecs(hitAngle);
+    			double velocity = initialVelocity * ((hitStunFrames - invulnerabilityLength) / (double)(stunLength));
+    			updateMovement(velocity);
     			boolean[] movement = getMovement();
     			if (canMove(moveDirecs, movement))
     			{
     				double angle = Math.toRadians(hitAngle);
-    				double velocity = initialHitVelocity * ((hitStunFrames - invulnerabilityLength) / (double)(stunLength));
     				setPos(getX() + Math.cos(angle) * velocity, getY() + Math.sin(angle) * velocity);
     			}
     		}
@@ -585,7 +588,6 @@ public class CombatChar extends Movable{
 	public static final int lI = 18;
 	public static final int lA = 19;
     
-    private static final int initialHitVelocity = 5;
     private static final int pauseLength = 8;
     private static final int startParticles = -1;
     

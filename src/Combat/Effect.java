@@ -17,8 +17,8 @@ public class Effect {
 			liveFrames = (int)information[frostDuration];
 			break;
 		case damage:
-			effect[hitDamage] *= owner.getDamageMultiplier();
-			desiredLength = 4;
+			effect[damageDamage] *= owner.getDamageMultiplier();
+			desiredLength = 5;
 			break;
 		
 		case heal:
@@ -59,10 +59,11 @@ public class Effect {
 	
 	//Damage is the effect type
 	public static final int damage = 1;
-	public static final int hitDamage = 0;
-	public static final int invulnFrames = 1;
-	public static final int stunFrames = 2;
-	public static final int fromAngle = 3;
+	public static final int damageDamage = 0;
+	public static final int damageInvulnFrames = 1;
+	public static final int damageStunFrames = 2;
+	public static final int damageFromAngle = 3;
+	public static final int damageInitialVelocity = 4;
 	
 	//Poison and heal are the effect types
 	public static final int poison = 2;
@@ -76,7 +77,4 @@ public class Effect {
 	public static final int powerUp = 4;
 	public static final int powerMultiplier = 0;
 	public static final int powerDuration = 1;
-	
-	
-	
 }

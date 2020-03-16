@@ -37,6 +37,7 @@ public abstract class Mob extends CombatChar{
 	protected int attackFrame;
 	protected int attackEnd;
 	protected int pauseEnd;
+	protected double initialDamageVelocity;
 	protected double damage;
 	protected double sightRange;
 	protected int attackStun;
@@ -64,6 +65,7 @@ public abstract class Mob extends CombatChar{
 			sightRange = 600;
 			attackEnd = 20;
 			pauseEnd = attackEnd + 30;
+			initialDamageVelocity = 5;
 			
 			firstSound = 6;
 			walkAnimSwitch = 6;
@@ -75,11 +77,11 @@ public abstract class Mob extends CombatChar{
 			attackStun = 16;
 			attackInvuln = 48;
 			
-			setHitLength(10);
+			setHitLength(20);
 			setProjectileLength(50);
 			setProjectileWidth(45);
 			setHitWidth(35);
-			hitBoxDown(20);
+			hitBoxDown(15);
 			
 			break;
 
@@ -99,6 +101,7 @@ public abstract class Mob extends CombatChar{
 			attackEnd = 15;
 			pauseEnd = attackEnd + 30;
 			
+			
 			firstSound = 6;
 			walkAnimSwitch = 6;
 			soundFXSwitch = 20;
@@ -110,8 +113,8 @@ public abstract class Mob extends CombatChar{
 			
 			setProjectileLength(35);
 			setProjectileWidth(35);
-			setHitLength(15);
-			hitBoxDown(10);
+			setHitLength(25);
+			hitBoxDown(5);
 			
 			break;
 		}

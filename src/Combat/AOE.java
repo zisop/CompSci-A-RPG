@@ -13,6 +13,7 @@ public class AOE extends Image{
 	private double damage;
 	private boolean placed;
 	private double volume;
+	private double initialVelocity;
 	private int animNum;
 	private int animSwitch;
 	private int existenceFrames;
@@ -43,10 +44,11 @@ public class AOE extends Image{
 				animSwitch = 2;
 				maxFrames = animSwitch * (activeAnims.length * 5 - 1);
 				volume = .5;
+				initialVelocity = 5;
 				break;
 			case lightning:
 				setWidth(50);
-				setLength(150);
+				setLength(250);
 				
 				damage = 10;
 				sounds = getSounds(lightningSoundInd, lightningSoundInd + 2);
@@ -57,6 +59,7 @@ public class AOE extends Image{
 				invulnFrames = maxFrames;
 				stunFrames = maxFrames;
 				volume = .2;
+				initialVelocity = 20;
 				setRotation(true);
 				break;
 			default:
@@ -94,6 +97,7 @@ public class AOE extends Image{
 				existenceFrames++;
 			}
 			super.show();
+			
 		}
 		
 	}
@@ -123,11 +127,12 @@ public class AOE extends Image{
 				CombatChar toAffect = (CombatChar)(curr);
 				if (toAffect.canBeAttacked() && collision(toAffect))
 				{
-					double[] damageInfo = new double[4];
-					damageInfo[Effect.hitDamage] = damage;
-					damageInfo[Effect.fromAngle] = toAffect.angleTo(this);
-					damageInfo[Effect.stunFrames] = stunFrames;
-					damageInfo[Effect.invulnFrames] = invulnFrames;
+					double[] damageInfo = new double[5];
+					damageInfo[Effect.damageDamage] = damage;
+					damageInfo[Effect.damageFromAngle] = toAffect.angleTo(owner);
+					damageInfo[Effect.damageStunFrames] = stunFrames;
+					damageInfo[Effect.damageInvulnFrames] = invulnFrames;
+					damageInfo[Effect.damageInitialVelocity] = initialVelocity;
 					
 					Effect damage = new Effect(Effect.damage, damageInfo, owner);
 					toAffect.receiveEffect(damage);
