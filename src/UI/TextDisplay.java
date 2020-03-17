@@ -171,4 +171,10 @@ public class TextDisplay {
     	ToolTip.initTips();
     	NPC.initText();
     }
+    public static char[] toChars(String str)
+    {
+    	char[] list = new char[str.length()];
+    	for (int i = 0; i < list.length; i++) {list[i] = str.charAt(i);}
+    	return list;
+    }
 }

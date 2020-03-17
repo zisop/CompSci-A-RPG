@@ -2,6 +2,9 @@ package UI;
 
 import java.util.ArrayList;
 
+import Combat.AOE;
+import Combat.CombatChar;
+import Combat.Projectile;
 import Exchange.ShopKeeper;
 import Game.Main;
 import Game.NPC;
@@ -33,13 +36,22 @@ public class UI {
     	showNPCText();
     	showMenus();
     	showBags();
-    	
     }
     public static void init()
     {
     	//Inits the entire UI
     	initInventory();
     	initStats();
+    	initSpellBag();
+    }
+    public static int[] getBindedSpells()
+    {
+    	int[] bindedSpells = new int[selectedSpells.length];
+    	for (int i = 0; i < bindedSpells.length; i++)
+    	{
+    		bindedSpells[i] = selectedSpells[i].getSpellID();
+    	}
+    	return bindedSpells;
     }
     
     //Will determine if the mouse is hovering over a positionable in the UI
@@ -69,22 +81,27 @@ public class UI {
     	boxDisplay.addShape(inBox);
     	
     	double xPos = 0;
-    	if (name.equals("Helmet"))
-    	{
-    		xPos = 14;
-    	}
-    	if (name.equals("Ring"))
-    	{
-    		xPos = 24;
-    	}
-    	if (name.equals("Tome"))
-    	{
-    		xPos = 21;
-    	}
-    	if (name.equals("Wand"))
-    	{
-    		xPos = 21;
-    	}
+    	switch (name) {
+			case "Helmet":
+				xPos = 14;
+				break;
+			case "Ring":
+				xPos = 24;
+				break;
+			case "Tome":
+				xPos = 21;
+				break;
+			case "Wand":
+				xPos = 21;
+				break;
+			default:
+				try {
+					throw new Exception("Item type " + name + " wasn't implemented");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(0);
+				}
+		}
     	Geometrical helmTextPos = new Geometrical();
     	helmTextPos.addShape(new Shape(0, xPos, 37, 60, 10, 0, 0, 0, 0));
     	TextBox itemText = new TextBox(8, name, helmTextPos, 255);
@@ -93,6 +110,64 @@ public class UI {
     	slotDisplay.addShape(itemText);
     	
     	return slotDisplay;
+    }
+    public static Geometrical spellBag;
+    public static SpellSlot[] selectedSpells;
+    public static boolean spellBagVisible = false;
+    private static void initSpellBag()
+    {
+    	selectedSpells = new SpellSlot[4];
+    	spellBag = new Geometrical();
+    	double width = 40;
+    	double length = 40;
+    	double distance = 55;
+    	double offset = 12;
+    	Shape outerRect = Geometry.createRect(
+    	//x1, x2
+    	-offset - width / 2, offset + width / 2 + distance * 3,
+    	//y1, y2
+    	offset + length / 2 + distance, -(offset + length / 2 + distance * 1.5),
+    	//color
+    	100, 100, 100, 255);
+    	offset = 8;
+    	Shape innerRect = Geometry.createRect(
+    	//x1, x2
+    	-offset - width / 2, offset + width / 2 + distance * 3,
+    	//y1, y2
+    	offset + length / 2 + distance, -(offset + length / 2 + distance * 1.5),
+    	//Color
+    	150, 150, 150, 255);
+    	
+    	spellBag.addShape(outerRect);
+    	spellBag.addShape(innerRect);
+    	SpellSlot fireSlot = new SpellSlot(distance * 0, distance * -.5, width, length, SpellSlot.displaysSpells);
+    	fireSlot.setSpell(Projectile.fireball);
+    	
+    	SpellSlot lightningSlot = new SpellSlot(distance * 1, distance * -.5, width, length, SpellSlot.displaysSpells);
+    	lightningSlot.setSpell(AOE.lightning);
+    	
+    	SpellSlot damageCloud = new SpellSlot(distance * 2, distance * -.5, width, length, SpellSlot.displaysSpells);
+    	damageCloud.setSpell(AOE.damageCloud);
+    	
+    	SpellSlot healSlot = new SpellSlot(distance * 3, distance * -.5, width, length, SpellSlot.displaysSpells);
+    	healSlot.setSpell(CombatChar.heal);
+    	
+    	SpellSlot powerSlot = new SpellSlot(distance * 0, distance * -1.5, width, length, SpellSlot.displaysSpells);
+    	powerSlot.setSpell(CombatChar.powerUp);
+    	
+    	for (int i = 0; i < selectedSpells.length; i++)
+    	{
+    		selectedSpells[i] = new SpellSlot(distance * i, distance, width, length, SpellSlot.acceptsSpells);
+    		spellBag.addShape(selectedSpells[i]);
+    	}
+    	
+    	
+    	spellBag.addShape(lightningSlot);
+    	spellBag.addShape(fireSlot);
+    	spellBag.addShape(damageCloud);
+    	spellBag.addShape(healSlot);
+    	spellBag.addShape(powerSlot);
+    	spellBag.setPos(-360, 230);
     }
     
     private static void initInventory()
@@ -171,11 +246,21 @@ public class UI {
 
     private static void showBags()
     {
+    	if (Main.r && !Main.rLastFrame)
+    	{
+    		spellBagVisible = !spellBagVisible;
+    		if (spellBagVisible && playerBag.getVisibility()) {playerBag.setVisibility(false); armorBag.setVisibility(false);}
+    	}
     	if (Main.e && !Main.eLastFrame)
         {
         	playerBag.setVisibility(!playerBag.getVisibility());
         	armorBag.setVisibility(playerBag.getVisibility());
+        	if (playerBag.getVisibility() && spellBagVisible) {spellBagVisible = false;}
         }
+    	if (spellBagVisible)
+    	{
+    		spellBag.UIshow();
+    	}
     	for (int i = 0; i < allBags.size(); i++)
     	{
     		ItemBag currBag = allBags.get(i);

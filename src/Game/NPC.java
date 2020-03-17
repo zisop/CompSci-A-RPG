@@ -203,22 +203,18 @@ public class NPC extends Image{
     	NPCtextBox.addShape(ellipse4);
 
     	allDialogue = new char[rawDialogue.length][][][];
-    	for (int charInd = 0; charInd < rawDialogue.length; charInd++)
+    	for (int NPCind = 0; NPCind < rawDialogue.length; NPCind++)
     	{
-    		String[][] currChar = rawDialogue[charInd];
-    		allDialogue[charInd] = new char[currChar.length][][]; 
+    		String[][] currChar = rawDialogue[NPCind];
+    		allDialogue[NPCind] = new char[currChar.length][][]; 
     		for (int questInd = 0; questInd < currChar.length; questInd++)
     		{
-    			String[] currQuest = rawDialogue[charInd][questInd];
-    			allDialogue[charInd][questInd] = new char[currQuest.length][];
+    			String[] currQuest = rawDialogue[NPCind][questInd];
+    			allDialogue[NPCind][questInd] = new char[currQuest.length][];
     			for (int textInd = 0; textInd < currQuest.length; textInd++)
     			{
     				String currText = currQuest[textInd];
-    				allDialogue[charInd][questInd][textInd] = new char[currText.length()];
-    				for (int i = 0; i < currText.length(); i++)
-    				{
-    					allDialogue[charInd][questInd][textInd][i] = currText.charAt(i); 
-    				}
+    				allDialogue[NPCind][questInd][textInd] = TextDisplay.toChars(currText);
     			}
     		}
     	}

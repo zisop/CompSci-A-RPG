@@ -49,7 +49,6 @@ public class Projectile extends Movable {
 				maxHits = 4;
 				setHitLength(getLength() * 4 / 5);
 				setHitWidth(getWidth() * 4 / 5);
-				hitBoxDown(-5);
 				attackStun = 0;
 				attackInvulnerability = 0;
 				initialVelocity = 10;
@@ -60,7 +59,7 @@ public class Projectile extends Movable {
 		numHits = 0;
 		orbitAngle = 0;
 		framesShot = 0;
-		orbitRadius = Math.max(owner.getHitWidth(), owner.getHitLength()) * 1.6;
+		orbitRadius = Math.max(owner.getWidth(), owner.getLength()) * .85;
 		setRotation(true);
 	}
 	
@@ -152,14 +151,9 @@ public class Projectile extends Movable {
 	 * determines whether the projectile should STOP EXISTING
 	 * @return end == true
 	 */
-	public boolean isEnded()
-	{
-		return framesShot == endFrame;
-	}
-	public boolean isOrbitting()
-	{
-		return orbitting;
-	}
+	public boolean isEnded() {return framesShot == endFrame;}
+	public boolean isOrbitting() {return orbitting;}
+	public double getOrbitRadius() {return orbitRadius;}
 	/**
 	 * moves projectile where it should false
 	 */

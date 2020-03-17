@@ -29,35 +29,9 @@ public class Item extends Image{
 		onMouse = false;
 		ID = inID;
 		setItemType();
-		double fontSize = 10;
-		double width = 150;
-		double yLen = fontSize * 2;
-		double currX = fontSize / 2;
-		char[] tip = ToolTip.allTips[ID];
-		
-		for (int i = 0; i < tip.length; i++)
-		{
-			if (currX >= width - fontSize / 2 || tip[i] == '`')
-			{
-				yLen += fontSize;
-				currX = fontSize / 2;
-			}
-			else
-			{
-				currX += fontSize;
-			}
-		}
-		
-		
-		Geometrical textBox = new Geometrical();
-		Shape mainRect = new Shape(0, 0, 0, width, yLen, 100, 255, 255, 200);
-		Shape rect1 = new Shape(0, 0, 0, width - fontSize + 3, yLen - fontSize + 3, 0, 100, 255, 200);
-		textBox.addShape(mainRect);
-		textBox.addShape(rect1);
-		myToolTip = new ToolTip(this, 150, 10, inID, textBox);
-		
+		myToolTip = ToolTip.defaultTip(ToolTip.rawItemTips[ID], this);
 		Geometrical display = new Geometrical();
-		display.addShape(new Shape(0, 0, 0, 15, 10, 100, 100, 100, 0));
+		display.addShape(new Shape(Shape.square, 0, 0, 15, 10, 100, 100, 100, 0));
 		quantity = 1;
 		quantityDisplay = new TextBox(10, "", display, 255);
 		

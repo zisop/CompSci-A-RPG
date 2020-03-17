@@ -2,57 +2,78 @@ package UI;
 
 import LowLevel.Geometrical;
 import LowLevel.Image;
+import LowLevel.Shape;
 
 public class ToolTip extends Image {
 	//In tooltips, ` will act as \n, meaning it indicates the start of a new line
 	//I did this because im way too lazy to implement regular expressions stop being mean to me
-	public static String[] rawTips = {
+	public static String[] rawItemTips = {
 			//Wands
 			"this``is the boi`ok", "yee", "dab", 
 			//Resources
 			"An egregious`emerald", "A riveting`ruby", "A shiny`sapphire"
 	};
-	public static char[][] allTips = new char[rawTips.length][];
-	private Geometrical textBox;
-	private char[] tip;
-	private double fontSize;
-	private Item item;
-	public ToolTip(Item inItem, double width, double font, int inID, Geometrical inBox)
+	public static char[][] itemTips = new char[rawItemTips.length][];
+	private TextBox textBox;
+	private Image owner;
+	public ToolTip(Image inOwner, double font, int inID, Geometrical inBox)
 	{
-		super(null, 0, 0, width, 0);
-		item = inItem;
-		textBox = new Geometrical();
-		tip = allTips[inID];
-		fontSize = font;
-		setLength(inBox.getLength());
-		textBox = inBox;
-		
+		this(inOwner, font, rawItemTips[inID], inBox);
+	}
+	public ToolTip(Image inOwner, double font, String text, Geometrical inBox)
+	{
+		super(null, 0, 0, 0, 0);
+		owner = inOwner;
+		super.setWidth(inBox.getWidth());
+		super.setLength(inBox.getLength());
+		textBox = new TextBox(font, text, inBox);
 	}
 	public static void initTips()
 	{
-		for (int strInd = 0; strInd < rawTips.length; strInd++)
+		for (int strInd = 0; strInd < rawItemTips.length; strInd++)
 		{
-			String currStr = rawTips[strInd];
-			
-			allTips[strInd] = new char[currStr.length()]; 
-			char[] currChars = allTips[strInd];
-			for (int charInd = 0; charInd < currStr.length(); charInd++)
-			{
-				
-				currChars[charInd] = currStr.charAt(charInd); 
-			}
+			String currStr = rawItemTips[strInd];
+			itemTips[strInd] = TextDisplay.toChars(currStr);
 		}
 	}
 	
 	public void updatePos()
 	{
-		super.setPos(item.getX() + getWidth() / 2, item.getY() - getLength() / 2);
-		textBox.setPos(item.getX() + getWidth() / 2, item.getY() - getLength() / 2);
+		double offset = 3;
+		super.setPos(owner.getX() + getWidth() / 2 + offset, owner.getY() - getLength() / 2 - offset);
+		textBox.setPos(owner.getX() + getWidth() / 2 + offset, owner.getY() - getLength() / 2 - offset);
 	}
 
 	public void UIshow()
 	{
 		updatePos();
-		TextDisplay.showText(textBox, tip, fontSize);
+		textBox.UIshow();
+	}
+	public static ToolTip defaultTip(String text, Image owner)
+	{
+		double fontSize = 10;
+		double width = 150;
+		double yLen = fontSize * 2;
+		double currX = fontSize / 2;
+		char[] tip = TextDisplay.toChars(text);
+		for (int i = 0; i < tip.length; i++)
+		{
+			if (currX >= width - fontSize / 2 || tip[i] == '`')
+			{
+				yLen += fontSize;
+				currX = fontSize / 2;
+			}
+			else
+			{
+				currX += fontSize;
+			}
+		}
+		Geometrical textBox = new Geometrical();
+		Shape mainRect = new Shape(0, 0, 0, width, yLen, 100, 255, 255, 200);
+		Shape rect1 = new Shape(0, 0, 0, width - fontSize + 3, yLen - fontSize + 3, 0, 100, 255, 200);
+		textBox.addShape(mainRect);
+		textBox.addShape(rect1);
+		ToolTip tooltip = new ToolTip(owner, 10, text, textBox);
+		return tooltip;
 	}
 }

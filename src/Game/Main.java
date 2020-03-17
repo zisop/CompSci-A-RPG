@@ -63,16 +63,19 @@ public class Main
     
     
     
-    public static boolean x = false;
+    
     public static boolean leftClick = false;
     public static boolean one = false;
     public static boolean two = false;
     public static boolean three = false;
     public static boolean four = false;
     public static boolean e = false;
+    public static boolean x = false;
+    public static boolean r = false;
     public static boolean rightClick = false;
    
     public static boolean eLastFrame = false;
+    public static boolean rLastFrame = false;
     public static boolean leftClickLastFrame = false;
     public static boolean xLastFrame = false;
     public static boolean oneLastFrame = false;
@@ -124,6 +127,7 @@ public class Main
             two = KeyInput.keys[GLFW_KEY_2];
             three = KeyInput.keys[GLFW_KEY_3];
             four = KeyInput.keys[GLFW_KEY_4];
+            r = KeyInput.keys[GLFW_KEY_R];
             
             player.updateMovement();
             boolean[] movement = player.getMovement();
@@ -175,6 +179,7 @@ public class Main
             threeLastFrame = three;
             fourLastFrame = four;
             rightClickLastFrame = rightClick;
+            rLastFrame = r;
             interactionEvent = false;
         }
     }
@@ -320,18 +325,19 @@ public class Main
         glfwMakeContextCurrent(window);
         GL.createCapabilities();
         
+        Image.init(width, length);
         Item.initItems();
         Chest.initChests();
         Projectile.initProj();
         Shape.initShapes();
-        UI.init();
         SpellSlot.init();
-        Image.init(width, length);
         TextDisplay.initText();
         Tile.initTex();
         CombatChar.init();
         NPC.initTex();
         AOE.init();
+        
+        UI.init();
         glEnable(3553);
         glEnable(3042);
         glBlendFunc(770, 771);

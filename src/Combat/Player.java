@@ -4,12 +4,17 @@ package Combat;
 
 import java.util.ArrayList;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
 import Game.Main;
 import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Geometry;
 import LowLevel.Point;
 import LowLevel.Positionable;
+import UI.ItemSlot;
+import UI.SpellSlot;
+import UI.UI;
 
 public class Player extends CombatChar
 {
@@ -17,7 +22,6 @@ public class Player extends CombatChar
 	private static double clickInteractionRadius = 40;
 	private ArrayList<Projectile> orbit;
 	
-	private int[] bindedSpells;
 	private Point[] xInteractionPoints;
 	private Point[] clickInteractionPoints;
 	private boolean casting;
@@ -64,7 +68,6 @@ public class Player extends CombatChar
         setEnemyState(good);
         handleCombatException();
         casting = false;
-        bindedSpells = new int[] {Projectile.fireball, AOE.damageCloud, CombatChar.heal, AOE.lightning};
     }
     
     public void show()
@@ -75,17 +78,21 @@ public class Player extends CombatChar
     		setHealth(health + healthRegen);
     		manageProjectiles();
     	}
-    	manageSpells();
     	showSpells();
+    	manageSpells();
     	
     	super.show();
+    }
+    public void setSpell(int slot, int ID)
+    {
+    	UI.selectedSpells[slot].setSpell(ID);
     }
     
     /**
      * Shows all the player's visible spells
      * Adds them to the visProj arrayList so they will be displayed at the top of the screen
      */
-    public void showSpells()
+    private void showSpells()
     {
     	for (int i = orbit.size() - 1; i >= 0; i--)
     	{
@@ -153,6 +160,7 @@ public class Player extends CombatChar
     				shot.setSpeed(speed);
     				mana -= fireBallCost;
     				shot.setDamage(10);
+    				shot.setHitLength(shot.getHitLength() * 3 / 5);
     				shot.setInvuln(8);
     				shot.setStun(8);
     				Audio.playSound("Batt/fireball", .48);
@@ -222,7 +230,7 @@ public class Player extends CombatChar
     /**
      * Determines where to place projectiles
      */
-    public void manageProjectiles()
+    private void manageProjectiles()
     {
     	int numProj = (int)(100 / fireBallCost);
     	int idealNum = (int)(mana / fireBallCost);
@@ -254,33 +262,31 @@ public class Player extends CombatChar
     			}
     		}
     		Projectile currProj = new Projectile(Projectile.fireball, 0, 0, 50, 50, Projectile.facingUp, this);
-    		currProj.setOrbitAngle(angle);
     		currProj.setOrbit(true);
+    		currProj.setOrbitAngle(angle);
+    		double orbitRadius = currProj.getOrbitRadius();
+    		double mathAngle = Math.toRadians(angle);
+			double xDist = orbitRadius * Math.cos(mathAngle);
+			double yDist = orbitRadius * Math.sin(mathAngle);
+			currProj.setPos(getX() + xDist, getY() + yDist);
+    		
     		
     		orbit.add(currProj);
     		currProj.setDamage(.2);
     	}
     }
+    /**
+     * Handles spell cast inputs from the player
+     */
     private void manageSpells()
     {
-    	if (!Main.alreadyInteracting)
+    	int[] bindedSpells = UI.getBindedSpells();
+    	if (!Main.alreadyInteracting && !(UI.spellBagVisible && UI.mouseHovering(UI.spellBag)))
     	{
-    		if (Main.one && !Main.oneLastFrame)
-    		{
-    			castSpell(bindedSpells[0]);
-    		}
-    		else if (Main.two && !Main.twoLastFrame)
-    		{
-    			castSpell(bindedSpells[1]);
-    		}
-    		else if (Main.three && !Main.threeLastFrame)
-    		{
-    			castSpell(bindedSpells[2]);
-    		}
-    		else if (Main.four && !Main.fourLastFrame)
-    		{
-    			castSpell(bindedSpells[3]);
-    		}
+    		if (Main.one && !Main.oneLastFrame && bindedSpells[0] != SpellSlot.noSpell) {castSpell(bindedSpells[0]);}
+    		else if (Main.two && !Main.twoLastFrame && bindedSpells[1] != SpellSlot.noSpell) {castSpell(bindedSpells[1]);}
+    		else if (Main.three && !Main.threeLastFrame && bindedSpells[2] != SpellSlot.noSpell) {castSpell(bindedSpells[2]);}
+    		else if (Main.four && !Main.fourLastFrame && bindedSpells[3] != SpellSlot.noSpell) {castSpell(bindedSpells[3]);}
     	}
     }
     

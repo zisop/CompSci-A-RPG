@@ -96,8 +96,13 @@ public class Geometrical extends Image{
 	}
 	public void setVisibility(boolean newVisibility) {visibility = newVisibility;}
 	public boolean isVisible() {return visibility;}
-	public Shape getMain()
-	{
-		return (Shape)shapes.get(0);
+	public void setMain(int index) {
+		Image shape = shapes.get(index);
+		super.setX(shape.getX());
+		super.setY(shape.getY());
+		super.setWidth(shape.getWidth());
+		super.setLength(shape.getLength());
 	}
+	
+	public Shape getMain() {return (Shape)shapes.get(0);}
 }

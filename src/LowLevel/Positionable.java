@@ -22,10 +22,10 @@ public class Positionable extends Point
     }
     public Positionable(double xVal, double yVal, double w, double l, double hitW, double hitL, double hitboxDown) {
         super(xVal, yVal);
-        width = w;
-        length = l;
-        hitWidth = hitW;
-        hitLength = hitL;
+        width = Math.abs(w);
+        length = Math.abs(l);
+        hitWidth = Math.abs(hitW);
+        hitLength = Math.abs(hitL);
         angle = 0.0;
         interactsProj = false;
         Point p1 = new Point(xVal - w / 2, yVal - l / 2);
