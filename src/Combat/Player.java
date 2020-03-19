@@ -27,11 +27,18 @@ public class Player extends CombatChar
 	private boolean casting;
 	private AOE cast;
 	
-    public Player(Texture img, int inX, int inY, double w, double l, double hitW, double hitL, double hbDown) {
-        super(img, inX, inY, w, l);
-        setHitWidth(hitW);
-        setHitLength(hitL);
-        hitBoxDown(hbDown);
+	private int level;
+	private double exp;
+	
+	//xps for each level
+	private static double[] levelXPs = {100, 150, 200};
+	
+    public Player(double inX, double inY) {
+    	//showWidth = 70, showLength = 70, hitBoxWidth = 35, hitBoxLength = 10, hitBoxDown 25 pixels
+        super(null, inX, inY, 70, 70);
+        setHitWidth(35);
+        setHitLength(10);
+        hitBoxDown(25);
         Point[] collisionBasis = getCollisionBasis();
         Point p1 = new Point(collisionBasis[DL].getX() - xInteractionRadius, collisionBasis[DL].getY() - xInteractionRadius);
         Point p2 = new Point(collisionBasis[DR].getX() + xInteractionRadius, collisionBasis[DR].getY() - xInteractionRadius);
@@ -63,11 +70,27 @@ public class Player extends CombatChar
         walkVolume = .2;
         
         anims = getAnims(playerAnimInd, playerAnimInd + 19);
+        setImage(anims[0]);
         walkSounds = getSounds(playerSoundInd, playerSoundInd + 0);
         firstSound = 6;
         setEnemyState(good);
         handleCombatException();
         casting = false;
+        
+        level = 1;
+        exp = 0;
+    }
+    public void gainXP(double xp)
+    {
+    	if (level == getMaxLevel()) {return;}
+    	exp += xp;
+    	double max = getXPMax();
+    	if (exp >= max)
+    	{
+    		exp -= max;
+    		level += 1;
+    		if (level == getMaxLevel()) {exp = max;}
+    	}
     }
     
     public void show()
@@ -226,6 +249,18 @@ public class Player extends CombatChar
 			System.exit(0);
 		}
     }
+    public int getLevel() {return level;}
+    public double getXP() {return exp;}
+    public double getXPMax() {
+    	if (level == getMaxLevel())
+    	{
+    		return levelXPs[level - 2];
+    	}
+    	return levelXPs[level - 1];
+    }
+    public void setLevel(int newLevel) {level = newLevel;}
+    public void setXP(double newXP) {exp = newXP;}
+    public int getMaxLevel() {return levelXPs.length + 1;}
 
     /**
      * Determines where to place projectiles

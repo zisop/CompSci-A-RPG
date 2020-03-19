@@ -8,6 +8,7 @@ public class Positionable extends Point
     private double hitWidth;
     private double hitLength;
     private double hitboxDown;
+    private double hitboxRight;
     private boolean interactsProj;
     private boolean shouldRotate;
     private Point[] showBasis;
@@ -40,6 +41,7 @@ public class Positionable extends Point
         collisionBasis = new Point[] {p1, p2, p3, p4};
         this.hitboxDown = hitboxDown;
         shouldRotate = false;
+        hitboxRight = 0;
     }
     public void setProjInteraction(boolean newInteraction) {interactsProj = newInteraction;}
     public boolean shouldRotate() {return shouldRotate;}
@@ -94,10 +96,6 @@ public class Positionable extends Point
         double selfXMax = collisionBasis[UR].getX();
         double selfYMin = collisionBasis[DR].getY();
         double selfYMax = collisionBasis[UR].getY();
-        
-
-        selfYMax -= hitboxDown;
-        selfYMin -= hitboxDown;
         Point[] otherBasis = otherChar.getCollisionBasis();
         double otherXMin = otherBasis[DL].getX();
         double otherXMax = otherBasis[DR].getX();
@@ -179,6 +177,14 @@ public class Positionable extends Point
     	collisionBasis[UL].setY(collisionBasis[UL].getY() - yVal);
     	collisionBasis[DR].setY(collisionBasis[DR].getY() - yVal);
     	collisionBasis[UR].setY(collisionBasis[UR].getY() - yVal);
+    }
+    public void hitBoxRight(double xVal)
+    {
+    	hitboxRight += xVal;
+    	collisionBasis[DL].setX(collisionBasis[DL].getX() + xVal);
+    	collisionBasis[UL].setX(collisionBasis[UL].getX() + xVal);
+    	collisionBasis[DR].setX(collisionBasis[DR].getX() + xVal);
+    	collisionBasis[UR].setX(collisionBasis[UR].getX() + xVal);
     }
     /**
      * Sets the length of collisionBasis (hitbox) to newLength

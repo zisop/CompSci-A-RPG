@@ -13,13 +13,6 @@ public class CursorInput extends GLFWCursorPosCallback{
 		xPos = x - Main.width / 2;
 		yPos = Main.length / 2 - y;
 	}
-	public double getX()
-	{
-		return xPos;
-	}
-	public double getY()
-	{
-		return yPos;
-	}
-
+	public double getX() {return xPos;}
+	public double getY() {return yPos;}
 }

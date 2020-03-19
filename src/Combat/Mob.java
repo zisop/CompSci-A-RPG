@@ -40,6 +40,7 @@ public abstract class Mob extends CombatChar{
 	protected double initialDamageVelocity;
 	protected double damage;
 	protected double sightRange;
+	protected double xpReward;
 	protected int attackStun;
 	protected int attackInvuln;
 	
@@ -76,6 +77,7 @@ public abstract class Mob extends CombatChar{
 			//one attack will affect the player for 40 frames
 			attackStun = 16;
 			attackInvuln = 48;
+			xpReward = 10;
 			
 			setHitLength(20);
 			setProjectileLength(50);
@@ -110,6 +112,7 @@ public abstract class Mob extends CombatChar{
 			//one attack will affect the player for 40 frames
 			attackStun = 16;
 			attackInvuln = 48;
+			xpReward = 8;
 			
 			setProjectileLength(35);
 			setProjectileWidth(35);
@@ -320,6 +323,7 @@ public abstract class Mob extends CombatChar{
 	{
 		Room currRoom = Main.allRooms[Main.currRoom];
 		currRoom.removeChar(this);
+		Main.player.gainXP(xpReward);
 	}
 	protected boolean shouldDie()
 	{

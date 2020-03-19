@@ -214,6 +214,13 @@ public class UI {
     	armorBag = new ItemBag(armor, slots);
     	armorBag.setPos(-395, 65);
     }
+    
+    public static final int maxHP = 3;
+    public static final int maxMN = 4;
+    public static final int HP = 5;
+    public static final int MN = 6;
+    public static final int maxXP = 8;
+    public static final int XP = 9;
     private static void initStats()
     {
     	//Stats Display
@@ -226,6 +233,10 @@ public class UI {
     	Shape charSlot = Geometry.createRect(4, 46, 4, 46, 255, 255, 255, 255);
     	Shape healthBar = Geometry.createRect(54, 396, 27, 48, 255, 0, 0, 255);
     	Shape manaBar = Geometry.createRect(54, 396, 2, 23, 0, 0, 255, 255);
+    	
+    	Shape xpBorder = Geometry.createRect(3, 252, -15, -4, 100, 100, 100, 255);
+    	Shape xpBar = Geometry.createRect(5, 250, -14, -5, 200, 200, 20, 255);
+    	Shape xpRect = Geometry.createRect(5, 250, -14, -5, 130, 130, 15, 255);
     	//Index 0
     	playerStats.addShape(mainRect);
     	playerStats.addShape(innerRect);
@@ -236,8 +247,14 @@ public class UI {
     	//healthBar = index 5, manaBar = index 6
     	playerStats.addShape(healthBar);
     	playerStats.addShape(manaBar);
+    	
+    	//xpRect = index 8, xpBar = index 9
+    	playerStats.addShape(xpBorder);
+    	playerStats.addShape(xpRect);
+    	playerStats.addShape(xpBar);
     	playerStats.setPos(-275, 365);
     }
+    
     private static void showNPCText()
     {
     	talkingNPCs.forEach((npc) -> npc.showText());
@@ -292,15 +309,23 @@ public class UI {
 		Image manaBar = playerStats.getShape(MN);
 		Image maxHealth = playerStats.getShape(maxHP);
 		Image maxMana = playerStats.getShape(maxMN);
+		Image expBar = playerStats.getShape(XP);
+		Image expRect = playerStats.getShape(maxXP);
 	    
 		double HP = Main.player.getHealth();
 		double maxHP = Main.player.getMaxHealth();
 		double MN = Main.player.getMana();
 		double maxMN = Main.player.getMaxMana();
+		double exp = Main.player.getXP();
+		double maxXP = Main.player.getXPMax();
 	    
 		double HPfrac1 = healthBar.getWidth() / maxHealth.getWidth();
 		double HPfrac2 = Math.max(0, HP / maxHP);
 		double HPxDiff = (HPfrac2 - HPfrac1) / 2 * maxHealth.getWidth();
+		
+		double XPfrac1 = expBar.getWidth() / expRect.getWidth();
+		double XPfrac2 = Math.max(0, exp / maxXP);
+		double XPxDiff = (XPfrac2 - XPfrac1) / 2 * expRect.getWidth();
 	    
 	
 		double MNfrac1 = manaBar.getWidth() / maxMana.getWidth();
@@ -312,11 +337,54 @@ public class UI {
 		healthBar.setX(healthBar.getX() + HPxDiff);
 		manaBar.setWidth(maxMana.getWidth() * MNfrac2);
 		manaBar.setX(manaBar.getX() + MNxDiff);
+		expBar.setWidth(expRect.getWidth() * XPfrac2);
+		expBar.setX(expBar.getX() + XPxDiff);
+		
+		playerStats.UIshow();
+		TextBox hoveredDisplay;
+		Geometrical temp;
+		Image copy;
+		String displayText;
+		double fontSize;
+		if (mouseHovering(maxHealth))
+		{
+			fontSize = 12;
+			temp = new Geometrical();
+			copy = Image.createCopy(maxHealth);
+			copy.setAlpha(0);
+			temp.addShape(copy);
+			displayText = (int)HP + " / " + (int)maxHP;
+			hoveredDisplay = new TextBox(fontSize, displayText, temp);
+			hoveredDisplay.setTextRGBA(40, 140, 140, 255);
+			hoveredDisplay.UIshow();
+		}
+		else if (mouseHovering(maxMana))
+		{
+			fontSize = 12;
+			temp = new Geometrical();
+			copy = Image.createCopy(maxMana);
+			copy.setAlpha(0);
+			temp.addShape(copy);
+			displayText = (int)MN + " / " + (int)maxMN;
+			hoveredDisplay = new TextBox(fontSize, displayText, temp);
+			hoveredDisplay.setTextRGBA(140, 140, 40, 255);
+			hoveredDisplay.UIshow();
+		}
+		else if (mouseHovering(expRect))
+		{
+			fontSize = 8;
+			temp = new Geometrical();
+			copy = Image.createCopy(expRect);
+			copy.setAlpha(0);
+			copy.setPos(copy.getX() + 5, copy.getY() + 3);
+			temp.addShape(copy);
+			displayText = (int)exp + " / " + (int)maxXP;
+			hoveredDisplay = new TextBox(fontSize, displayText, temp);
+			hoveredDisplay.setTextRGBA(20, 20, 20, 255);
+			hoveredDisplay.UIshow();
+		}
 	    
-    	playerStats.UIshow();
+    	
     }
-    public static final int maxHP = 3;
-    public static final int maxMN = 4;
-    public static final int HP = 5;
-    public static final int MN = 6;
+    
 }

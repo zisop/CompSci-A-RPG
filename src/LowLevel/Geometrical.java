@@ -104,5 +104,5 @@ public class Geometrical extends Image{
 		super.setLength(shape.getLength());
 	}
 	
-	public Shape getMain() {return (Shape)shapes.get(0);}
+	public Image getMain() {return shapes.get(0);}
 }

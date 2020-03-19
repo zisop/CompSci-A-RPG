@@ -173,8 +173,9 @@ public class Terrain extends Image {
 	public double getMinY() {return minY;}
 	public double getMaxY() {return maxY;}
 	
-	public static Terrain createTerrain(int ID, double x, double y, int rows, int cols, double tileWidth)
+	public static Terrain createTerrain(int ID, double x, double y, int rows, int cols)
 	{
+		double tileWidth = 80;
 		Tile[] tiles = new Tile[rows * cols];
 		double startX = x - tileWidth * cols / 2 + tileWidth / 2;
 		double startY = y + tileWidth * rows / 2 - tileWidth / 2;
@@ -197,8 +198,8 @@ public class Terrain extends Image {
 	{
 		return Geometry.insideShape(getCollisionBasis(), movementPoint);
 	}
-	private static int up = 0;
-    private static int right = 1;
-    private static int down = 2;
-    private static int left = 3;
+	private static final int up = 0;
+    private static final int right = 1;
+    private static final int down = 2;
+    private static final int left = 3;
 }

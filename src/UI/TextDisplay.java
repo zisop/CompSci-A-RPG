@@ -59,7 +59,7 @@ public class TextDisplay {
     public static void showText(Geometrical textBox, char[] charLi, double fontSize, int frameNum, float a, float r, float g, float b)
     {
     	textBox.UIshow();
-    	Shape mainRect = (Shape)(textBox.getShape(0));
+    	Image mainRect = (textBox.getShape(0));
     	double texX = mainRect.getX() - mainRect.getWidth() / 2 + fontSize;
     	double texY = mainRect.getY() + mainRect.getLength() / 2 - fontSize;
     	Image letterImg;

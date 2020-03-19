@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL;
 
 import Combat.MeleeMob;
 import Combat.Mob;
+import Combat.Movable;
 import Combat.AOE;
 import Combat.CombatChar;
 import Combat.Player;
@@ -88,7 +89,7 @@ public class Main
     public static void main(String[] args) throws InterruptedException {
         init();
         Texture tex = new Texture("IdleAnim/IdleDown.PNG");
-        player = new Player(tex, 0, 0, 70, 70, 35, 10, 25);
+        player = new Player(0, 0);
         initRoom(currRoom = 0);
         
         
@@ -106,7 +107,6 @@ public class Main
         UI.playerBag.addItem(wand2, 0);
         UI.playerBag.addItem(ruby, 3);
         UI.playerBag.addItem(ruby2, 4);
-        
         
         
         
@@ -161,7 +161,9 @@ public class Main
             if (alreadyInteracting) {Image.colorMultiplier = .7f;}
             else {Image.colorMultiplier = 1;}
             showVisibles();
-            
+            player.gainXP(4);
+            //System.out.println(player.getXP());
+
             UI.showUI();
             
             glfwSwapBuffers(window);
@@ -189,15 +191,8 @@ public class Main
     	double curseY = cursor.getY();
     	double hypoLen = Math.sqrt((curseX * curseX) + (curseY * curseY));
     	double angle;
-    	if (curseY >= 0)
-    	{
-    		
-    		angle = Math.toDegrees(Math.acos(curseX / hypoLen));
-    	}
-    	else 
-    	{
-			angle = 360 -Math.toDegrees(Math.acos(curseX / hypoLen));
-		}
+    	if (curseY >= 0) {angle = Math.toDegrees(Math.acos(curseX / hypoLen));}
+    	else {angle = 360 - Math.toDegrees(Math.acos(curseX / hypoLen));}
     	return angle;
     }
     //Figures out whether a character can interact, or if something else is already interacting
@@ -209,11 +204,14 @@ public class Main
     {
     	return x && !xLastFrame && player.xCollision(obj) && canInteract(obj);
     }
-    //Will determine if a click interaction has been made on an object
+    /**
+     * Returns a click interaction with a non UI character
+     * @param obj
+     * @return clicked and within distance of player
+     */
     public static boolean clickInteraction(Image obj)
     {
     	boolean validClick = leftClick && !leftClickLastFrame;
-
     	return validClick && player.clickCollision(obj) &&
     	Geometry.insideShape(obj.getShowBasis(), new Point(cursor.getX() + player.getX(), cursor.getY() + player.getY()));
     }
@@ -223,44 +221,44 @@ public class Main
         allRooms[currRoom].show();
     }
     
-    
+    public static Point exitPoint = new Point(0, 0);
     //Initializes a room given a roomNumber, or doesn't if already initialized
     public static void initRoom(int roomNum) {
     	if (allRooms[currRoom] != null) {allRooms[currRoom].clear();}
     	Main.currRoom = roomNum;
         if (!Main.initted[roomNum]) {
-            if (roomNum == 0) {
-                initRoom0();
-            }
-            if (roomNum == 1) {
-                initRoom1();
-            }
-            if (roomNum == 2) {
-                initRoom2();
-            }
+            switch (roomNum) {
+				case 0:
+					initRoom0();
+					break;
+				case 1:
+					initRoom1();
+					break;
+				case 2:
+					initRoom2();
+					break;
+				default:
+					try {throw new Exception("Room ID: " + roomNum + " didn't exist");}
+					catch (Exception e) {e.printStackTrace(); System.exit(0);}
+			
+			}
         }
-        if (roomNum == 0) {
-            player.setPos(0.0, -150.0);
-        }
-        if (roomNum == 1) {
-            player.setPos(0.0, 150.0);
-        }
-        if (roomNum == 2) {
-            player.setPos(0.0, 150.0);
-        }
+        player.setPos(exitPoint.getX(), exitPoint.getY());
         interactingChar = null;
     }
     public static void initRoom0() {
         ArrayList<Image> room = new ArrayList<Image>();
-        Door door1 = new Door(Shape.shapes[Shape.square], 0, -300, 50, 100, 2);
-        Door door2 = new Door(Shape.shapes[Shape.square], 200, -100, 100, 50, 1);
-        door2.setCollisionStatus(true);
+        Door door1 = new Door(Door.woodWindowless, 0, -300, Movable.up);
+        Door door2 = new Door(Door.woodWindowless, 200, -100, Movable.left);
+        
+        door1.setExit(0, 200);
+        door2.setExit(0, 200);
+        
+        
         room.add(door1);
         room.add(door2);
         door1.setLead(1);
         door2.setLead(2);
-        room.add(new Shape(Shape.square, -200, 200, 150, 150));
-        room.add(new Shape(Shape.square, 200, 200, 150, 150));
         
         int[] inIDs = new int[] {Item.ruby};
         int[] inQuantities = new int[] {6};
@@ -274,12 +272,10 @@ public class Main
         Item wand = new Item(2);
         bag.addItem(wand, 1);
         room.add(new Chest(0, 200, 50, 50, 50, 50, 40, bag));
-        room.add(new MeleeMob(10, 20, Mob.skeleton));
-        room.add(new MeleeMob(10, 20, Mob.skeleton));
         
-        Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10, 80);
+        Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10);
         test.addRow(Tile.GrassDirtBR, CombatChar.down);
-        Terrain test2 = Terrain.createTerrain(Tile.Grass, -200, 800, 10, 4, 80);
+        Terrain test2 = Terrain.createTerrain(Tile.Grass, -200, 800, 10, 4);
         
         Room newRoom = new Room(room, new Terrain[] {test, test2});
         allRooms[0] = newRoom;
@@ -287,27 +283,27 @@ public class Main
     }
     
     public static void initRoom1() {
-        ArrayList<Image> room = new ArrayList<Image>();
-        Door theDoor = new Door(Shape.shapes[Shape.square], 0, 300, 50, 100, 0);
+        ArrayList<Image> images = new ArrayList<Image>();
+        Door theDoor = new Door(Door.woodWindowless, 0, 300, Movable.down);
         theDoor.setLead(0);
-        room.add(theDoor);
-        room.add(new Shape(Shape.square, -200, -200, 150, 150));
-        room.add(new Shape(Shape.square, 200, -200, 150, 150));
+        theDoor.setExit(0, -100);
+        
+        images.add(theDoor);
+        
         NPC npc = new NPC(0, 100, 300, 40, 40, 1, 13);
-        room.add(npc);
-        allRooms[1] = new Room(room, new Terrain[] {});
+        images.add(npc);
+        allRooms[1] = new Room(images, new Terrain[] {});
         initted[1] = true;
     }
     
     public static void initRoom2() {
     	
-        ArrayList<Image> room = new ArrayList<Image>();
-        Door theDoor = new Door(Shape.shapes[0], 0, 300, 50, 100, 0);
+        ArrayList<Image> images = new ArrayList<Image>();
+        Door theDoor = new Door(Door.woodWindowless, 0, 300, Movable.down);
         theDoor.setLead(0);
-        room.add(theDoor);
-        room.add(new Shape(Shape.square, -100, -200, 150, 150));
-        room.add(new Shape(Shape.square, 100, -200, 150, 150));
-        allRooms[2] = new Room(room, new Terrain[] {});
+        theDoor.setExit(0, -100);
+        images.add(theDoor);
+        allRooms[2] = new Room(images, new Terrain[] {});
         initted[2] = true;
     }
     
@@ -332,6 +328,7 @@ public class Main
         Shape.initShapes();
         SpellSlot.init();
         TextDisplay.initText();
+        Door.initTex();
         Tile.initTex();
         CombatChar.init();
         NPC.initTex();

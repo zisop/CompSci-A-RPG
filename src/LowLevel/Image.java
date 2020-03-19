@@ -33,13 +33,26 @@ public class Image extends Positionable
         collides = false;
         enemyState = neutral;
     }
-    public void setRGBA(float newR, float newG, float newB, float newA)
+    public void setRGBA(float newRed, float newGreen, float newBlue, float newAlpha)
     {
-    	red = newR; green = newG; blue = newB; alpha = newA;
+    	setRed(newRed); setGreen(newGreen); setBlue(newBlue); setAlpha(newAlpha);
     }
+    public void setRGB(float newRed, float newGreen, float newBlue)
+    {
+    	setRGBA(newRed, newGreen, newBlue, getAlpha());
+    }
+    public void setRed(float newRed) {red = newRed;}
+    public void setGreen(float newGreen) {green = newGreen;}
+    public void setBlue(float newBlue) {blue = newBlue;}
     public float getRed() {return red;}
     public float getGreen() {return green;}
     public float getBlue() {return blue;}
+    public Texture getTex() {return image;}
+    public static Image createCopy(Image toCopy)
+	{
+		Image copy = new Image(toCopy.getTex(), toCopy.getX(), toCopy.getY(), toCopy.getWidth(), toCopy.getLength());
+		return copy;
+	}
     public boolean isEnemy(Image otherChar)
     {
     	if (enemyState() == good && otherChar.enemyState() == bad) {return true;}
