@@ -167,14 +167,14 @@ public class UI {
     	spellBag.addShape(damageCloud);
     	spellBag.addShape(healSlot);
     	spellBag.addShape(powerSlot);
-    	spellBag.setPos(-360, 230);
+    	spellBag.setPos(-360, 220);
     }
     
     private static void initInventory()
     {
     	
     	//Player bag display
-    	playerBag = new ItemBag(-395, 245, 40, 40, 4, 4);
+    	playerBag = new ItemBag(-395, 235, 40, 40, 4, 4);
     	Geometrical armor = new Geometrical();
     	
     	Shape armorMainRect = Geometry.createRect(-2, 152, -2, 177, 100, 100, 100, 255);
@@ -212,7 +212,7 @@ public class UI {
     	ItemSlot[] slots = {wandSlot, ringSlot, bookSlot, helmSlot};
     	
     	armorBag = new ItemBag(armor, slots);
-    	armorBag.setPos(-395, 65);
+    	armorBag.setPos(-395, 55);
     }
     
     public static final int maxHP = 3;

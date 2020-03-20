@@ -1,5 +1,7 @@
 package Combat;
 
+import java.util.Random;
+
 import Game.Main;
 import LowLevel.Geometrical;
 import LowLevel.Geometry;
@@ -13,7 +15,7 @@ public class RangedMob extends Mob{
 	{
 		super(x, y, ID);
 		switch (ID) {
-		case Mob.archer:
+		case archer:
 			projectileID = Projectile.arrow;
 			//TODO: handle this
 			break;
@@ -67,15 +69,16 @@ public class RangedMob extends Mob{
 	 */
 	private Point testPlayerPoint()
 	{
+		Random random = Main.random;
 		Point playerPoint = Main.player;
 		double minRadius = 100;
 		double maxRadius = 250;
 		//mob will find an angle within a semicircle ranging from -90 degrees to 90 degrees
-		double semiCircleAngle = (Math.random() - .5) * Math.PI;
+		double semiCircleAngle = (random.nextDouble() - .5) * Math.PI;
 		//semicircle will be repositioned based on player's angle to the mob so that the mob always moves into the semicircle half facing it
 		double angle = semiCircleAngle + Main.player.angleTo(this);
 		double rangeSquared = Math.pow(maxRadius - minRadius, 2);
-		double radius = Math.sqrt(rangeSquared * Math.random()) + minRadius;
+		double radius = Math.sqrt(rangeSquared * random.nextDouble()) + minRadius;
 		Point testPoint = new Point(playerPoint.getX() + Math.cos(angle) * radius, playerPoint.getY() + Math.sin(angle) * radius);
 		return testPoint;
 	}
@@ -83,5 +86,4 @@ public class RangedMob extends Mob{
 	{
 		//TODO: implement this with projectiles
 	}
-	
 }

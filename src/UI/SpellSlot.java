@@ -14,7 +14,7 @@ import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Shape;
 
-public class SpellSlot extends Image{
+public class SpellSlot extends Image {
 	private int spellContained;
 	private int slotType;
 	private boolean colorChanged;

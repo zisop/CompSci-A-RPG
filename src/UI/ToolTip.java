@@ -2,6 +2,7 @@ package UI;
 
 import LowLevel.Geometrical;
 import LowLevel.Image;
+import LowLevel.Positionable;
 import LowLevel.Shape;
 
 public class ToolTip extends Image {
@@ -42,6 +43,15 @@ public class ToolTip extends Image {
 		double offset = 3;
 		super.setPos(owner.getX() + getWidth() / 2 + offset, owner.getY() - getLength() / 2 - offset);
 		textBox.setPos(owner.getX() + getWidth() / 2 + offset, owner.getY() - getLength() / 2 - offset);
+	}
+	public void show()
+	{
+		try {
+			throw new Exception("show() not implemented for Tooltip");
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
 	}
 
 	public void UIshow()

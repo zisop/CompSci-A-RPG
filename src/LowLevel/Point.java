@@ -60,6 +60,7 @@ public class Point implements Comparable<Point>{
 	}
 	public double angleTo(Point to)
 	{
+		if (to.equals(this)) {return 0;}
 		double angle;
 		double xDiff = to.getX() - getX();
 		double yDiff = to.getY() - getY();

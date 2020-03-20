@@ -18,7 +18,9 @@ public class MeleeMob extends Mob{
 		
 		attackFrame = 0;
 		facePlayer();
+		
 		handleAttackAnims();
+		
 		double[] damageInfo = new double[5];
 		damageInfo[Effect.damageDamage] = damage;
 		damageInfo[Effect.damageFromAngle] = Main.player.angleTo(this);
@@ -26,7 +28,9 @@ public class MeleeMob extends Mob{
 		damageInfo[Effect.damageInvulnFrames] = attackInvuln;
 		damageInfo[Effect.damageInitialVelocity] = initialDamageVelocity;
 		Effect damage = new Effect(Effect.damage, damageInfo, this);
+		
 		Main.player.receiveEffect(damage);
+		
 	}
 	
 	

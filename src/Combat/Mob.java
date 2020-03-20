@@ -4,6 +4,8 @@ package Combat;
 
 
 
+import java.util.Random;
+
 import Game.Main;
 import LowLevel.Geometrical;
 import LowLevel.Image;
@@ -103,7 +105,7 @@ public abstract class Mob extends CombatChar{
 			attackEnd = 15;
 			pauseEnd = attackEnd + 30;
 			
-			
+			initialDamageVelocity = 5;
 			firstSound = 6;
 			walkAnimSwitch = 6;
 			soundFXSwitch = 20;
@@ -156,9 +158,12 @@ public abstract class Mob extends CombatChar{
 	
 	public void show()
 	{
+		
 		if (!Main.alreadyInteracting)
 		{
+			
 			updateMovement();
+			
 			if (attackFrame >= attackEnd) {
 				if (attackFrame == pauseEnd)
 				{
@@ -169,10 +174,13 @@ public abstract class Mob extends CombatChar{
 			}
 			else {attackFrame++;}
 			setHealth(getHealth() + healthRegen);
+			
+			
 		}
 		super.show();
 		stats.show();
 		if (shouldDie()) {die();}
+		
 	}
 	public boolean inAttackRange()
 	{
@@ -318,6 +326,8 @@ public abstract class Mob extends CombatChar{
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
 		if (sightRange == 0) { try { throw new Exception("sightRange was 0 for Mob " + mobID);} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (initialDamageVelocity == 0) { try { throw new Exception("damageVelocity was 0 for Mob " + mobID);} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
 	}
 	public void die()
 	{
@@ -376,22 +386,23 @@ public abstract class Mob extends CombatChar{
 		
 		double maxRadius = sightRange;
 		
+		Random random = Main.random;
 		//Cubic graph results in a tendency to move far, rather than not far
 		//there are exactly 0 words that mean not far you fuck
 		double cube = Math.pow(maxRadius, 3);
-		double radius = Math.pow(cube * Math.random(), 1/3.0);
+		double radius = Math.pow(random.nextDouble() * cube, 1/3.0);
 		
 		
-		double angle = 2 * Math.PI * Math.random();
-		startingHorizontal = Math.random() < .5;
+		double angle = 2 * Math.PI * random.nextDouble();
+		startingHorizontal = random.nextBoolean();
 		Point testPoint = new Point(getX() + Math.cos(angle) * radius, getY() + Math.sin(angle) * radius);
 		int numTries = 0;
 		Room currRoom = Main.allRooms[Main.currRoom];
 		while (!currRoom.pathPossible(this, testPoint))
 		{
-			startingHorizontal = Math.random() < .5;
-			radius = Math.pow(cube * Math.random(), 1/3.0);
-			angle = 2 * Math.PI * Math.random();
+			startingHorizontal = random.nextBoolean();
+			radius = Math.pow(cube * random.nextDouble(), 1/3.0);
+			angle = 2 * Math.PI * random.nextDouble();
 			
 			testPoint = new Point(getX() + Math.cos(angle) * radius, getY() + Math.sin(angle) * radius);
 			numTries++;

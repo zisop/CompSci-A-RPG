@@ -15,7 +15,7 @@ public class Terrain extends Image {
 	private double tileWidth;
 	public Terrain(Tile[] inTiles)
 	{
-		super(null, 0, 0, 1, 1, 1, 1);
+		super(null, 0, 0, 0, 0);
 		tiles = new ArrayList<Tile>();
 		Tile startTile = inTiles[0];
 		tileWidth = startTile.getWidth();

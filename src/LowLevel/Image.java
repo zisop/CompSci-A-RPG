@@ -133,6 +133,7 @@ public class Image extends Positionable
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glEnd();
     }
+    
     public void UIshow() {
         UIshow(red, green, blue, alpha);
     }

@@ -79,7 +79,7 @@ public class ItemBag extends Positionable {
 						int currSlot = 0;
 						while (excess > 0 && currSlot != itemSlots.length)
 						{
-							for (currSlot = currSlot; currSlot < itemSlots.length; currSlot++)
+							for (;currSlot < itemSlots.length; currSlot++)
 							{
 								ItemSlot slot = itemSlots[currSlot];
 								Item item = slot.getItem();

@@ -11,6 +11,7 @@ import Combat.AOE;
 import Combat.CombatChar;
 import Combat.Player;
 import Combat.Projectile;
+import Combat.SpawnPoint;
 import Exchange.ItemExchange;
 import Exchange.Shop;
 import Exchange.ShopKeeper;
@@ -24,6 +25,7 @@ import LowLevel.Point;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import LowLevel.Shape;
 import UI.Item;
@@ -40,6 +42,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Main
 {
+	public static Random random;
 	public static int questState = 0;
     public static int width;
     public static int length;
@@ -60,6 +63,7 @@ public class Main
     public static boolean interactionEvent;
     public static boolean alreadyInteracting;
     public static Image interactingChar;
+    public static final int FPS = 30;
     
     
     
@@ -161,15 +165,13 @@ public class Main
             if (alreadyInteracting) {Image.colorMultiplier = .7f;}
             else {Image.colorMultiplier = 1;}
             showVisibles();
-            player.gainXP(4);
-            //System.out.println(player.getXP());
 
             UI.showUI();
             
             glfwSwapBuffers(window);
             
             //30FPS
-            double wait = 1000/30.0 - (System.currentTimeMillis() - startTime);
+            double wait = 1000./FPS - (System.currentTimeMillis() - startTime);
             if (wait > 0) {Thread.sleep((long)wait);}
             
             leftClickLastFrame = leftClick;
@@ -225,8 +227,8 @@ public class Main
     //Initializes a room given a roomNumber, or doesn't if already initialized
     public static void initRoom(int roomNum) {
     	if (allRooms[currRoom] != null) {allRooms[currRoom].clear();}
-    	Main.currRoom = roomNum;
-        if (!Main.initted[roomNum]) {
+    	currRoom = roomNum;
+        if (!initted[roomNum]) {
             switch (roomNum) {
 				case 0:
 					initRoom0();
@@ -275,9 +277,12 @@ public class Main
         
         Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10);
         test.addRow(Tile.GrassDirtBR, CombatChar.down);
-        Terrain test2 = Terrain.createTerrain(Tile.Grass, -200, 800, 10, 4);
         
-        Room newRoom = new Room(room, new Terrain[] {test, test2});
+        int[] mobIDs = new int[] {Mob.skeleton, Mob.slime};
+        SpawnPoint spawnPoint = new SpawnPoint(-20, 20, mobIDs);
+        room.add(spawnPoint);
+        
+        Room newRoom = new Room(room, new Terrain[] {test});
         allRooms[0] = newRoom;
         initted[0] = true;
     }
@@ -309,6 +314,7 @@ public class Main
     
     //Initializes the game
     public static void init() {
+    	random = new Random();
         events = new KeyInput();
         width = 1000;
         length = 800;

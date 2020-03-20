@@ -21,6 +21,7 @@ public class Room extends Image{
 	private ArrayList<Image> images;
 	private ArrayList<Projectile> orbitProj;
 	private ArrayList<Projectile> shotProj;
+	private ArrayList<Image> toAdd;
 	private ArrayList<AOE> uncasted;
 	private ArrayList<AOE> casted;
 	private ArrayList<Image> toRemove;
@@ -42,9 +43,12 @@ public class Room extends Image{
 		shotProj = new ArrayList<Projectile>();
 		uncasted = new ArrayList<AOE>();
 		casted = new ArrayList<AOE>();
+		toAdd = new ArrayList<Image>();
 	}
 	public void show()
 	{
+		toAdd.forEach((img) -> images.add(img));
+		toAdd.clear();
 		for (int i = 0; i < terrains.length; i++)
 		{
 			terrains[i].show();
@@ -110,16 +114,22 @@ public class Room extends Image{
 	{
 		return Geometry.strictCollision(outline, Geometry.createLines(otherChar.getCollisionBasis()));
 	}
-	/**
-	 * not implemented you fuck<br>
-	 * use strictCollision
-	 */
 	public boolean collision(Positionable otherChar)
 	{
-		try {
-			throw new Exception("Do not use collision; use strictCollision, for Room.java");
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (int i = 0; i < terrains.length; i++)
+		{
+			if (terrains[i].collision(otherChar))
+			{
+				return true;
+			}
+		}
+		for (int i = 0; i < images.size(); i++)
+		{
+			Image curr = images.get(i);
+			if (curr.collides() && otherChar.collision(curr))
+			{
+				return true;
+			}
 		}
 		return false;
 	}
@@ -155,6 +165,10 @@ public class Room extends Image{
 			return !collided;
 		}
 		return false;
+	}
+	public void addChar(Image character)
+	{
+		toAdd.add(character);
 	}
 	public void removeChar(Image character)
 	{

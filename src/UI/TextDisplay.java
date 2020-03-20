@@ -6,7 +6,6 @@ import Imported.Texture;
 import LowLevel.CharTex;
 import LowLevel.Geometrical;
 import LowLevel.Image;
-import LowLevel.Shape;
 
 public class TextDisplay {
 	public static CharTex[] fontChars = new CharTex[51];

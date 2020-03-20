@@ -1,12 +1,11 @@
 package Game;
 
+
 import Combat.Movable;
 import Imported.Audio;
 import Imported.Texture;
 import LowLevel.Image;
 import LowLevel.Point;
-import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
-
 public class Door extends Image
 {
     private int leadRoom;

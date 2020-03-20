@@ -2,7 +2,6 @@ package World;
 
 import java.util.ArrayList;
 import World.Terrain;
-import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
 import LowLevel.Image;
 
 public class RoomCreation {
