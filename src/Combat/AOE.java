@@ -160,6 +160,8 @@ public class AOE extends Image{
 		}
 		return sounds;
 	}
+	public double getDamage() {return damage;}
+	public void setDamage(double newDamage) {damage = newDamage;}
 	public static Texture[] allAnims;
 	public static String[] allSounds;
 	public static void init()

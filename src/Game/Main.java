@@ -165,6 +165,7 @@ public class Main
             if (alreadyInteracting) {Image.colorMultiplier = .7f;}
             else {Image.colorMultiplier = 1;}
             showVisibles();
+            player.printStats();
 
             UI.showUI();
             
@@ -279,8 +280,8 @@ public class Main
         test.addRow(Tile.GrassDirtBR, CombatChar.down);
         
         int[] mobIDs = new int[] {Mob.skeleton, Mob.slime};
-        SpawnPoint spawnPoint = new SpawnPoint(-20, 20, mobIDs);
-        room.add(spawnPoint);
+        //SpawnPoint spawnPoint = new SpawnPoint(-20, 20, mobIDs);
+        //room.add(spawnPoint);
         
         Room newRoom = new Room(room, new Terrain[] {test});
         allRooms[0] = newRoom;

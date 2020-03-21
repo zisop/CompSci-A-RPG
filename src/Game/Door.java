@@ -97,8 +97,6 @@ public class Door extends Image
 			opening = true;
 			Audio.playSound(openSound, volume);
 		}
-    	
-    	showCollisionBox();
     	super.show();
     	
     	if (opening)

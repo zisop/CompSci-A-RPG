@@ -12,6 +12,9 @@ import Imported.Texture;
 import LowLevel.Geometry;
 import LowLevel.Point;
 import LowLevel.Positionable;
+import UI.Item;
+import UI.ItemBag;
+import UI.ItemEffect;
 import UI.ItemSlot;
 import UI.SpellSlot;
 import UI.UI;
@@ -29,6 +32,14 @@ public class Player extends CombatChar
 	
 	private int level;
 	private double exp;
+	
+	private double baseHealth;
+	private double baseMana;
+	private double baseHealthRegen;
+	private double baseManaRegen;
+	private double baseArmor;
+	private double baseAttackMultiplier;
+	private double itemAttackMultiplier;
 	
 	//xps for each level
 	private static double[] levelXPs = {100, 150, 200};
@@ -54,12 +65,9 @@ public class Player extends CombatChar
         speed = baseSpeed;
         
         orbit = new ArrayList<Projectile>();
-        maxHealth = 100;
-        maxMana = 100;
-        health = maxHealth;
-        mana = maxMana;
-        manaRegen = .5;
-        healthRegen = .02;
+        
+        setLevel(1);
+        
         
         walkFrame = 0;
         soundFXFrame = 0;
@@ -77,7 +85,8 @@ public class Player extends CombatChar
         handleCombatException();
         casting = false;
         
-        level = 1;
+        
+        itemProcessFrame = 0;
         exp = 0;
     }
     public void gainXP(double xp)
@@ -88,13 +97,16 @@ public class Player extends CombatChar
     	if (exp >= max)
     	{
     		exp -= max;
-    		level += 1;
+    		setLevel(getLevel() + 1);
     		if (level == getMaxLevel()) {exp = max;}
     	}
     }
-    
+    private int itemProcessFrame;
+    //process items every 15 frames
+    private static int shouldProcess = 15;
     public void show()
     {
+    	if (itemProcessFrame++ == shouldProcess) {processItems(); itemProcessFrame = 0;}
     	if (!Main.alreadyInteracting)
     	{
     		setMana(mana + manaRegen);
@@ -182,7 +194,7 @@ public class Player extends CombatChar
     				shot.setAngle(shotAngle);
     				shot.setSpeed(speed);
     				mana -= fireBallCost;
-    				shot.setDamage(10);
+    				shot.setDamage(10 * itemAttackMultiplier);
     				shot.setHitLength(shot.getHitLength() * 3 / 5);
     				shot.setInvuln(8);
     				shot.setStun(8);
@@ -194,6 +206,7 @@ public class Player extends CombatChar
     			if (mana >= poisonCost)
     			{
     				cast = new AOE(AOE.damageCloud, this);
+    				cast.setDamage(cast.getDamage() * itemAttackMultiplier);
     				updateCastState(true);
     			}
     			return;
@@ -238,6 +251,7 @@ public class Player extends CombatChar
     				angle = Math.toRadians(angle);
     				lightning.setPos(getX() + radius * Math.cos(angle), getY() + radius * Math.sin(angle));
     				lightning.place();
+    				lightning.setDamage(lightning.getDamage() * itemAttackMultiplier);
     				mana -= lightningCost;
     			}
     			return;
@@ -258,7 +272,53 @@ public class Player extends CombatChar
     	}
     	return levelXPs[level - 1];
     }
-    public void setLevel(int newLevel) {level = newLevel;}
+    
+    
+    private void setLevel(int newLevel) {
+    	level = newLevel;
+    	switch (level) {
+			case 1:
+				//player stats for level 1
+				baseHealth = 100;
+		        baseMana = 100;
+		        baseManaRegen = .5;
+		        baseHealthRegen = .02;
+		        baseAttackMultiplier = 1;
+		        baseArmor = 0;
+		}
+    	processItems();
+    	health = maxHealth;
+    	mana = maxMana;
+    }
+    
+    private void processItems()
+    {
+    	ItemBag equipment = UI.armorBag;
+    	ArrayList<Item> items = Item.extractItems(equipment.getSlots());
+    	double[] totalEffects = new double[ItemEffect.numEffects];
+    	for (Item item : items)
+    	{
+    		ItemEffect[] effects = item.getEffects();
+    		for (ItemEffect effect : effects)
+    		{
+    			int ID = effect.getID();
+    			totalEffects[ID] += effect.getInfo();
+    		}
+    	}
+    	
+    	
+    	
+    	maxHealth = baseHealth + totalEffects[ItemEffect.healthAdd];
+    	maxMana = baseMana + totalEffects[ItemEffect.manaAdd];
+    	setHealth(Math.min(maxHealth, health));
+    	setMana(Math.min(maxMana, mana));
+    	manaRegen = baseManaRegen + totalEffects[ItemEffect.manaRegenAdd];
+    	armor = baseArmor + totalEffects[ItemEffect.armorAdd];
+    	healthRegen = baseHealthRegen + totalEffects[ItemEffect.healthRegenAdd];
+    	itemAttackMultiplier = baseAttackMultiplier + totalEffects[ItemEffect.damageMult];
+    }
+    
+    
     public void setXP(double newXP) {exp = newXP;}
     public int getMaxLevel() {return levelXPs.length + 1;}
 
@@ -307,7 +367,7 @@ public class Player extends CombatChar
     		
     		
     		orbit.add(currProj);
-    		currProj.setDamage(.2);
+    		currProj.setDamage(.2 * itemAttackMultiplier);
     	}
     }
     /**
@@ -324,6 +384,8 @@ public class Player extends CombatChar
     		else if (Main.four && !Main.fourLastFrame && bindedSpells[3] != SpellSlot.noSpell) {castSpell(bindedSpells[3]);}
     	}
     }
+    
+    
     
     /**
      * Determines whether the character was within player's X button pressing collision radius

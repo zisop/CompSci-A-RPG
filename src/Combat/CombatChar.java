@@ -26,6 +26,7 @@ public class CombatChar extends Movable{
 	protected double healthRegen;
 	protected double maxHealth;
 	protected double maxMana;
+	protected double armor;
 	
 	protected int hitStunFrames;
 	protected int invulnerabilityLength;
@@ -61,6 +62,11 @@ public class CombatChar extends Movable{
         currentEffects = new ArrayList<Effect>();
         damageMultiplier = 1;
     }
+	public void printStats()
+	{
+		System.out.print("Armor: " + armor + "\nDamage: " + damageMultiplier + "\nmaxHealth: " + maxHealth
+		+ "\nmaxMana: " + maxMana + "\nhealthRegen: " + healthRegen + "\nmanaRegen: " + manaRegen);
+	}
 	public Point[] getProjectileBasis()
 	{
 		return projectileBasis;
@@ -124,7 +130,7 @@ public class CombatChar extends Movable{
     			stunLength = stunLen;
     			hitStunFrames = invulnerabilityLength + stunLength;
     			initialVelocity = information[Effect.damageInitialVelocity];
-    			setHealth(getHealth() - damage);
+    			setHealth(getHealth() - Math.max(damage - armor, 0));
     			break;
     		case Effect.heal:
     			createParticles(Effect.heal);
@@ -165,14 +171,14 @@ public class CombatChar extends Movable{
     				if (frame % (int)information[Effect.tickFrame] == 0)
     				{
     					//Ticks the health down on the tickframe
-    					setHealth(getHealth() - information[Effect.poisonTick]);
-    					
+    					double numTicks = information[Effect.poisonDuration] / information[Effect.tickFrame];
+    					double damage = Math.max(information[Effect.poisonTick] - (armor / numTicks), 0);
+    					setHealth(getHealth() - damage);
     				}
     				break;
     			case Effect.heal:
     				if (frame % (int)information[Effect.tickFrame] == 0)
     				{
-    					//Ticks the health up on the tickframe
     					setHealth(getHealth() + information[Effect.healTick]);
     				}
     				break;

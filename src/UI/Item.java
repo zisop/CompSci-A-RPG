@@ -1,6 +1,10 @@
 package UI;
 
 
+import java.util.ArrayList;
+
+import com.sun.scenario.effect.Effect;
+
 import Game.Main;
 import Imported.Texture;
 import LowLevel.Geometrical;
@@ -23,11 +27,13 @@ public class Item extends Image{
 	private TextBox quantityDisplay;
 	private double xOffset;
 	private double yOffset;
+	private ItemEffect[] effects;
 	public Item(int inID)
 	{
 		super(itemTextures[inID], 0, 0, 0, 0);
 		onMouse = false;
 		ID = inID;
+		setEffects();
 		setItemType();
 		myToolTip = ToolTip.defaultTip(ToolTip.rawItemTips[ID], this);
 		Geometrical display = new Geometrical();
@@ -35,6 +41,19 @@ public class Item extends Image{
 		quantity = 1;
 		quantityDisplay = new TextBox(10, "", display, 255);
 		
+	}
+	
+	public static ArrayList<Item> extractItems(ItemSlot[] slots)
+	{
+		ArrayList<Item> items = new ArrayList<Item>();
+		for (int i = 0; i < slots.length; i++)
+		{
+			if (slots[i].getItem() != null)
+			{
+				items.add(slots[i].getItem());
+			}
+		}
+		return items;
 	}
 	
 	public void setQuantity(int inQuantity)
@@ -60,24 +79,38 @@ public class Item extends Image{
 	{
 		return quantity;
 	}
+	public ItemEffect[] getEffects() {return effects;}
+	private void setEffects()
+	{
+		switch (ID) {
+			case wand0:
+				effects = new ItemEffect[3];
+				effects[0] = new ItemEffect(ItemEffect.damageMult, 1.1);
+				effects[1] = new ItemEffect(ItemEffect.manaAdd, 20);
+				effects[2] = new ItemEffect(ItemEffect.manaRegenAdd, .1);
+				break;
+			case wand1:
+				effects = new ItemEffect[3];
+				effects[0] = new ItemEffect(ItemEffect.damageMult, 1.15);
+				effects[1] = new ItemEffect(ItemEffect.manaAdd, 25);
+				effects[2] = new ItemEffect(ItemEffect.manaRegenAdd, .15);
+				break;
+			case wand2:
+				effects = new ItemEffect[3];
+				effects[0] = new ItemEffect(ItemEffect.damageMult, 1.3);
+				effects[1] = new ItemEffect(ItemEffect.manaAdd, 10);
+				effects[2] = new ItemEffect(ItemEffect.manaRegenAdd, .5);
+				break;
+		}
+	}
+	
 	
 	private void setItemType()
 	{
-		if (ID >= 0 && ID <= 2)
-		{
-			ItemType = wandType;
-		}
-		
-		if (ID >= resourceInd && ID <= resourceInd + 2)
-		{
-			ItemType = resourceType;
-		}
+		if (ID >= wandInd + 0 && ID <= wandInd + 2) {ItemType = wandType;}
+		else if (ID >= resourceInd && ID <= resourceInd + 2) {ItemType = resourceType;}
 		maxQuantity = findMax(ID);
-		if (ID == ruby || ID == emerald)
-		{
-			xOffset = -4;
-			yOffset = 4;
-		}
+		if (ID == ruby || ID == emerald) {xOffset = -4; yOffset = 4;}
 	}
 	public static int findMax(int ID)
 	{
@@ -222,24 +255,24 @@ public class Item extends Image{
 		quantityDisplay.setTextAlpha(newAlpha);
 	}
 	
-	private static int wandInd = 0;
-	public static int wand0 = wandInd + 0;
-	public static int wand1 = wandInd + 1;
-	public static int wand2 = wandInd + 2;
+	private static final int wandInd = 0;
+	public static final int wand0 = wandInd + 0;
+	public static final int wand1 = wandInd + 1;
+	public static final int wand2 = wandInd + 2;
 	
-	private static int resourceInd = 3;
-	public static int emerald = resourceInd + 0;
-	public static int ruby = resourceInd + 1;
-	public static int sapphire = resourceInd + 2;
+	private static final int resourceInd = 3;
+	public static final int emerald = resourceInd + 0;
+	public static final int ruby = resourceInd + 1;
+	public static final int sapphire = resourceInd + 2;
 	
-	public static int acceptAll = -1;
-	public static int acceptNone = -2;
-	public static int noInteraction = -3;
-	public static int wandType = 0;
-	public static int ringType = 1;
-	public static int bookType = 2;
-	public static int helmType = 3;
-	public static int resourceType = 4;
+	public static final int acceptAll = -1;
+	public static final int acceptNone = -2;
+	public static final int noInteraction = -3;
+	public static final int wandType = 0;
+	public static final int ringType = 1;
+	public static final int bookType = 2;
+	public static final int helmType = 3;
+	public static final int resourceType = 4;
 	
 	public static int destroyItem = -1;
 }

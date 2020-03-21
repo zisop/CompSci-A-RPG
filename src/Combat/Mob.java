@@ -69,6 +69,7 @@ public abstract class Mob extends CombatChar{
 			attackEnd = 20;
 			pauseEnd = attackEnd + 30;
 			initialDamageVelocity = 5;
+			armor = 4;
 			
 			firstSound = 6;
 			walkAnimSwitch = 6;
@@ -104,6 +105,7 @@ public abstract class Mob extends CombatChar{
 			sightRange = 600;
 			attackEnd = 15;
 			pauseEnd = attackEnd + 30;
+			armor = 2;
 			
 			initialDamageVelocity = 5;
 			firstSound = 6;
