@@ -1,5 +1,6 @@
 package UI;
 
+import LowLevel.CharTex;
 import LowLevel.Geometrical;
 import LowLevel.Image;
 import LowLevel.Positionable;
@@ -10,9 +11,40 @@ public class ToolTip extends Image {
 	//I did this because im way too lazy to implement regular expressions stop being mean to me
 	public static String[] rawItemTips = {
 			//Wands
-			"this``is the boi`ok", "yee", "dab", 
+			"A sad stick", 
+			"A weak wand", 
+			"The wand of a novice wizard",
+			"There's a blackmarket for`these wands`among mana`addicts",
+			"The devs didn'tmean to leave`this one in",
 			//Resources
-			"An egregious`emerald", "A riveting`ruby", "A shiny`sapphire"
+			"An egregious`emerald", 
+			"A riveting`ruby", 
+			"A shiny`sapphire",
+			"An avant-garde amethyst",
+			"Some great gold",
+			//Helmets
+			"A basic`protective`helmet",
+			"Some old`prince's gear",
+			"The lost relic of an ancient war",
+			"It suckles yourhealth...`to help you",
+			"The helmet of an Aztecan`emperor",
+			//Rings
+			"Worn by King`George III",
+			"",
+			"",
+			"",
+			"Crafted by`some famous`blacksmith",
+			"",
+			//Potions
+			"The result of a horrible alchemical experiment",
+			"A scientist was found dead in a lab next to this",
+			//Tomes
+			"Increases PP`size",
+			"Washed ashore`from some`ocean",
+			"Dug up in`Atlantis",
+			"Some map fromthe library ledto this one",
+			"Found on a`wrecked pirateship",
+			"Found next to`a dead peasant "
 	};
 	public static char[][] itemTips = new char[rawItemTips.length][];
 	private TextBox textBox;
@@ -68,14 +100,16 @@ public class ToolTip extends Image {
 		char[] tip = TextDisplay.toChars(text);
 		for (int i = 0; i < tip.length; i++)
 		{
-			if (currX >= width - fontSize / 2 || tip[i] == '`')
+			char curr = tip[i];
+			CharTex temp = TextDisplay.getLetter(curr);
+			if (currX >= width - fontSize || curr == '`')
 			{
 				yLen += fontSize;
 				currX = fontSize / 2;
 			}
 			else
 			{
-				currX += fontSize;
+				currX += fontSize * temp.getSpace();
 			}
 		}
 		Geometrical textBox = new Geometrical();

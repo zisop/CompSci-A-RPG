@@ -11,6 +11,7 @@ import LowLevel.Point;
 
 public class CombatChar extends Movable{
 	private Point[] projectileBasis;
+	protected boolean isDead;
 	
 	private Texture[] particleAnims;
 	private ArrayList<Effect> currentEffects;
@@ -61,6 +62,7 @@ public class CombatChar extends Movable{
         walkVolume = .6;
         currentEffects = new ArrayList<Effect>();
         damageMultiplier = 1;
+        isDead = false;
     }
 	public void printStats()
 	{
@@ -203,48 +205,51 @@ public class CombatChar extends Movable{
     }
     public void show()
     {
-    	if (hitStunFrames > 0)
+    	if (!isDead)
     	{
-    		if (hitStunFrames - invulnerabilityLength > 0)
+    		if (hitStunFrames > 0)
     		{
-    			boolean[] moveDirecs = findDirecs(hitAngle);
-    			double velocity = initialVelocity * ((hitStunFrames - invulnerabilityLength) / (double)(stunLength));
-    			updateMovement(velocity);
-    			boolean[] movement = getMovement();
-    			if (canMove(moveDirecs, movement))
+    			if (hitStunFrames - invulnerabilityLength > 0)
     			{
-    				double angle = Math.toRadians(hitAngle);
-    				setPos(getX() + Math.cos(angle) * velocity, getY() + Math.sin(angle) * velocity);
+    				boolean[] moveDirecs = findDirecs(hitAngle);
+    				double velocity = initialVelocity * ((hitStunFrames - invulnerabilityLength) / (double)(stunLength));
+    				updateMovement(velocity);
+    				boolean[] movement = getMovement();
+    				if (canMove(moveDirecs, movement))
+    				{
+    					double angle = Math.toRadians(hitAngle);
+    					setPos(getX() + Math.cos(angle) * velocity, getY() + Math.sin(angle) * velocity);
+    				}
     			}
+    			if (hitStunFrames % pauseLength == 0)
+    			{
+    				if (getAlpha() == 255) {setAlpha(100);}
+    				else {setAlpha(255);}
+    			}
+    			hitStunFrames--;
     		}
-    		if (hitStunFrames % pauseLength == 0)
+    		else {setAlpha(255);}
+    		receiveStuckEffects();
+    		if (particleFrames != 0) {
+    			if (particleFrames % particleSwitch == 0) {
+    				particleAnim += 1;
+    				particleEffect.setImage(particleAnims[particleAnim]);
+    			}
+    			particleEffect.setPos(getX(), getY());
+    			particleEffect.show();
+    			particleFrames--;
+    		}
+    		else if (particleFrames < 0)
     		{
-    			if (getAlpha() == 255) {setAlpha(100);}
-    			else {setAlpha(255);}
+    			try {
+					throw new Exception("Particle frames shouldn't have been lower than 0");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(0);
+				}
     		}
-    		hitStunFrames--;
     	}
-    	else {setAlpha(255);}
-    	super.show();
-    	receiveStuckEffects();
-    	if (particleFrames != 0) {
-    		if (particleFrames % particleSwitch == 0) {
-    			particleAnim += 1;
-    			particleEffect.setImage(particleAnims[particleAnim]);
-    		}
-    		particleEffect.setPos(getX(), getY());
-    		particleEffect.show();
-    		particleFrames--;
-    	}
-    	else if (particleFrames < 0)
-    	{
-    		try {
-				throw new Exception("Particle frames shouldn't have been lower than 0");
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.exit(0);
-			}
-    	}
+		super.show();
     }
     public boolean canBeAttacked()
     {

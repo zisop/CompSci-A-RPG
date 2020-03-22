@@ -8,7 +8,7 @@ import LowLevel.Geometrical;
 import LowLevel.Image;
 
 public class TextDisplay {
-	public static CharTex[] fontChars = new CharTex[51];
+	public static CharTex[] fontChars = new CharTex[53];
 	//Have geo, str, size, frame
 	public static void showText(Geometrical textBox, String str, double fontSize, int frameNum)
     {
@@ -75,6 +75,7 @@ public class TextDisplay {
     			letterImg = new Image(currLetter.getTex(), texX, texY, fontSize * currLetter.getSize(), fontSize * currLetter.getSize());
     			letterImg.UIshow(r, g, b, a);
     			texX += currLetter.getSpace() * fontSize;
+    			if (charLi[i] == '-') {}
     		}
     		else if (charLi[i] == ' ') 
     		{
@@ -92,21 +93,25 @@ public class TextDisplay {
     //Given a char, returns the corresponding font texture
     public static CharTex getLetter(char letter)
     {
-    	if (letter == ',') {return fontChars[26];}
-		if (letter == ';') {return fontChars[27];}
-		if (letter == '!') {return fontChars[28];}
-		if (letter == '#') {return fontChars[29];}
-		if (letter == ':') {return fontChars[41];}
-		if (letter == '/') {return fontChars[43];}
-		if (letter == '?') {return fontChars[42];}
-		if (letter == '(') {return fontChars[47];}
-		if (letter == ')') {return fontChars[48];}
-		if (letter == '@') {return fontChars[44];}
-		if (letter == '%') {return fontChars[46];}
-		if (letter == '&') {return fontChars[45];}
-		if (letter == '$') {return fontChars[40];}
-		if (letter == '.') {return fontChars[49];}
-		if (letter == '\'') {return fontChars[50];}
+    	switch (letter) {
+			case ',': return fontChars[26];
+			case ';': return fontChars[27];
+			case '!': return fontChars[28];
+			case '#': return fontChars[29];
+			case ':': return fontChars[41];
+			case '/': return fontChars[43];
+			case '?': return fontChars[42];
+			case '(': return fontChars[47];
+			case ')': return fontChars[48];
+			case '@': return fontChars[44];
+			case '%': return fontChars[46];
+			case '&': return fontChars[45];
+			case '$': return fontChars[40];
+			case '.': return fontChars[49];
+			case '\'': return fontChars[50];
+			case '+': return fontChars[51]; 
+			case '-': return fontChars[52];
+		}
     	int base = 0;
     	int letterVal = letter;
 		if (letterVal >= 48 && letterVal < 58) {base = 18;}
@@ -165,8 +170,10 @@ public class TextDisplay {
     	fontChars[46] = new CharTex(new Texture("Font/%.png"));
     	fontChars[47] = new CharTex(new Texture("Font/(.png"));
     	fontChars[48] = new CharTex(new Texture("Font/).png"));
-    	fontChars[49] = new CharTex(new Texture("Font/period.png"));
+    	fontChars[49] = new CharTex(new Texture("Font/period.png"), .9);
     	fontChars[50] = new CharTex(new Texture("Font/apostrophe.png"), .6);
+    	fontChars[51] = new CharTex(new Texture("Font/plus.png"));
+    	fontChars[52] = new CharTex(new Texture("Font/minus.png"));
     	ToolTip.initTips();
     	NPC.initText();
     }

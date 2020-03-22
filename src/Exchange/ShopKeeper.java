@@ -46,7 +46,6 @@ public class ShopKeeper extends NPC{
 		if ((Main.xInteraction(this) || Main.clickInteraction(this)) && !Main.alreadyInteracting)
 		{
 			Main.alreadyInteracting = true;
-			Main.interactionEvent = true;
 			Main.interactingChar = this;
 			menu.setVisibility(true);
 			Audio.playSound("NPC/Slime/slime4");
@@ -280,7 +279,6 @@ public class ShopKeeper extends NPC{
 	private void closeMenu()
 	{
 		Main.alreadyInteracting = false;
-		Main.interactionEvent = true;
 		Main.interactingChar = null;
 		menu.setVisibility(false);
 		optionState = atMenu;

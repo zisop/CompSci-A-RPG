@@ -6,10 +6,14 @@ package Combat;
 
 import java.util.Random;
 
+import Game.Chest;
 import Game.Main;
 import LowLevel.Geometrical;
 import LowLevel.Image;
 import LowLevel.Point;
+import LowLevel.Shape;
+import UI.Item;
+import UI.ItemBag;
 import World.Room;
 
 public abstract class Mob extends CombatChar{
@@ -18,6 +22,12 @@ public abstract class Mob extends CombatChar{
 	private double horizontalMove;
 	private int longStoppingFrame;
 	private double attackRange;
+	private int deathFrames;
+	private ItemDrop itemReward;
+	private ItemBag deathBag;
+	
+	//mobs disappear after 12 seconds
+	private static int maxDeathFrames = 12 * Main.FPS;
 	
 	protected Geometrical stats;
 	protected Image MN;
@@ -28,8 +38,7 @@ public abstract class Mob extends CombatChar{
 	private boolean shouldCreate;
 	private boolean dontFollow;
 	private int mobID;
-	private int deathAnimFrame;
-	private int deathAnimMaxFrame;
+	
 	
 	protected int shortStoppingStart;
 	protected int stoppingFrame;
@@ -136,13 +145,13 @@ public abstract class Mob extends CombatChar{
 		shouldCreate = true;
 		stoppingFrame = longStoppingFrame;
 		walkAnim = resetWalk;
-		deathAnimFrame = 0;
 		soundFXFrame = 0;
 		walkFrame = 0;
 		attackFrame = pauseEnd;
 		createStats();
 		health = maxHealth;
 		setEnemyState(bad);
+		createDrops();
 		handleMobException();
 	}
 	public void setX(double newX)
@@ -160,29 +169,98 @@ public abstract class Mob extends CombatChar{
 	
 	public void show()
 	{
-		
-		if (!Main.alreadyInteracting)
+		if (!isDead)
 		{
+			if (!Main.alreadyInteracting)
+			{
 			
-			updateMovement();
+				updateMovement();
 			
-			if (attackFrame >= attackEnd) {
-				if (attackFrame == pauseEnd)
-				{
-					if (inAttackRange() && Main.player.canBeAttacked()) {attack();}
-					else {move();}
+				if (attackFrame >= attackEnd) {
+					if (attackFrame == pauseEnd)
+					{
+						if (inAttackRange() && Main.player.canBeAttacked()) {attack();}
+						else {move();}
+					}
+					else {attackFrame++;}
 				}
 				else {attackFrame++;}
+				setHealth(getHealth() + healthRegen);
+			
+			
 			}
-			else {attackFrame++;}
-			setHealth(getHealth() + healthRegen);
-			
-			
+			if (shouldDie()) {die();}
 		}
+		else
+		{
+			if (deathFrames == maxDeathFrames)
+			{
+				Room currRoom = Main.allRooms[Main.currRoom];
+				currRoom.removeChar(this);
+				deathBag.setVisibility(false);
+				if (Main.interactingChar == this)
+				{
+					Main.interactingChar = null;
+					Main.alreadyInteracting = false;
+				}
+			}
+			else 
+			{
+				setAlpha(255 * (1 - (deathFrames / (float)maxDeathFrames)));
+				handleDeathBag();
+				if (!deathBag.getVisibility()) {deathFrames++;}
+			}
+		}	
 		super.show();
-		stats.show();
-		if (shouldDie()) {die();}
+		if (!isDead) {stats.show();}
+	}
+	
+	private void createDrops()
+	{
+		int[] IDs = null;
+		double[] probabilities = null;
+		int[] quantities = null;
+		int numRolls = 0;
+		switch (mobID) {
+			case skeleton:
+				numRolls = 4;
+				IDs = new int[] {Item.ruby, Item.sapphire};
+				probabilities = new double[] {.2, .2};
+				quantities = new int[] {3, 3};
+				break;
+			case slime:
+				numRolls = 3;
+				IDs = new int[] {Item.sapphire};
+				probabilities = new double[] {.3};
+				quantities = new int[] {2};
+				break;
+			default:
+				try {
+					throw new Exception("Mob of ID: " + mobID + " didn't have drops initialized");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(0);
+				}
+		}
+		itemReward = new ItemDrop(IDs, probabilities, quantities, numRolls);
+	}
+	private void handleDeathBag()
+	{
 		
+		if (Main.xInteraction(this) || Main.clickInteraction(this))
+		{
+			if (deathBag.getVisibility())
+			{
+				Main.interactingChar = null;
+				Main.alreadyInteracting = false;
+			}
+			else 
+			{
+				Main.interactingChar = this;
+				Main.alreadyInteracting = true;
+			}
+			deathBag.setVisibility(!deathBag.getVisibility());
+		}
 	}
 	public boolean inAttackRange()
 	{
@@ -331,16 +409,13 @@ public abstract class Mob extends CombatChar{
 		if (initialDamageVelocity == 0) { try { throw new Exception("damageVelocity was 0 for Mob " + mobID);} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
 	}
-	public void die()
+	private void die()
 	{
-		Room currRoom = Main.allRooms[Main.currRoom];
-		currRoom.removeChar(this);
+		isDead = true;
 		Main.player.gainXP(xpReward);
+		deathBag = itemReward.generateItems();
 	}
-	protected boolean shouldDie()
-	{
-		return health <= 0;
-	}
+	protected boolean shouldDie() {return health <= 0;}
 	
 	protected void createMovementPoint()
 	{

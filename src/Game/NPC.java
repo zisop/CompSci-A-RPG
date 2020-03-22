@@ -139,7 +139,6 @@ public class NPC extends Image{
    			{
    				Main.interactingChar = null;
 			}
-   			Main.interactionEvent = true;
     	}
     }
     public boolean showingText()

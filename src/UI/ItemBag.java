@@ -161,7 +161,6 @@ public class ItemBag extends Positionable {
 							//If the type is acceptable to the slot
 							if (currSlot.acceptableType(heldItem.getType()))
 							{
-							
 								Item temp = heldItem;
 								if (temp.getID() == currItem.getID())
 								{
@@ -262,20 +261,7 @@ public class ItemBag extends Positionable {
 	public boolean mouseOnItem(int slot)
 	{
 		ItemSlot currSlot = itemSlots[slot];
-		double mouseX = Main.cursor.getX();
-		double mouseY = Main.cursor.getY();
-		double startX = currSlot.getX() - currSlot.getWidth() / 2;
-		double startY = currSlot.getY() - currSlot.getLength() / 2;
-		double endX = startX + currSlot.getWidth();
-		double endY = startY + currSlot.getLength();
-		if (startX < mouseX && mouseX < endX)
-		{
-			if (startY < mouseY && mouseY < endY)
-			{
-				return true;
-			}
-		}
-		return false;
+		return UI.mouseHovering(currSlot);
 	}
 	public Item getItem(int slot)
 	{

@@ -60,7 +60,6 @@ public class Main
     
     
     public static int moveDirecLastFrame;
-    public static boolean interactionEvent;
     public static boolean alreadyInteracting;
     public static Image interactingChar;
     public static final int FPS = 30;
@@ -92,7 +91,6 @@ public class Main
     
     public static void main(String[] args) throws InterruptedException {
         init();
-        Texture tex = new Texture("IdleAnim/IdleDown.PNG");
         player = new Player(0, 0);
         initRoom(currRoom = 0);
         
@@ -100,18 +98,24 @@ public class Main
 
         
         
-        Item wand = new Item(Item.wand0);
-        Item ruby = new Item(Item.ruby);
-        Item ruby2 = new Item(Item.ruby);
-        ruby2.setQuantity(64);
-        ruby.setQuantity(64);
-        Item wand2 = new Item(Item.wand1);
-        
-        UI.playerBag.addItem(wand, 8);
-        UI.playerBag.addItem(wand2, 0);
-        UI.playerBag.addItem(ruby, 3);
-        UI.playerBag.addItem(ruby2, 4);
-        
+        Item tome0 = new Item(Item.tome0);
+        Item tome1 = new Item(Item.tome1);
+        Item tome2 = new Item(Item.tome2);
+        Item tome3 = new Item(Item.tome3);
+        Item tome4 = new Item(Item.tome4);
+        Item tome5 = new Item(Item.tome5);
+        UI.playerBag.addItem(tome0, 0);
+        UI.playerBag.addItem(tome1, 1);
+        UI.playerBag.addItem(tome2, 2);
+        UI.playerBag.addItem(tome3, 3);
+        UI.playerBag.addItem(tome4, 4);
+        UI.playerBag.addItem(tome5, 5);
+        UI.playerBag.addItem(new Item(Item.ring0), 6);
+        UI.playerBag.addItem(new Item(Item.ring1), 7);
+        UI.playerBag.addItem(new Item(Item.ring2), 8);
+        UI.playerBag.addItem(new Item(Item.ring3), 9);
+        UI.playerBag.addItem(new Item(Item.ring4), 10);
+        UI.playerBag.addItem(new Item(Item.ring5), 11);
         
         
         
@@ -165,7 +169,6 @@ public class Main
             if (alreadyInteracting) {Image.colorMultiplier = .7f;}
             else {Image.colorMultiplier = 1;}
             showVisibles();
-            player.printStats();
 
             UI.showUI();
             
@@ -185,7 +188,7 @@ public class Main
             fourLastFrame = four;
             rightClickLastFrame = rightClick;
             rLastFrame = r;
-            interactionEvent = false;
+            //only accept interactions every 3 frames
         }
     }
     public static double cursorAngle()
@@ -201,11 +204,11 @@ public class Main
     //Figures out whether a character can interact, or if something else is already interacting
     public static boolean canInteract(Image obj)
     {
-    	return !interactionEvent && (interactingChar == null || interactingChar == obj);
+    	return (interactingChar == null || interactingChar == obj);
     }
     public static boolean xInteraction(Image obj)
     {
-    	return x && !xLastFrame && player.xCollision(obj) && canInteract(obj);
+    	return x && !xLastFrame && player.interactionCollision(obj) && canInteract(obj);
     }
     /**
      * Returns a click interaction with a non UI character
@@ -215,7 +218,7 @@ public class Main
     public static boolean clickInteraction(Image obj)
     {
     	boolean validClick = leftClick && !leftClickLastFrame;
-    	return validClick && player.clickCollision(obj) &&
+    	return validClick && player.interactionCollision(obj) &&
     	Geometry.insideShape(obj.getShowBasis(), new Point(cursor.getX() + player.getX(), cursor.getY() + player.getY()));
     }
     
@@ -280,8 +283,8 @@ public class Main
         test.addRow(Tile.GrassDirtBR, CombatChar.down);
         
         int[] mobIDs = new int[] {Mob.skeleton, Mob.slime};
-        //SpawnPoint spawnPoint = new SpawnPoint(-20, 20, mobIDs);
-        //room.add(spawnPoint);
+        SpawnPoint spawnPoint = new SpawnPoint(-20, 20, mobIDs);
+        room.add(spawnPoint);
         
         Room newRoom = new Room(room, new Terrain[] {test});
         allRooms[0] = newRoom;

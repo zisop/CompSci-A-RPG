@@ -20,7 +20,7 @@ public class SpawnPoint extends Image {
 	}
 	public void show()
 	{
-		if (framesTillSpawn-- == 0)
+		if (!Main.alreadyInteracting && framesTillSpawn-- == 0)
 		{
 			int fps = Main.FPS;
 			Random random = Main.random;

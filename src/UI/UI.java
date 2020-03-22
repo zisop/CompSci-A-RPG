@@ -69,7 +69,7 @@ public class UI {
     
     public static boolean shouldInteract()
     {
-    	return !Main.interactionEvent && Main.leftClick && !Main.leftClickLastFrame;
+    	return Main.leftClick && !Main.leftClickLastFrame;
     }
     
     private static Geometrical createSlot(String name)

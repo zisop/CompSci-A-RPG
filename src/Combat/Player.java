@@ -22,11 +22,9 @@ import UI.UI;
 public class Player extends CombatChar
 {
 	private static double xInteractionRadius = 20;
-	private static double clickInteractionRadius = 40;
 	private ArrayList<Projectile> orbit;
 	
-	private Point[] xInteractionPoints;
-	private Point[] clickInteractionPoints;
+	private Point[] interactionPoints;
 	private boolean casting;
 	private AOE cast;
 	
@@ -40,6 +38,7 @@ public class Player extends CombatChar
 	private double baseArmor;
 	private double baseAttackMultiplier;
 	private double itemAttackMultiplier;
+	private double itemExpMultiplier;
 	
 	//xps for each level
 	private static double[] levelXPs = {100, 150, 200};
@@ -55,13 +54,8 @@ public class Player extends CombatChar
         Point p2 = new Point(collisionBasis[DR].getX() + xInteractionRadius, collisionBasis[DR].getY() - xInteractionRadius);
         Point p3 = new Point(collisionBasis[UR].getX() + xInteractionRadius, collisionBasis[UR].getY() + xInteractionRadius);
         Point p4 = new Point(collisionBasis[UL].getX() - xInteractionRadius, collisionBasis[UL].getY() + xInteractionRadius);
-        xInteractionPoints = new Point[] {p1, p2, p3, p4};
-        
-        p1 = new Point(collisionBasis[DL].getX() - clickInteractionRadius, collisionBasis[DL].getY() - clickInteractionRadius);
-        p2 = new Point(collisionBasis[DR].getX() + clickInteractionRadius, collisionBasis[DR].getY() - clickInteractionRadius);
-        p3 = new Point(collisionBasis[UR].getX() + clickInteractionRadius, collisionBasis[UR].getY() + clickInteractionRadius);
-        p4 = new Point(collisionBasis[UL].getX() - clickInteractionRadius, collisionBasis[UL].getY() + clickInteractionRadius);
-        clickInteractionPoints = new Point[] {p1, p2, p3, p4};
+        interactionPoints = new Point[] {p1, p2, p3, p4};
+
         speed = baseSpeed;
         
         orbit = new ArrayList<Projectile>();
@@ -85,14 +79,14 @@ public class Player extends CombatChar
         handleCombatException();
         casting = false;
         
-        
+        itemExpMultiplier = 1;
         itemProcessFrame = 0;
         exp = 0;
     }
     public void gainXP(double xp)
     {
     	if (level == getMaxLevel()) {return;}
-    	exp += xp;
+    	exp += (xp * itemExpMultiplier);
     	double max = getXPMax();
     	if (exp >= max)
     	{
@@ -316,6 +310,7 @@ public class Player extends CombatChar
     	armor = baseArmor + totalEffects[ItemEffect.armorAdd];
     	healthRegen = baseHealthRegen + totalEffects[ItemEffect.healthRegenAdd];
     	itemAttackMultiplier = baseAttackMultiplier + totalEffects[ItemEffect.damageMult];
+    	itemExpMultiplier = 1 + totalEffects[ItemEffect.expAdd];
     }
     
     
@@ -392,65 +387,45 @@ public class Player extends CombatChar
      * @param otherChar
      * @return player can interact with the x button
      */
-    public boolean xCollision(Positionable otherChar)
+    public boolean interactionCollision(Positionable otherChar)
     {
     	Point[] otherBasis = otherChar.getCollisionBasis();
-    	return Geometry.colliding(xInteractionPoints, otherBasis);
-    }
-    /**
-     * Determines whether the character was within player's click collision radius
-     * @param otherChar
-     * @return player can interact with click
-     */
-    public boolean clickCollision(Positionable otherChar)
-    {
-    	Point[] otherBasis = otherChar.getCollisionBasis();
-    	return Geometry.colliding(clickInteractionPoints, otherBasis);
+    	return Geometry.colliding(interactionPoints, otherBasis);
     }
     public void setWidth(double newWidth)
     {
     	super.setWidth(newWidth);
     	Point[] collisionBasis = getCollisionBasis();
-        xInteractionPoints[DL].setX(collisionBasis[DL].getX() - xInteractionRadius);
-        xInteractionPoints[UL].setX(collisionBasis[UL].getX() - xInteractionRadius);
-        xInteractionPoints[UR].setX(collisionBasis[UR].getX() + xInteractionRadius);
-        xInteractionPoints[DR].setX(collisionBasis[DR].getX() + xInteractionRadius);
-        clickInteractionPoints[DL].setX(collisionBasis[DL].getX() - clickInteractionRadius);
-        clickInteractionPoints[UL].setX(collisionBasis[UL].getX() - clickInteractionRadius);
-        clickInteractionPoints[UR].setX(collisionBasis[UR].getX() + clickInteractionRadius);
-        clickInteractionPoints[DR].setX(collisionBasis[DR].getX() + clickInteractionRadius);
+        interactionPoints[DL].setX(collisionBasis[DL].getX() - xInteractionRadius);
+        interactionPoints[UL].setX(collisionBasis[UL].getX() - xInteractionRadius);
+        interactionPoints[UR].setX(collisionBasis[UR].getX() + xInteractionRadius);
+        interactionPoints[DR].setX(collisionBasis[DR].getX() + xInteractionRadius);
     }
     public void setLength(double newLength)
     {
     	super.setLength(newLength);
     	Point[] collisionBasis = getCollisionBasis();
-        xInteractionPoints[DL].setY(collisionBasis[DL].getY() - xInteractionRadius);
-        xInteractionPoints[UL].setY(collisionBasis[UL].getY() - xInteractionRadius);
-        xInteractionPoints[UR].setY(collisionBasis[UR].getY() + xInteractionRadius);
-        xInteractionPoints[DR].setY(collisionBasis[DR].getY() + xInteractionRadius);
-        clickInteractionPoints[DL].setY(collisionBasis[DL].getY() - clickInteractionRadius);
-        clickInteractionPoints[UL].setY(collisionBasis[UL].getY() - clickInteractionRadius);
-        clickInteractionPoints[UR].setY(collisionBasis[UR].getY() + clickInteractionRadius);
-        clickInteractionPoints[DR].setY(collisionBasis[DR].getY() + clickInteractionRadius);
+        interactionPoints[DL].setY(collisionBasis[DL].getY() - xInteractionRadius);
+        interactionPoints[UL].setY(collisionBasis[UL].getY() - xInteractionRadius);
+        interactionPoints[UR].setY(collisionBasis[UR].getY() + xInteractionRadius);
+        interactionPoints[DR].setY(collisionBasis[DR].getY() + xInteractionRadius);
     }
     public void setX(double newX)
     {
     	double xDiff = newX - getX();
     	super.setX(newX);
-    	for (int i = 0; i < clickInteractionPoints.length; i++)
+    	for (int i = 0; i < interactionPoints.length; i++)
     	{
-    		clickInteractionPoints[i].setX(clickInteractionPoints[i].getX() + xDiff);
-    		xInteractionPoints[i].setX(xInteractionPoints[i].getX() + xDiff);
+    		interactionPoints[i].setX(interactionPoints[i].getX() + xDiff);
     	}
     }
     public void setY(double newY)
     {
     	double yDiff = newY - getY();
     	super.setY(newY);
-    	for (int i = 0; i < clickInteractionPoints.length; i++)
+    	for (int i = 0; i < interactionPoints.length; i++)
     	{
-    		clickInteractionPoints[i].setY(clickInteractionPoints[i].getY() + yDiff);
-    		xInteractionPoints[i].setY(xInteractionPoints[i].getY() + yDiff);
+    		interactionPoints[i].setY(interactionPoints[i].getY() + yDiff);
     	}
     }
     

@@ -10,19 +10,19 @@ public class Chest extends Image{
 	private ItemBag chestBag;
 	private boolean isOpen;
 	private int openFrame;
-	private int whichChest;
+	private int ID;
 
-	public Chest(int inChest, double x, double y, double width, double length, ItemBag inBag)
+	public Chest(int inID, double x, double y, double width, double length, ItemBag inBag)
 	{
-		this(inChest, x, y, width, length, width, length * 4 / 5, inBag);
+		this(inID, x, y, width, length, width, length * 4 / 5, inBag);
 	}
-	public Chest(int inChest, double x, double y, double width, double length, double charWidth, double charLength, ItemBag inBag)
+	public Chest(int inID, double x, double y, double width, double length, double charWidth, double charLength, ItemBag inBag)
 	{
-		super(chestTex[inChest * 4], x, y, width, length, charWidth, charLength);
+		super(chestTex[inID * 4], x, y, width, length, charWidth, charLength);
 		chestBag = inBag;
 		isOpen = false;
 		openFrame = 0;
-		whichChest = inChest;
+		ID = inID;
 		setCollisionStatus(true);
 	}
 	public void setState(boolean state)
@@ -57,21 +57,18 @@ public class Chest extends Image{
 				Main.interactingChar = null;
 				
 			}
-			//If we just interacted with this chest, the game needs to know not to interact with anybody else
-			//This is performed via an xEvent boolean
-			Main.interactionEvent = true;
 		}
 		//Animation garbage
 		int initFrame = openFrame;
 		if (isOpen && openFrame != 3)
 		{
 			openFrame++;
-			setImage(chestTex[whichChest * 4 + openFrame]);
+			setImage(chestTex[ID * 4 + openFrame]);
 		}
 		if (!isOpen && openFrame != 0)
 		{
 			openFrame--;
-			setImage(chestTex[whichChest * 4 + openFrame]);
+			setImage(chestTex[ID * 4 + openFrame]);
 		}
 		if (openFrame != initFrame && (openFrame == 3 || openFrame == 0))
 		{
