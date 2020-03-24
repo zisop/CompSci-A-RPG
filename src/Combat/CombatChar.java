@@ -63,6 +63,10 @@ public class CombatChar extends Movable{
         currentEffects = new ArrayList<Effect>();
         damageMultiplier = 1;
         isDead = false;
+        walkDirec = down;
+		walkAnim = resetWalk;
+		soundFXFrame = 0;
+		walkFrame = 0;
     }
 	public void printStats()
 	{
@@ -152,7 +156,7 @@ public class CombatChar extends Movable{
     		case Effect.powerUp:
     			createParticles(Effect.powerUp);
     			currentEffects.add(effect);
-    			setDamageMultiplier(effect.getInformation()[Effect.powerMultiplier]);
+    			setDamageMultiplier(damageMultiplier * effect.getInformation()[Effect.powerMultiplier]);
     			break;
     	}
     }

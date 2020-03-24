@@ -5,42 +5,21 @@ import LowLevel.Image;
 
 public class TextBox extends Image{
 	private char[] text;
-	private Geometrical textBox;
+	private Image textBox;
 	private double fontSize;
 	private float textRed;
 	private float textGreen;
 	private float textBlue;
 	private float textAlpha;
-	public TextBox(double inSize, char[] myText, Geometrical display)
+	public TextBox(double inSize, char[] myText, Image display)
 	{
-		super(null, display.getX(), display.getY(), display.getWidth(), display.getLength());
-		text = myText;
-		textBox = display;
-		fontSize = inSize;
-		textRed = 0;
-		textBlue = 0;
-		textGreen = 0;
-		super.setAlpha((textBox.getMain().getAlpha()));
-		textAlpha = getAlpha();
+		this(inSize, myText, display, display.getAlpha());
 	}
-	public TextBox(double inSize, String myText, Geometrical display)
+	public TextBox(double inSize, String myText, Image display)
 	{
-		super(null, display.getX(), display.getY(), display.getWidth(), display.getLength());
-		char[] toChars = new char[myText.length()];
-		for (int i = 0; i < toChars.length; i++)
-		{
-			toChars[i]= myText.charAt(i); 
-		}
-		text = toChars;
-		textBox = display;
-		fontSize = inSize;
-		textRed = 0;
-		textBlue = 0;
-		textGreen = 0;
-		super.setAlpha((textBox.getMain().getAlpha()));
-		textAlpha = getAlpha();
+		this(inSize, TextDisplay.toChars(myText), display, display.getAlpha());
 	}
-	public TextBox(double inSize, char[] myText, Geometrical display, float inAlpha)
+	public TextBox(double inSize, char[] myText, Image display, float inAlpha)
 	{
 		super(null, display.getX(), display.getY(), display.getWidth(), display.getLength());
 		text = myText;
@@ -52,22 +31,9 @@ public class TextBox extends Image{
 		super.setAlpha(inAlpha);
 		textAlpha = inAlpha;
 	}
-	public TextBox(double inSize, String myText, Geometrical display, float inAlpha)
+	public TextBox(double inSize, String myText, Image display, float inAlpha)
 	{
-		super(null, display.getX(), display.getY(), display.getWidth(), display.getLength());
-		char[] toChars = new char[myText.length()];
-		for (int i = 0; i < toChars.length; i++)
-		{
-			toChars[i]= myText.charAt(i); 
-		}
-		text = toChars;
-		textBox = display;
-		fontSize = inSize;
-		textRed = 0;
-		textBlue = 0;
-		textGreen = 0;
-		super.setAlpha(inAlpha);
-		textAlpha = inAlpha;
+		this(inSize, TextDisplay.toChars(myText), display, inAlpha);
 	}
 	public void setText(String newText)
 	{

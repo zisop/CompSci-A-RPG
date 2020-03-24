@@ -138,15 +138,13 @@ public abstract class Mob extends CombatChar{
 			
 		
 		
-		walkDirec = down;
 		
 		mobID = ID;
 		followingPlayer = false;
 		shouldCreate = true;
 		stoppingFrame = longStoppingFrame;
-		walkAnim = resetWalk;
-		soundFXFrame = 0;
-		walkFrame = 0;
+		
+		
 		attackFrame = pauseEnd;
 		createStats();
 		health = maxHealth;

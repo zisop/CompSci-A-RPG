@@ -17,6 +17,7 @@ import UI.ItemBag;
 import UI.ItemEffect;
 import UI.ItemSlot;
 import UI.SpellSlot;
+import UI.TextBox;
 import UI.UI;
 
 public class Player extends CombatChar
@@ -63,10 +64,6 @@ public class Player extends CombatChar
         setLevel(1);
         
         
-        walkFrame = 0;
-        soundFXFrame = 0;
-        walkAnim = resetWalk;
-        walkDirec = down;
         walkAnimSwitch = 6;
         soundFXSwitch = 20;
         walkVolume = .2;
@@ -226,7 +223,7 @@ public class Player extends CombatChar
     			if (mana >= powerUpCost)
     			{
     				double[] effectInfo = new double[2];
-    				double multiplier = 1.5;
+    				double multiplier = 1.3;
     				int duration = 210;
     				effectInfo[Effect.powerDuration] = duration;
     				effectInfo[Effect.powerMultiplier] = multiplier;
@@ -279,6 +276,38 @@ public class Player extends CombatChar
 		        baseHealthRegen = .02;
 		        baseAttackMultiplier = 1;
 		        baseArmor = 0;
+		        break;
+			case 2:
+				baseHealth = 110;
+		        baseMana = 105;
+		        baseManaRegen = .55;
+		        baseHealthRegen = .03;
+		        baseAttackMultiplier = 1.05;
+		        baseArmor = 1;
+		        break;
+			case 3:
+				baseHealth = 115;
+		        baseMana = 110;
+		        baseManaRegen = .6;
+		        baseHealthRegen = .04;
+		        baseAttackMultiplier = 1.1;
+		        baseArmor = 3;
+		        break;
+			case 4:
+				baseHealth = 120;
+		        baseMana = 110;
+		        baseManaRegen = .6;
+		        baseHealthRegen = .04;
+		        baseAttackMultiplier = 1.1;
+		        baseArmor = 4;
+		        break;
+		    default:
+		    	try {
+					throw new Exception("Level: " + newLevel + " stats were not implemented for player");
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.exit(0);
+				}
 		}
     	processItems();
     	health = maxHealth;
@@ -311,6 +340,18 @@ public class Player extends CombatChar
     	healthRegen = baseHealthRegen + totalEffects[ItemEffect.healthRegenAdd];
     	itemAttackMultiplier = baseAttackMultiplier + totalEffects[ItemEffect.damageMult];
     	itemExpMultiplier = 1 + totalEffects[ItemEffect.expAdd];
+    	updateStatDisplay();
+    }
+    private void updateStatDisplay()
+    {
+    	TextBox[] boxes = UI.statText;
+    	boxes[ItemEffect.armorAdd].setText("Armor: " + (int)(armor));
+    	boxes[ItemEffect.healthAdd].setText("Health: " + (int)(maxHealth));
+    	boxes[ItemEffect.manaAdd].setText("Mana: " + (int)(maxMana));
+    	boxes[ItemEffect.manaRegenAdd].setText("MNregen: " + (int)(manaRegen * 10));
+    	boxes[ItemEffect.healthRegenAdd].setText("hpregen: " + (int)(healthRegen * 10));
+    	boxes[ItemEffect.expAdd].setText("EXP bonus: +" + (int)(itemExpMultiplier * 100 - 100) + "%");
+    	boxes[ItemEffect.damageMult].setText("Damage: +" + (int)((itemAttackMultiplier * damageMultiplier) * 100 - 100) + "%");
     }
     
     

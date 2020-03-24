@@ -19,7 +19,8 @@ public class UI {
 	public static ArrayList<ItemBag> allBags = new ArrayList<ItemBag>();
     public static ItemBag playerBag;
     public static ItemBag armorBag;
-    public static Geometrical playerStats;
+    public static Geometrical statBars;
+    public static Geometrical statDisplay;
     public static boolean statsShowing;
     public static ArrayList<ToolTip> visTips = new ArrayList<ToolTip>();
     public static ArrayList<Item> visItems = new ArrayList<Item>();
@@ -43,6 +44,7 @@ public class UI {
     	initInventory();
     	initStats();
     	initSpellBag();
+    	initStatDisplay();
     }
     public static int[] getBindedSpells()
     {
@@ -54,19 +56,30 @@ public class UI {
     	return bindedSpells;
     }
     
-    //Will determine if the mouse is hovering over a positionable in the UI
+    /**
+     * determines if mouse hovers over UI object
+     * @param obj
+     * @return hovered == true 
+     */
     public static boolean mouseHovering(Positionable obj)
     {
     	Point[] objPoints = obj.getShowBasis();
     	Point cursorPoint = new Point(Main.cursor.getX(), Main.cursor.getY());
     	return Geometry.insideShape(objPoints, cursorPoint);
     }
-    
+    /**
+     * Determines if an object in UI was clicked
+     * @param obj
+     * @return clicked == true
+     */
     public static boolean mouseInteraction(Positionable obj)
     {
     	return shouldInteract() && mouseHovering(obj);
     }
-    
+    /**
+     * Determines if the player left clicked on this frame
+     * @return leftClick && !leftClickLastFrame
+     */
     public static boolean shouldInteract()
     {
     	return Main.leftClick && !Main.leftClickLastFrame;
@@ -169,6 +182,61 @@ public class UI {
     	spellBag.addShape(powerSlot);
     	spellBag.setPos(-360, 220);
     }
+    public static TextBox[] statText;
+    private static void initStatDisplay()
+    {
+    	statDisplay = new Geometrical();
+    	double offset = 3;
+    	double width = spellBag.getWidth() - offset * 2;
+    	double length = 140;
+    	Shape mainRect = Geometry.createRect(-offset, width + offset, -offset, length + offset, 100, 100, 100, 255);
+    	Shape innerRect = Geometry.createRect(0, width, 0, length, 52, 107, 235, 255);
+    	statDisplay.addShape(mainRect);
+    	statDisplay.addShape(innerRect);
+    	
+    	statText = new TextBox[ItemEffect.numEffects];
+    	double fontSize = 10;
+    	Image textRect = Geometry.createRect(0, width, length - fontSize, length, 0, 0, 0, 0);
+    	float r = 24; float g = 53; float b = 22;
+    	
+    	statText[ItemEffect.healthAdd] = new TextBox(fontSize, "Health: ", textRect, 255);
+    	statText[ItemEffect.healthAdd].setTextRGBA(r, g, b, 255);
+    	statDisplay.addShape(statText[ItemEffect.healthAdd]);
+    	offset = fontSize + 10;
+    	textRect = Image.createCopy(textRect);
+    	textRect.setY(textRect.getY() - offset);
+    	statText[ItemEffect.manaAdd] = new TextBox(fontSize, "Mana: ", textRect, 255);
+    	statDisplay.addShape(statText[ItemEffect.manaAdd]);
+    	statText[ItemEffect.manaAdd].setTextRGBA(r, g, b, 255);
+    	textRect = Image.createCopy(textRect);
+    	textRect.setY(textRect.getY() - offset);
+    	statText[ItemEffect.healthRegenAdd] = new TextBox(fontSize, "HPRegen: ", textRect, 255);
+    	statDisplay.addShape(statText[ItemEffect.healthRegenAdd]);
+    	statText[ItemEffect.healthRegenAdd].setTextRGBA(r, g, b, 255);
+    	textRect = Image.createCopy(textRect);
+    	textRect.setY(textRect.getY() - offset);
+    	statText[ItemEffect.manaRegenAdd] = new TextBox(fontSize, "MNRegen: ", textRect, 255);
+    	statDisplay.addShape(statText[ItemEffect.manaRegenAdd]);
+    	statText[ItemEffect.manaRegenAdd].setTextRGBA(r, g, b, 255);
+    	textRect = Image.createCopy(textRect);
+    	textRect.setY(textRect.getY() - offset);
+    	statText[ItemEffect.armorAdd] = new TextBox(fontSize, "Armor: ", textRect, 255);
+    	statDisplay.addShape(statText[ItemEffect.armorAdd]);
+    	statText[ItemEffect.armorAdd].setTextRGBA(r, g, b, 255);
+    	textRect = Image.createCopy(textRect);
+    	textRect.setY(textRect.getY() - offset);
+    	statText[ItemEffect.damageMult] = new TextBox(fontSize, "Damage: ", textRect, 255);
+    	statDisplay.addShape(statText[ItemEffect.damageMult]);
+    	statText[ItemEffect.damageMult].setTextRGBA(r, g, b, 255);
+    	textRect = Image.createCopy(textRect);
+    	textRect.setY(textRect.getY() - offset);
+    	statText[ItemEffect.expAdd] = new TextBox(fontSize, "EXP Bonus: ", textRect, 255);
+    	statDisplay.addShape(statText[ItemEffect.expAdd]);
+    	statText[ItemEffect.expAdd].setTextRGBA(r, g, b, 255);
+    	
+    	offset = 10;
+    	statDisplay.setPos(spellBag.getX(), spellBag.getY() - spellBag.getLength() / 2 - length / 2 - offset);
+    }
     
     private static void initInventory()
     {
@@ -221,10 +289,11 @@ public class UI {
     public static final int MN = 6;
     public static final int maxXP = 8;
     public static final int XP = 9;
+    
     private static void initStats()
     {
     	//Stats Display
-    	playerStats = new Geometrical();
+    	statBars = new Geometrical();
     	statsShowing = true;
     	Shape mainRect = Geometry.createRect(-2, 402, -2, 52, 0, 0, 0, 255);
     	Shape innerRect = Geometry.createRect(0, 400, 0, 50, 100, 100, 100, 255);
@@ -238,29 +307,27 @@ public class UI {
     	Shape xpBar = Geometry.createRect(5, 250, -14, -5, 200, 200, 20, 255);
     	Shape xpRect = Geometry.createRect(5, 250, -14, -5, 130, 130, 15, 255);
     	//Index 0
-    	playerStats.addShape(mainRect);
-    	playerStats.addShape(innerRect);
-    	playerStats.addShape(charSlot);
+    	statBars.addShape(mainRect);
+    	statBars.addShape(innerRect);
+    	statBars.addShape(charSlot);
     	//MaxHealth = ind3, MaxMana = ind4
-    	playerStats.addShape(healthRect);
-    	playerStats.addShape(manaRect);
+    	statBars.addShape(healthRect);
+    	statBars.addShape(manaRect);
     	//healthBar = index 5, manaBar = index 6
-    	playerStats.addShape(healthBar);
-    	playerStats.addShape(manaBar);
+    	statBars.addShape(healthBar);
+    	statBars.addShape(manaBar);
     	
     	//xpRect = index 8, xpBar = index 9
-    	playerStats.addShape(xpBorder);
-    	playerStats.addShape(xpRect);
-    	playerStats.addShape(xpBar);
-    	playerStats.setPos(-275, 365);
+    	statBars.addShape(xpBorder);
+    	statBars.addShape(xpRect);
+    	statBars.addShape(xpBar);
+    	statBars.setPos(-275, 365);
     }
-    
     private static void showNPCText()
     {
     	talkingNPCs.forEach((npc) -> npc.showText());
     	talkingNPCs.clear();
     }
-
     private static void showBags()
     {
     	if (Main.r && !Main.rLastFrame)
@@ -277,6 +344,7 @@ public class UI {
     	if (spellBagVisible)
     	{
     		spellBag.UIshow();
+    		statDisplay.UIshow();
     	}
     	for (int i = 0; i < allBags.size(); i++)
     	{
@@ -305,12 +373,12 @@ public class UI {
     private static void showStats()
     {
    
-    	Image healthBar = playerStats.getShape(HP);
-		Image manaBar = playerStats.getShape(MN);
-		Image maxHealth = playerStats.getShape(maxHP);
-		Image maxMana = playerStats.getShape(maxMN);
-		Image expBar = playerStats.getShape(XP);
-		Image expRect = playerStats.getShape(maxXP);
+    	Image healthBar = statBars.getShape(HP);
+		Image manaBar = statBars.getShape(MN);
+		Image maxHealth = statBars.getShape(maxHP);
+		Image maxMana = statBars.getShape(maxMN);
+		Image expBar = statBars.getShape(XP);
+		Image expRect = statBars.getShape(maxXP);
 	    
 		double HP = Main.player.getHealth();
 		double maxHP = Main.player.getMaxHealth();
@@ -340,7 +408,7 @@ public class UI {
 		expBar.setWidth(expRect.getWidth() * XPfrac2);
 		expBar.setX(expBar.getX() + XPxDiff);
 		
-		playerStats.UIshow();
+		statBars.UIshow();
 		TextBox hoveredDisplay;
 		Geometrical temp;
 		Image copy;

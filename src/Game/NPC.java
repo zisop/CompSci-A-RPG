@@ -6,6 +6,7 @@ import Imported.Texture;
 import LowLevel.Geometrical;
 import LowLevel.Image;
 import LowLevel.Shape;
+import UI.TextBox;
 import UI.TextDisplay;
 import UI.UI;
 
@@ -110,7 +111,6 @@ public class NPC extends Image{
     public void showText()
     {
     	TextDisplay.showText(NPCtextBox, dialogue[Main.questState][currText], fontSize, frameNum);
-    	//we never overflow bois (doesnt matter unless this hits 2 million LOL)
     	if (frameNum < dialogue[Main.questState][currText].length)
     	{
     		frameNum++;
@@ -148,7 +148,7 @@ public class NPC extends Image{
     public boolean shouldInteract()
     {
     	
-    	return Main.xInteraction(this) || Main.clickInteraction(this);
+    	return Main.xInteraction(this) || Main.clickInteraction(this) || UI.mouseInteraction(NPCtextBox);
     }
     
     

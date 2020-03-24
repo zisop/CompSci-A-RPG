@@ -54,7 +54,6 @@ public class Main
     public static boolean[] initted = new boolean[allRooms.length];
     public static ArrayList<Integer> toInit = new ArrayList<Integer>();
     public static Player player;
-    public static String currDialogue;
     
     public static CursorInput cursor;
     
@@ -171,7 +170,6 @@ public class Main
             showVisibles();
 
             UI.showUI();
-            
             glfwSwapBuffers(window);
             
             //30FPS
@@ -188,7 +186,6 @@ public class Main
             fourLastFrame = four;
             rightClickLastFrame = rightClick;
             rLastFrame = r;
-            //only accept interactions every 3 frames
         }
     }
     public static double cursorAngle()

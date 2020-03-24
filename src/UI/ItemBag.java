@@ -227,7 +227,7 @@ public class ItemBag extends Positionable {
 					}
 				}
 				if (currItem.getQuantity() == 0) {removeItem(slot);}
-				else {UI.visItems.add(currItem);}
+				else if (!(holdingItem && currItem == heldItem)) {UI.visItems.add(currItem);}
 			}
 			else 
 			{

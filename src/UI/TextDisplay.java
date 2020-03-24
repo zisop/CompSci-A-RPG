@@ -10,57 +10,51 @@ import LowLevel.Image;
 public class TextDisplay {
 	public static CharTex[] fontChars = new CharTex[53];
 	//Have geo, str, size, frame
-	public static void showText(Geometrical textBox, String str, double fontSize, int frameNum)
+	public static void showText(Image textBox, String str, double fontSize, int frameNum)
     {
-    	showText(textBox, str, fontSize, frameNum, textBox.getMain().getAlpha());
+    	showText(textBox, str, fontSize, frameNum, textBox.getAlpha());
     }
 	//Have geo, list, size
-	public static void showText(Geometrical textBox, char[] charLi, double fontSize)
+	public static void showText(Image textBox, char[] charLi, double fontSize)
     {
     	showText(textBox, charLi, fontSize, charLi.length);
     }
 	//Have geo, str, size, alpha
-	public static void showText(Geometrical textBox, String str, double fontSize, float alpha)
+	public static void showText(Image textBox, String str, double fontSize, float alpha)
     {
     	showText(textBox, str, fontSize, str.length(), alpha);
     }
 	//Have geo, list, size, alpha
-	public static void showText(Geometrical textBox, char[] charLi, double fontSize, float alpha)
+	public static void showText(Image textBox, char[] charLi, double fontSize, float alpha)
     {
     	showText(textBox, charLi, fontSize, charLi.length, alpha);
     }
 	//Have geo, str, size
-	public static void showText(Geometrical textBox, String str, double fontSize)
+	public static void showText(Image textBox, String str, double fontSize)
     {
     	showText(textBox, str, fontSize, str.length());
     }
 	//Have geo, listChars, size, frame
-	public static void showText(Geometrical textBox, char[] charLi, double fontSize, int frameNum)
+	public static void showText(Image textBox, char[] charLi, double fontSize, int frameNum)
 	{
-		showText(textBox, charLi, fontSize,  frameNum, textBox.getMain().getAlpha());
+		showText(textBox, charLi, fontSize,  frameNum, textBox.getAlpha());
 	}
 	//Have geo, str, size, num, alpha
-	public static void showText(Geometrical textBox, String str, double fontSize, int frameNum, float alpha)
+	public static void showText(Image textBox, String str, double fontSize, int frameNum, float alpha)
     {
-    	char[] tempLi = new char[str.length()];
-    	for (int i = 0; i < str.length(); i++)
-    	{
-    		tempLi[i]= str.charAt(i); 
-    	}
-    	showText(textBox, tempLi, fontSize, frameNum, alpha);
+    	showText(textBox, toChars(str), fontSize, frameNum, alpha);
     }
-	public static void showText(Geometrical textBox, char[] charLi, double fontSize, int frameNum, float a)
+	public static void showText(Image textBox, char[] charLi, double fontSize, int frameNum, float a)
 	{
 		showText(textBox, charLi, fontSize, frameNum, a, 0, 0, 0);
 	}
 	
 	//FrameNum decides how many chars to display, allows us to display one char at a time
-    public static void showText(Geometrical textBox, char[] charLi, double fontSize, int frameNum, float a, float r, float g, float b)
+    public static void showText(Image textBox, char[] charLi, double fontSize, int frameNum, float a, float r, float g, float b)
     {
     	textBox.UIshow();
-    	Image mainRect = (textBox.getShape(0));
-    	double texX = mainRect.getX() - mainRect.getWidth() / 2 + fontSize;
-    	double texY = mainRect.getY() + mainRect.getLength() / 2 - fontSize;
+    	double texX = textBox.getX() - textBox.getWidth() / 2 + fontSize;
+    	double texY = textBox.getY() + textBox.getLength() / 2 - fontSize;
     	Image letterImg;
     	
     	
@@ -81,9 +75,9 @@ public class TextDisplay {
     		{
 				texX += fontSize;
 			}
-    		if (texX >= mainRect.getX() + mainRect.getWidth() / 2 - fontSize / 2 || charLi[i] == '`') 
+    		if (texX >= textBox.getX() + textBox.getWidth() / 2 - fontSize / 2 || charLi[i] == '`') 
     		{
-    			texX = mainRect.getX() - mainRect.getWidth() / 2 + fontSize;
+    			texX = textBox.getX() - textBox.getWidth() / 2 + fontSize;
     			texY -= fontSize;
     		}
     	}
@@ -174,7 +168,6 @@ public class TextDisplay {
     	fontChars[50] = new CharTex(new Texture("Font/apostrophe.png"), .6);
     	fontChars[51] = new CharTex(new Texture("Font/plus.png"));
     	fontChars[52] = new CharTex(new Texture("Font/minus.png"));
-    	ToolTip.initTips();
     	NPC.initText();
     }
     public static char[] toChars(String str)

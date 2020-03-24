@@ -3,8 +3,6 @@ package UI;
 
 import java.util.ArrayList;
 
-import com.sun.scenario.effect.Effect;
-
 import Game.Main;
 import Imported.Texture;
 import LowLevel.Geometrical;

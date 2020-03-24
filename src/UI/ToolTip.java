@@ -3,7 +3,6 @@ package UI;
 import LowLevel.CharTex;
 import LowLevel.Geometrical;
 import LowLevel.Image;
-import LowLevel.Positionable;
 import LowLevel.Shape;
 
 public class ToolTip extends Image {
@@ -30,11 +29,11 @@ public class ToolTip extends Image {
 			"The helmet of an Aztecan`emperor",
 			//Rings
 			"Worn by King`George III",
-			"",
-			"",
-			"",
+			"Has the power`of love",
+			"It's made of`brass so you`can trust it",
+			"Iron rings justlike minecraft",
 			"Crafted by`some famous`blacksmith",
-			"",
+			"Almost has to`be more decor`than utility",
 			//Potions
 			"The result of a horrible alchemical experiment",
 			"A scientist was found dead in a lab next to this",
@@ -46,13 +45,8 @@ public class ToolTip extends Image {
 			"Found on a`wrecked pirateship",
 			"Found next to`a dead peasant "
 	};
-	public static char[][] itemTips = new char[rawItemTips.length][];
 	private TextBox textBox;
 	private Image owner;
-	public ToolTip(Image inOwner, double font, int inID, Geometrical inBox)
-	{
-		this(inOwner, font, rawItemTips[inID], inBox);
-	}
 	public ToolTip(Image inOwner, double font, String text, Geometrical inBox)
 	{
 		super(null, 0, 0, 0, 0);
@@ -60,14 +54,6 @@ public class ToolTip extends Image {
 		super.setWidth(inBox.getWidth());
 		super.setLength(inBox.getLength());
 		textBox = new TextBox(font, text, inBox);
-	}
-	public static void initTips()
-	{
-		for (int strInd = 0; strInd < rawItemTips.length; strInd++)
-		{
-			String currStr = rawItemTips[strInd];
-			itemTips[strInd] = TextDisplay.toChars(currStr);
-		}
 	}
 	
 	public void updatePos()

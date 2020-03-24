@@ -51,6 +51,7 @@ public class Image extends Positionable
     public static Image createCopy(Image toCopy)
 	{
 		Image copy = new Image(toCopy.getTex(), toCopy.getX(), toCopy.getY(), toCopy.getWidth(), toCopy.getLength());
+		copy.setRGBA(toCopy.getRed(), toCopy.getGreen(), toCopy.getBlue(), toCopy.getAlpha());
 		return copy;
 	}
     public boolean isEnemy(Image otherChar)
