@@ -168,6 +168,9 @@ public class UI {
     	SpellSlot powerSlot = new SpellSlot(distance * 0, distance * -1.5, width, length, SpellSlot.displaysSpells);
     	powerSlot.setSpell(CombatChar.powerUp);
     	
+    	SpellSlot doorSlot = new SpellSlot(distance * 1, distance * -1.5, width, length, SpellSlot.displaysSpells);
+    	doorSlot.setSpell(Projectile.door);
+    	
     	for (int i = 0; i < selectedSpells.length; i++)
     	{
     		selectedSpells[i] = new SpellSlot(distance * i, distance, width, length, SpellSlot.acceptsSpells);
@@ -180,6 +183,7 @@ public class UI {
     	spellBag.addShape(damageCloud);
     	spellBag.addShape(healSlot);
     	spellBag.addShape(powerSlot);
+    	spellBag.addShape(doorSlot);
     	spellBag.setPos(-360, 220);
     }
     public static TextBox[] statText;

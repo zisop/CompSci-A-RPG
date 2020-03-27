@@ -120,7 +120,8 @@ public class SpellSlot extends Image {
 			"An area of`effect cloud``of magical`essence",
 			"Will heal you``  as long as`your brain is`extremely`large",
 			"Multiplies yourspell`damage (allowsfor stacking)",
-			"A lightning`spell that will blow`enemies away,``literally."
+			"A lightning`spell that will blow enemies``away",
+			"Domestic`violence has`never been`easier with`thrown doors"
 	};
 	
 	public static final int acceptsSpells = 0;
@@ -130,11 +131,12 @@ public class SpellSlot extends Image {
 	public static Texture[] spellIcons;
 	public static void init()
 	{
-		spellIcons = new Texture[5];
+		spellIcons = new Texture[6];
 		spellIcons[Projectile.fireball] = new Texture("SpellIcons/fireball.png");
 		spellIcons[AOE.damageCloud] = new Texture("SpellIcons/eruption.png");
 		spellIcons[AOE.lightning] = new Texture("SpellIcons/lightning.png");
 		spellIcons[CombatChar.heal] = new Texture("SpellIcons/heal.png");
 		spellIcons[CombatChar.powerUp] = new Texture("SpellIcons/powerUp.png");
+		spellIcons[Projectile.door] = new Texture("SpellIcons/doorIcon.png");
 	}
 }

@@ -168,8 +168,8 @@ public class Main
             if (alreadyInteracting) {Image.colorMultiplier = .7f;}
             else {Image.colorMultiplier = 1;}
             showVisibles();
-
             UI.showUI();
+            
             glfwSwapBuffers(window);
             
             //30FPS
@@ -279,7 +279,7 @@ public class Main
         Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10);
         test.addRow(Tile.GrassDirtBR, CombatChar.down);
         
-        int[] mobIDs = new int[] {Mob.skeleton, Mob.slime};
+        int[] mobIDs = new int[] {Mob.duck};
         SpawnPoint spawnPoint = new SpawnPoint(-20, 20, mobIDs);
         room.add(spawnPoint);
         

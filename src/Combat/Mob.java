@@ -46,13 +46,37 @@ public abstract class Mob extends CombatChar{
 	protected Point movementPoint;
 	protected boolean followingPlayer;
 	protected int attackFrame;
+	/**
+	 * Frame at which character stops animation after attacking
+	 */
 	protected int attackEnd;
+	/**
+	 * Frame at which character starts moving after attacking
+	 */
 	protected int pauseEnd;
+	/**
+	 * Velocity at which it sends targets on hit
+	 */
 	protected double initialDamageVelocity;
+	/**
+	 * Damage on hit
+	 */
 	protected double damage;
+	/**
+	 * Range of seeing player
+	 */
 	protected double sightRange;
+	/**
+	 * XP rewarded on death
+	 */
 	protected double xpReward;
+	/**
+	 * Frames of stun when attack lands on other character
+	 */
 	protected int attackStun;
+	/**
+	 * Frames of invulnerability when attack lands on other character
+	 */
 	protected int attackInvuln;
 	
 	public Mob(double x, double y, int ID)
@@ -69,24 +93,24 @@ public abstract class Mob extends CombatChar{
 			walkSounds = getSounds(skelSoundInd, skelSoundInd + 1);
 			
 			speed = 4;
-			longStoppingFrame = 40;
+			longStoppingFrame = 20;
 			shortStoppingStart = longStoppingFrame - 5;
 			
 			damage = 10;
 			attackRange = 60;
 			sightRange = 600;
-			attackEnd = 20;
-			pauseEnd = attackEnd + 30;
+			attackEnd = 10;
+			pauseEnd = attackEnd + 10;
 			initialDamageVelocity = 5;
-			armor = 4;
+			armor = 2;
 			
 			firstSound = 6;
-			walkAnimSwitch = 6;
+			walkAnimSwitch = 9;
 			soundFXSwitch = 25;
 			walkVolume = .4;
 			healthRegen = .05;
 			maxHealth = 30;
-			//one attack will affect the player for 40 frames
+
 			attackStun = 16;
 			attackInvuln = 48;
 			xpReward = 10;
@@ -106,15 +130,15 @@ public abstract class Mob extends CombatChar{
 			walkSounds = getSounds(slimeSoundInd, slimeSoundInd + 9);
 			
 			speed = 6;
-			longStoppingFrame = 40;
+			longStoppingFrame = 10;
 			shortStoppingStart = longStoppingFrame - 5;
 			
 			damage = 5;
 			attackRange = 45;
 			sightRange = 600;
 			attackEnd = 15;
-			pauseEnd = attackEnd + 30;
-			armor = 2;
+			pauseEnd = attackEnd + 15;
+			armor = 1;
 			
 			initialDamageVelocity = 5;
 			firstSound = 6;
@@ -122,7 +146,6 @@ public abstract class Mob extends CombatChar{
 			soundFXSwitch = 20;
 			healthRegen = .05;
 			maxHealth = 20;
-			//one attack will affect the player for 40 frames
 			attackStun = 16;
 			attackInvuln = 48;
 			xpReward = 8;
@@ -132,6 +155,39 @@ public abstract class Mob extends CombatChar{
 			setHitLength(25);
 			hitBoxDown(5);
 			
+			break;
+		case duck:
+			setWidth(50);
+			setLength(getWidth() * 10 / 7);
+			anims = getAnims(duckAnimInd, duckAnimInd + 19);
+			walkSounds = getSounds(slimeSoundInd, slimeSoundInd + 9);
+			
+			speed = 6;
+			longStoppingFrame = 20;
+			shortStoppingStart = longStoppingFrame - 5;
+			
+			damage = 15;
+			attackRange = 60;
+			sightRange = 600;
+			attackEnd = 15;
+			pauseEnd = attackEnd + 15;
+			armor = 2;
+			
+			initialDamageVelocity = 7;
+			firstSound = 6;
+			walkAnimSwitch = 9;
+			soundFXSwitch = 20;
+			healthRegen = .1;
+			maxHealth = 70;
+			attackStun = 20;
+			attackInvuln = 40;
+			xpReward = 12;
+			
+			setProjectileLength(70);
+			setProjectileWidth(40);
+			setHitWidth(40);
+			setHitLength(25);
+			hitBoxDown(15);
 			break;
 		}
 
@@ -211,6 +267,7 @@ public abstract class Mob extends CombatChar{
 		}	
 		super.show();
 		if (!isDead) {stats.show();}
+		showProjectileBox();
 	}
 	
 	private void createDrops()
@@ -231,6 +288,12 @@ public abstract class Mob extends CombatChar{
 				IDs = new int[] {Item.sapphire};
 				probabilities = new double[] {.3};
 				quantities = new int[] {2};
+				break;
+			case duck:
+				numRolls = 3;
+				IDs = new int[] {Item.ruby, Item.gold, Item.amethyst};
+				probabilities = new double[] {.3, .1, .2};
+				quantities = new int[] {4, 2, 2};
 				break;
 			default:
 				try {
@@ -531,7 +594,7 @@ public abstract class Mob extends CombatChar{
 	
 	public final static int skeleton = 0;
 	public final static int slime = 1;
-	public final static int zombie = 2;
+	public final static int duck = 2;
 	public final static int archer = 3;
 
 	private static final int skelSoundInd = 0;

@@ -2,7 +2,7 @@ package Combat;
 
 import java.util.ArrayList;
 
-
+import Game.Door;
 import Game.Main;
 import Imported.Texture;
 import LowLevel.Geometry;
@@ -21,7 +21,9 @@ public class Projectile extends Movable {
 	private ArrayList<Image> alreadyAttacked;
 	private double orbitRadius;
 	private boolean orbitting;
+	private boolean rotateWhileShot;
 	private double damage;
+	private double shotAngle;
 	
 	private double initialVelocity;
 	private int changeFrame;
@@ -34,14 +36,16 @@ public class Projectile extends Movable {
 	private Texture[] anims;
 	private CombatChar owner;
 	private double orbitAngle;
-	public Projectile(int inID, double x, double y, double width, double length, double angle, CombatChar ownChar)
+	public Projectile(int inID, double x, double y, double angle, CombatChar ownChar)
 	{
-		super(null, x, y, width, length);
+		super(null, x, y, 0, 0);
 		frameAnim = 0;
 		ID = inID;
 		alreadyAttacked = new ArrayList<Image>();
 		switch (ID) {
 			case fireball:
+				setWidth(50);
+				setLength(50);
 				orbitAnims = getAnims(fireBallOrbit, fireBallOrbit + 3);
 				shotAnims = getAnims(fireBallShot, fireBallShot + 1);
 				changeFrame = 3;
@@ -52,9 +56,29 @@ public class Projectile extends Movable {
 				attackStun = 0;
 				attackInvulnerability = 0;
 				initialVelocity = 10;
+				rotateWhileShot = false;
+				break;
+			case door:
+				damage = 20;
+				speed = 20;
+				setWidth(60);
+				setLength(getWidth() * 3 / 2);
+				int whichDoor = Main.random.nextInt(numDoors);
+				shotAnims = getAnims(doorInd + whichDoor, doorInd + whichDoor);
+				changeFrame = 10;
+				endFrame = 90;
+				maxHits = 100;
+				attackStun = 45;
+				attackInvulnerability = 10;
+				initialVelocity = speed * 2 / 3;
+				rotateWhileShot = true;
+				break;
+			default:
+				try {throw new Exception("Projectile: " + inID + " didn't exist");} 
+				catch (Exception e) {e.printStackTrace(); System.exit(0);}
 		}
 		setAngle(angle);
-		orbitting = false;
+		setOrbit(false);		
 		owner = ownChar;
 		numHits = 0;
 		orbitAngle = 0;
@@ -81,7 +105,7 @@ public class Projectile extends Movable {
 			{
 				double[] damageInfo = new double[5];
 				damageInfo[Effect.damageDamage] = damage;
-				damageInfo[Effect.damageFromAngle] = coll.angleTo(owner);
+				damageInfo[Effect.damageFromAngle] = collidingChar.angleTo(owner);
 				damageInfo[Effect.damageStunFrames] = attackStun;
 				damageInfo[Effect.damageInvulnFrames] = attackInvulnerability;
 				damageInfo[Effect.damageInitialVelocity] = initialVelocity;
@@ -100,7 +124,7 @@ public class Projectile extends Movable {
 	{
 		orbitting = flag;
 		if (orbitting) {anims = orbitAnims;}
-		else {anims = shotAnims;}
+		else {anims = shotAnims; shotAngle = getAngle();}
 		frameAnim = 0;
 		framesShot = 0;
 	}
@@ -161,9 +185,10 @@ public class Projectile extends Movable {
 	{
 		if (!orbitting)
 		{	
-			double xDist = Math.cos(getAngle() * Math.PI / 180) * speed;
-			double yDist = Math.sin(getAngle() * Math.PI / 180) * speed;
+			double xDist = Math.cos(shotAngle * Math.PI / 180) * speed;
+			double yDist = Math.sin(shotAngle * Math.PI / 180) * speed;
 			setPos(getX() + xDist, getY() + yDist);
+			if (rotateWhileShot) {setAngle(getAngle() + 5);}
 		}
 		else
 		{
@@ -176,12 +201,14 @@ public class Projectile extends Movable {
 			setPos(owner.getX() + xDist, owner.getY() + yDist);
 		}
 	}
-	public static final int fireBallOrbit = 0;
-	public static final int fireBallShot = 4; 
+	private static final int fireBallOrbit = 0;
+	private static final int fireBallShot = fireBallOrbit + 4; 
+	private static final int doorInd = fireBallShot + 2;
 	public static final int fireball = 0;
+	public static final int door = 5;
 	public static final int arrow = 2;
 	public static final double facingUp = 90;
-	public static Texture[] projTex = new Texture[6];
+	public static Texture[] projTex = new Texture[12];
 	/**
 	 * init
 	 */
@@ -193,7 +220,14 @@ public class Projectile extends Movable {
 		projTex[fireBallOrbit + 3] = projTex[1];
 		projTex[fireBallShot + 0] = new Texture("Projectiles/Fireball1/fire0.png");
 		projTex[fireBallShot + 1] = new Texture("Projectiles/Fireball1/fire1.png");
+		projTex[doorInd] = new Texture("Projectiles/Door/door0.png");
+		projTex[doorInd + 1] = new Texture("Projectiles/Door/door1.png");
+		projTex[doorInd + 2] = new Texture("Projectiles/Door/door2.png");
+		projTex[doorInd + 3] = new Texture("Projectiles/Door/door3.png");
+		projTex[doorInd + 4] = new Texture("Projectiles/Door/door4.png");
+		projTex[doorInd + 5] = new Texture("Projectiles/Door/door5.png");
 	}
+	private static final int numDoors = 6;
 	
 	/**
 	 * 

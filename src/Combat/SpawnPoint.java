@@ -8,8 +8,8 @@ import LowLevel.Image;
 import World.Room;
 
 public class SpawnPoint extends Image {
-	private static double width = 400;
-	private static double length = 400;
+	private static double width = 200;
+	private static double length = 200;
 	private int framesTillSpawn;
 	private int[] mobGens;
 	public SpawnPoint(double x, double y, int[] mobIDs)
@@ -43,7 +43,7 @@ public class SpawnPoint extends Image {
 		switch (ID) {
 			case MeleeMob.slime:
 			case MeleeMob.skeleton:
-			case MeleeMob.zombie:
+			case MeleeMob.duck:
 				mob = new MeleeMob(0, 0, ID);
 				break;
 			case MeleeMob.archer:
@@ -60,7 +60,7 @@ public class SpawnPoint extends Image {
 		}
 		mob.setPos(x, y);
 		int numTries = 1;
-		while (!(currRoom.collision(mob) && !currRoom.strictCollision(mob)))
+		while (currRoom.imageCollision(mob) || currRoom.strictCollision(mob) || !currRoom.collision(mob))
 		{
 			if (numTries++ == 1000)
 			{

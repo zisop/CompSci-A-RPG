@@ -4,8 +4,7 @@ package Combat;
 
 import java.util.ArrayList;
 
-
-
+import Game.Door;
 import Game.Main;
 import Imported.Audio;
 import Imported.Texture;
@@ -155,14 +154,14 @@ public class Player extends CombatChar
      * Casts a spell corresponding to the ID
      * @param ID
      */
-    private void castSpell(int ID)
+    public void castSpell(int ID)
     {
     	switch(ID)
     	{
     		case Projectile.fireball:
     			if (mana >= fireBallCost)
     			{
-    				double speed = this.speed * 5/4;
+    				double projSpeed = 10;
     				double mouseAngle = Main.cursorAngle();
     				int smallestInd = 0;
     				for (int i = 1; i < orbit.size(); i++)
@@ -181,9 +180,9 @@ public class Player extends CombatChar
     				double hypoLen = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
     				double shotAngle = Math.toDegrees(Math.acos(xDiff / hypoLen));
     				if (yDiff < 0) {shotAngle *= -1;}
-    				shot.setOrbit(false);
     				shot.setAngle(shotAngle);
-    				shot.setSpeed(speed);
+    				shot.setOrbit(false);
+    				shot.setSpeed(projSpeed);
     				mana -= fireBallCost;
     				shot.setDamage(10 * itemAttackMultiplier);
     				shot.setHitLength(shot.getHitLength() * 3 / 5);
@@ -244,6 +243,21 @@ public class Player extends CombatChar
     				lightning.place();
     				lightning.setDamage(lightning.getDamage() * itemAttackMultiplier);
     				mana -= lightningCost;
+    			}
+    			return;
+    		case Projectile.door:
+    			if (mana >= doorCost)
+    			{
+    				double mouseAngle = Main.cursorAngle();
+    				mouseAngle = Math.toRadians(mouseAngle);
+    				double radiusFromPlayer = 30;
+    				double x = getX() + Math.cos(mouseAngle) * radiusFromPlayer;
+    				double y = getY() + Math.sin(mouseAngle) * radiusFromPlayer;
+    				Projectile shot = new Projectile(Projectile.door, x, y, Math.toDegrees(mouseAngle), this);
+    				shot.setAngle(Main.random.nextDouble() * 360);
+    				//Audio.playSound("Batt/fireball", .48);
+    				Main.allRooms[Main.currRoom].permaShow(shot);
+    				mana -= doorCost;
     			}
     			return;
     	}
@@ -392,7 +406,7 @@ public class Player extends CombatChar
     				}
     			}
     		}
-    		Projectile currProj = new Projectile(Projectile.fireball, 0, 0, 50, 50, Projectile.facingUp, this);
+    		Projectile currProj = new Projectile(Projectile.fireball, 0, 0, Projectile.facingUp, this);
     		currProj.setOrbit(true);
     		currProj.setOrbitAngle(angle);
     		double orbitRadius = currProj.getOrbitRadius();
@@ -475,5 +489,6 @@ public class Player extends CombatChar
     private static final double poisonCost = 30;
     private static final double healCost = 40;
     private static final double powerUpCost = 50;
+    private static final double doorCost = 60;
     public final static double baseSpeed = 8;
 }

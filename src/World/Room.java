@@ -123,6 +123,10 @@ public class Room extends Image{
 				return true;
 			}
 		}
+		return false;
+	}
+	public boolean imageCollision(Positionable otherChar)
+	{
 		for (int i = 0; i < images.size(); i++)
 		{
 			Image curr = images.get(i);

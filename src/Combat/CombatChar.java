@@ -462,6 +462,7 @@ public class CombatChar extends Movable{
 	protected static final int slimeAnimInd = 20;
 	protected static final int playerAnimInd = 40;
 	protected static final int healAnimInd = playerAnimInd + 20;
+	protected static final int duckAnimInd = healAnimInd + 22;
 	
 	protected static final int skelSoundInd = 0;
 	protected static final int slimeSoundInd = 2;
@@ -485,27 +486,48 @@ public class CombatChar extends Movable{
 		loadedSounds[playerSoundInd + 0] = "Move/Steps/foot2";
 		
 		
-		loadedTex = new Texture[82];
-		loadedTex[skelAnimInd + uW0] = new Texture("Mobs/Skeleton/IdleUp.png");
-		loadedTex[skelAnimInd + uW1] = new Texture("Mobs/Skeleton/IdleUp.png");
-		loadedTex[skelAnimInd + uW2] = new Texture("Mobs/Skeleton/IdleUp.png");
-		loadedTex[skelAnimInd + uA] = new Texture("Mobs/Skeleton/IdleUp.png");
-		loadedTex[skelAnimInd + uI] = new Texture("Mobs/Skeleton/IdleUp.png");
-		loadedTex[skelAnimInd + rW0] = new Texture("Mobs/Skeleton/IdleRight.png");
-		loadedTex[skelAnimInd + rW1] = new Texture("Mobs/Skeleton/IdleRight.png");
-		loadedTex[skelAnimInd + rW2] = new Texture("Mobs/Skeleton/IdleRight.png");
-		loadedTex[skelAnimInd + rA] = new Texture("Mobs/Skeleton/IdleRight.png");
-		loadedTex[skelAnimInd + rI] = new Texture("Mobs/Skeleton/IdleRight.png");
-		loadedTex[skelAnimInd + dW0] = new Texture("Mobs/Skeleton/IdleDown.png");
-		loadedTex[skelAnimInd + dW1] = new Texture("Mobs/Skeleton/IdleDown.png");
-		loadedTex[skelAnimInd + dW2] = new Texture("Mobs/Skeleton/IdleDown.png");
-		loadedTex[skelAnimInd + dA] = new Texture("Mobs/Skeleton/IdleDown.png");
-		loadedTex[skelAnimInd + dI] = new Texture("Mobs/Skeleton/IdleDown.png");
-		loadedTex[skelAnimInd + lW0] = new Texture("Mobs/Skeleton/IdleLeft.png");
-		loadedTex[skelAnimInd + lW1] = new Texture("Mobs/Skeleton/IdleLeft.png");
-		loadedTex[skelAnimInd + lW2] = new Texture("Mobs/Skeleton/IdleLeft.png");
-		loadedTex[skelAnimInd + lA] = new Texture("Mobs/Skeleton/IdleLeft.png");
-		loadedTex[skelAnimInd + lI] = new Texture("Mobs/Skeleton/IdleLeft.png");
+		loadedTex = new Texture[duckAnimInd + 20];
+		loadedTex[skelAnimInd + uW0] = new Texture("Mobs/Skeleton/Animations/walkUp/up0.png");
+		loadedTex[skelAnimInd + uW1] = new Texture("Mobs/Skeleton/Animations/walkUp/up1.png");
+		loadedTex[skelAnimInd + uW2] = new Texture("Mobs/Skeleton/Animations/walkUp/up2.png");
+		loadedTex[skelAnimInd + uA] = new Texture("Mobs/Skeleton/Idle/IdleUp.png");
+		loadedTex[skelAnimInd + uI] = new Texture("Mobs/Skeleton/Idle/IdleUp.png");
+		loadedTex[skelAnimInd + rW0] = new Texture("Mobs/Skeleton/Animations/walkRight/right0.png");
+		loadedTex[skelAnimInd + rW1] = new Texture("Mobs/Skeleton/Animations/walkRight/right1.png");
+		loadedTex[skelAnimInd + rW2] = new Texture("Mobs/Skeleton/Animations/walkRight/right2.png");
+		loadedTex[skelAnimInd + rA] = new Texture("Mobs/Skeleton/Idle/IdleRight.png");
+		loadedTex[skelAnimInd + rI] = new Texture("Mobs/Skeleton/Idle/IdleRight.png");
+		loadedTex[skelAnimInd + dW0] = new Texture("Mobs/Skeleton/Animations/walkDown/down0.png");
+		loadedTex[skelAnimInd + dW1] = new Texture("Mobs/Skeleton/Animations/walkDown/down1.png");
+		loadedTex[skelAnimInd + dW2] = new Texture("Mobs/Skeleton/Animations/walkDown/down2.png");
+		loadedTex[skelAnimInd + dA] = new Texture("Mobs/Skeleton/Idle/IdleDown.png");
+		loadedTex[skelAnimInd + dI] = new Texture("Mobs/Skeleton/Idle/IdleDown.png");
+		loadedTex[skelAnimInd + lW0] = new Texture("Mobs/Skeleton/Animations/walkLeft/left0.png");
+		loadedTex[skelAnimInd + lW1] = new Texture("Mobs/Skeleton/Animations/walkLeft/left1.png");
+		loadedTex[skelAnimInd + lW2] = new Texture("Mobs/Skeleton/Animations/walkLeft/left2.png");
+		loadedTex[skelAnimInd + lA] = new Texture("Mobs/Skeleton/Idle/IdleLeft.png");
+		loadedTex[skelAnimInd + lI] = new Texture("Mobs/Skeleton/Idle/IdleLeft.png");
+		
+		loadedTex[duckAnimInd + uW0] = new Texture("Mobs/Duck/anims/up0.png");
+		loadedTex[duckAnimInd + uW1] = new Texture("Mobs/Duck/anims/up1.png");
+		loadedTex[duckAnimInd + uW2] = new Texture("Mobs/Duck/anims/up2.png");
+		loadedTex[duckAnimInd + uA] = new Texture("Mobs/Duck/anims/up1.png");
+		loadedTex[duckAnimInd + uI] = new Texture("Mobs/Duck/anims/up1.png");
+		loadedTex[duckAnimInd + rW0] = new Texture("Mobs/Duck/anims/right0.png");
+		loadedTex[duckAnimInd + rW1] = new Texture("Mobs/Duck/anims/right1.png");
+		loadedTex[duckAnimInd + rW2] = new Texture("Mobs/Duck/anims/right2.png");
+		loadedTex[duckAnimInd + rA] = new Texture("Mobs/Duck/anims/right1.png");
+		loadedTex[duckAnimInd + rI] = new Texture("Mobs/Duck/anims/right1.png");
+		loadedTex[duckAnimInd + lW0] = new Texture("Mobs/Duck/anims/left0.png");
+		loadedTex[duckAnimInd + lW1] = new Texture("Mobs/Duck/anims/left1.png");
+		loadedTex[duckAnimInd + lW2] = new Texture("Mobs/Duck/anims/left2.png");
+		loadedTex[duckAnimInd + lA] = new Texture("Mobs/Duck/anims/left1.png");
+		loadedTex[duckAnimInd + lI] = new Texture("Mobs/Duck/anims/left1.png");
+		loadedTex[duckAnimInd + dW0] = new Texture("Mobs/Duck/anims/down0.png");
+		loadedTex[duckAnimInd + dW1] = new Texture("Mobs/Duck/anims/down1.png");
+		loadedTex[duckAnimInd + dW2] = new Texture("Mobs/Duck/anims/down2.png");
+		loadedTex[duckAnimInd + dA] = new Texture("Mobs/Duck/anims/down1.png");
+		loadedTex[duckAnimInd + dI] = new Texture("Mobs/Duck/anims/down1.png");
 		
 		
 		loadedTex[slimeAnimInd + uW0] = new Texture("Mobs/Slime/IdleUp.png");
