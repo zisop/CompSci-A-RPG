@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import Game.Main;
 import Imported.Audio;
 import Imported.Texture;
+import LowLevel.Animation;
 import LowLevel.Image;
 import World.Room;
 
@@ -21,6 +22,7 @@ public class AOE extends Image{
 	private int stunFrames;
 	private int invulnFrames;
 	private int ID;
+	//private Animation anim;
 	private Texture[] anims;
 	private Texture[] startAnims;
 	private Texture[] activeAnims;

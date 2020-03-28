@@ -25,7 +25,7 @@ public class Projectile extends Movable {
 	private double damage;
 	private double shotAngle;
 	
-	private double initialVelocity;
+	private double initialHitVelocity;
 	private int changeFrame;
 	private int attackStun;
 	private int attackInvulnerability;
@@ -45,7 +45,7 @@ public class Projectile extends Movable {
 		switch (ID) {
 			case fireball:
 				setWidth(50);
-				setLength(50);
+				setLength(getWidth());
 				orbitAnims = getAnims(fireBallOrbit, fireBallOrbit + 3);
 				shotAnims = getAnims(fireBallShot, fireBallShot + 1);
 				changeFrame = 3;
@@ -55,14 +55,15 @@ public class Projectile extends Movable {
 				setHitWidth(getWidth() * 4 / 5);
 				attackStun = 0;
 				attackInvulnerability = 0;
-				initialVelocity = 10;
+				initialHitVelocity = 10;
 				rotateWhileShot = false;
 				break;
 			case door:
 				damage = 20;
 				speed = 20;
-				setWidth(60);
-				setLength(getWidth() * 3 / 2);
+				setLength(80);
+				setWidth(getLength() * 3 / 2);
+				
 				int whichDoor = Main.random.nextInt(numDoors);
 				shotAnims = getAnims(doorInd + whichDoor, doorInd + whichDoor);
 				changeFrame = 10;
@@ -70,8 +71,24 @@ public class Projectile extends Movable {
 				maxHits = 100;
 				attackStun = 45;
 				attackInvulnerability = 10;
-				initialVelocity = speed * 2 / 3;
+				initialHitVelocity = speed * 2 / 3;
 				rotateWhileShot = true;
+				break;
+			case arrow:
+				damage = 15;
+				speed = 10;
+				setLength(40);
+				setWidth(getLength());
+				setHitLength(getLength() / 2);
+				
+				shotAnims = getAnims(arrowInd, arrowInd);
+				changeFrame = 50;
+				endFrame = 50;
+				maxHits = 1;
+				attackStun = 10;
+				attackInvulnerability = 10;
+				initialHitVelocity = speed * 2 / 3;
+				rotateWhileShot = false;
 				break;
 			default:
 				try {throw new Exception("Projectile: " + inID + " didn't exist");} 
@@ -92,8 +109,7 @@ public class Projectile extends Movable {
 	{
 		if (!Main.alreadyInteracting)
 		{
-			setImage(anims[(frameAnim / changeFrame) % anims.length]);
-			frameAnim++;
+			setImage(anims[(frameAnim++ / changeFrame) % anims.length]);
 			if (!orbitting)
 			{
 				framesShot++;
@@ -108,7 +124,7 @@ public class Projectile extends Movable {
 				damageInfo[Effect.damageFromAngle] = collidingChar.angleTo(owner);
 				damageInfo[Effect.damageStunFrames] = attackStun;
 				damageInfo[Effect.damageInvulnFrames] = attackInvulnerability;
-				damageInfo[Effect.damageInitialVelocity] = initialVelocity;
+				damageInfo[Effect.damageInitialVelocity] = initialHitVelocity;
 				Effect damage = new Effect(Effect.damage, damageInfo, owner);
 				coll.receiveEffect(damage);
 				if (!orbitting) {
@@ -204,11 +220,12 @@ public class Projectile extends Movable {
 	private static final int fireBallOrbit = 0;
 	private static final int fireBallShot = fireBallOrbit + 4; 
 	private static final int doorInd = fireBallShot + 2;
+	private static final int arrowInd = doorInd + 6;
 	public static final int fireball = 0;
 	public static final int door = 5;
 	public static final int arrow = 2;
 	public static final double facingUp = 90;
-	public static Texture[] projTex = new Texture[12];
+	public static Texture[] projTex = new Texture[13];
 	/**
 	 * init
 	 */
@@ -226,6 +243,7 @@ public class Projectile extends Movable {
 		projTex[doorInd + 3] = new Texture("Projectiles/Door/door3.png");
 		projTex[doorInd + 4] = new Texture("Projectiles/Door/door4.png");
 		projTex[doorInd + 5] = new Texture("Projectiles/Door/door5.png");
+		projTex[arrowInd] = new Texture("Projectiles/arrow.png");
 	}
 	private static final int numDoors = 6;
 	

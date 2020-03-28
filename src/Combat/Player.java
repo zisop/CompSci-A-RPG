@@ -67,9 +67,9 @@ public class Player extends CombatChar
         soundFXSwitch = 20;
         walkVolume = .2;
         
-        anims = getAnims(playerAnimInd, playerAnimInd + 19);
-        setImage(anims[0]);
-        walkSounds = getSounds(playerSoundInd, playerSoundInd + 0);
+        anims = getAnims(playerAnimInd, playerAnimInd + 11, walkAnimSwitch, this);
+        setAnim(dW);
+        walkSounds = getSounds(playerSoundInd, playerSoundInd);
         firstSound = 6;
         setEnemyState(good);
         handleCombatException();

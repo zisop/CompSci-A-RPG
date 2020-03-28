@@ -89,7 +89,8 @@ public abstract class Mob extends CombatChar{
 		case skeleton:
 			setWidth(50);
 			setLength(50);
-			anims = getAnims(skelAnimInd, skelAnimInd + 19);
+			walkAnimSwitch = 9;
+			anims = getAnims(skelAnimInd, skelAnimInd + 11, walkAnimSwitch, this);
 			walkSounds = getSounds(skelSoundInd, skelSoundInd + 1);
 			
 			speed = 4;
@@ -105,7 +106,7 @@ public abstract class Mob extends CombatChar{
 			armor = 2;
 			
 			firstSound = 6;
-			walkAnimSwitch = 9;
+			
 			soundFXSwitch = 25;
 			walkVolume = .4;
 			healthRegen = .05;
@@ -126,7 +127,8 @@ public abstract class Mob extends CombatChar{
 		case slime:
 			setWidth(35);
 			setLength(35);
-			anims = getAnims(slimeAnimInd, slimeAnimInd + 19);
+			walkAnimSwitch = 6;
+			anims = getAnims(slimeAnimInd, slimeAnimInd + 11, walkAnimSwitch, this);
 			walkSounds = getSounds(slimeSoundInd, slimeSoundInd + 9);
 			
 			speed = 6;
@@ -142,7 +144,6 @@ public abstract class Mob extends CombatChar{
 			
 			initialDamageVelocity = 5;
 			firstSound = 6;
-			walkAnimSwitch = 6;
 			soundFXSwitch = 20;
 			healthRegen = .05;
 			maxHealth = 20;
@@ -159,8 +160,9 @@ public abstract class Mob extends CombatChar{
 		case duck:
 			setWidth(50);
 			setLength(getWidth() * 10 / 7);
-			anims = getAnims(duckAnimInd, duckAnimInd + 19);
-			walkSounds = getSounds(slimeSoundInd, slimeSoundInd + 9);
+			walkAnimSwitch = 9;
+			anims = getAnims(duckAnimInd, duckAnimInd + 11, walkAnimSwitch, this);
+			walkSounds = getSounds(duckSoundInd, duckSoundInd);
 			
 			speed = 6;
 			longStoppingFrame = 20;
@@ -175,19 +177,21 @@ public abstract class Mob extends CombatChar{
 			
 			initialDamageVelocity = 7;
 			firstSound = 6;
-			walkAnimSwitch = 9;
 			soundFXSwitch = 20;
 			healthRegen = .1;
-			maxHealth = 70;
+			maxHealth = 55;
 			attackStun = 20;
 			attackInvuln = 40;
 			xpReward = 12;
 			
-			setProjectileLength(70);
-			setProjectileWidth(40);
+			setProjectileWidth(getWidth());
+			setProjectileLength(getLength());
 			setHitWidth(40);
 			setHitLength(25);
 			hitBoxDown(15);
+			walkVolume = .2;
+			break;
+		case archer:
 			break;
 		}
 
@@ -207,6 +211,7 @@ public abstract class Mob extends CombatChar{
 		setEnemyState(bad);
 		createDrops();
 		handleMobException();
+		setAnim(dI);;
 	}
 	public void setX(double newX)
 	{
@@ -267,7 +272,6 @@ public abstract class Mob extends CombatChar{
 		}	
 		super.show();
 		if (!isDead) {stats.show();}
-		showProjectileBox();
 	}
 	
 	private void createDrops()
@@ -364,14 +368,11 @@ public abstract class Mob extends CombatChar{
 		}
 		if (movement[direc] == false)
 		{
-			direc = shouldStopWalk;
 			stopWalk(shortStop);
 			if (followingPlayer) {dontFollow = true;}
 			return;
 		}
-		if (walkDirec != direc) {walkAnim = resetWalk;}
-		walkDirec = direc;
-		
+		walkInDirec(direc);
 		super.move();
 	}
 	public boolean seeingPlayer()
@@ -469,6 +470,8 @@ public abstract class Mob extends CombatChar{
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
 		if (initialDamageVelocity == 0) { try { throw new Exception("damageVelocity was 0 for Mob " + mobID);} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (xpReward == 0) { try { throw new Exception("xpReward was 0 for Mob " + mobID);} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
 	}
 	private void die()
 	{
@@ -502,10 +505,10 @@ public abstract class Mob extends CombatChar{
 	{
 		switch (walkDirec)
 		{
-			case up: setImage(anims[uA]); break;
-			case right: setImage(anims[rA]); break;
-			case down: setImage(anims[dA]); break;
-			case left: setImage(anims[lA]); break;
+			case up: setAnim(uA); break;
+			case right: setAnim(rA); break;
+			case down: setAnim(dA); break;
+			case left: setAnim(lA); break;
 		}
 	}
 	/**

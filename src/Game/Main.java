@@ -162,13 +162,14 @@ public class Main
                 }
             }
             
-            if (moveDirec != notMoving) {player.setDirec(moveDirec); player.move();}
+            if (moveDirec != notMoving) {player.walkInDirec(moveDirec); player.move();}
             
             else {player.stopWalk();}
             if (alreadyInteracting) {Image.colorMultiplier = .7f;}
             else {Image.colorMultiplier = 1;}
             showVisibles();
             UI.showUI();
+            if (one && !oneLastFrame) {allRooms[currRoom].permaShow(new Projectile(Projectile.arrow, 0, 0, cursorAngle(), player));}
             
             glfwSwapBuffers(window);
             

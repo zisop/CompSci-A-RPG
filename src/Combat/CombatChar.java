@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import Imported.Audio;
 import Imported.Texture;
+import LowLevel.Animation;
 import LowLevel.Geometry;
 import LowLevel.Image;
 import LowLevel.Point;
@@ -13,13 +14,13 @@ public class CombatChar extends Movable{
 	private Point[] projectileBasis;
 	protected boolean isDead;
 	
-	private Texture[] particleAnims;
+	private Animation particleAnim;
 	private ArrayList<Effect> currentEffects;
 	
 	private Image particleEffect;
 	private int particleFrames;
-	private int particleAnim;
 	private int particleSwitch;
+	private boolean idling;
 	
 	protected double manaRegen;
 	protected double mana;
@@ -35,8 +36,6 @@ public class CombatChar extends Movable{
 	protected double initialVelocity;
 	protected double hitAngle;
 	
-	protected int walkAnim;
-	protected int walkFrame;
 	protected int soundFXFrame;
 	protected int walkDirec;
 	protected int walkAnimSwitch;
@@ -47,7 +46,9 @@ public class CombatChar extends Movable{
 	protected double damageMultiplier;
 	
 	protected String[] walkSounds;
-	protected Texture[] anims;
+	
+	private Animation currAnim;
+	protected Animation[] anims;
 	
 	public CombatChar(Texture img, double inX, double inY, double w, double l) {
         super(img, inX, inY, w, l);
@@ -64,9 +65,8 @@ public class CombatChar extends Movable{
         damageMultiplier = 1;
         isDead = false;
         walkDirec = down;
-		walkAnim = resetWalk;
+        idling = true;
 		soundFXFrame = 0;
-		walkFrame = 0;
     }
 	public void printStats()
 	{
@@ -112,7 +112,12 @@ public class CombatChar extends Movable{
     			case down: setY(getY() - speed); break;
     			case left: setX(getX() - speed); break;
     		}
-    		handleAnims();
+    		if (soundFXFrame == soundFXSwitch || soundFXFrame == firstSound)
+    		{
+    			playWalkSound();
+    			soundFXFrame = firstSound + 1;
+    		}
+    		else {soundFXFrame++;}
     	}
     }
     /**
@@ -209,6 +214,7 @@ public class CombatChar extends Movable{
     }
     public void show()
     {
+    	boolean showParticles = false;
     	if (!isDead)
     	{
     		if (hitStunFrames > 0)
@@ -235,13 +241,10 @@ public class CombatChar extends Movable{
     		else {setAlpha(255);}
     		receiveStuckEffects();
     		if (particleFrames != 0) {
-    			if (particleFrames % particleSwitch == 0) {
-    				particleAnim += 1;
-    				particleEffect.setImage(particleAnims[particleAnim]);
-    			}
+    			particleAnim.update();
     			particleEffect.setPos(getX(), getY());
-    			particleEffect.show();
     			particleFrames--;
+    			showParticles = true;
     		}
     		else if (particleFrames < 0)
     		{
@@ -252,8 +255,10 @@ public class CombatChar extends Movable{
 					System.exit(0);
 				}
     		}
+    		currAnim.update();
     	}
-		super.show();
+    	super.show();
+    	if (showParticles) {particleEffect.show();}
     }
     public boolean canBeAttacked()
     {
@@ -264,12 +269,13 @@ public class CombatChar extends Movable{
     	boolean shouldError = true;
     	switch (ID) {
 		case Effect.heal:
-			particleAnims = getAnims(healAnimInd, healAnimInd + 21);
-			particleEffect = new Image(null, 0, 0, getWidth(), getLength());
-			particleEffect.setAlpha(150);
+			
 			particleSwitch = 2;
-			particleAnim = startParticles;
-			particleFrames = (particleAnims.length - 1) * particleSwitch;
+			particleEffect = new Image(null, 0, 0, getWidth(), getLength());
+			
+			particleAnim = getAnims(healAnimInd, healAnimInd, particleSwitch, particleEffect)[0];
+			particleEffect.setAlpha(100);
+			particleFrames = (particleAnim.length - 1) * particleSwitch;
 			shouldError = false;
 			break;
 		case Effect.poison:
@@ -325,68 +331,6 @@ public class CombatChar extends Movable{
     }
     
     
-    /**
-	 * handles walk animations and sounds
-	 */
-    protected void handleAnims()
-	{
-		walkFrame++;
-		if (walkAnim == resetWalk) {walkAnim = startWalking; walkFrame = walkAnimSwitch;}
-		if (walkFrame == walkAnimSwitch)
-		{
-			walkAnim++;
-			walkFrame = 0;
-			switch (walkDirec)
-			{
-				case up:
-					switch (walkAnim)
-					{
-						case 1: setImage(anims[uW0]); break;
-						case 2: setImage(anims[uW1]); break;
-						case 3: setImage(anims[uW2]); break;
-						case 4: setImage(anims[uW1]); break;
-						case 5: walkAnim = 1; setImage(anims[uW0]); break;
-					}
-					break;
-				case right:
-					switch (walkAnim)
-					{
-						case 1: setImage(anims[rW0]); break;
-						case 2: setImage(anims[rW1]); break;
-						case 3: setImage(anims[rW2]); break;
-						case 4: setImage(anims[rW1]); break;
-						case 5: walkAnim = 1; setImage(anims[rW0]); break;
-					}
-					break;
-				case down:
-					switch (walkAnim)
-					{
-						case 1: setImage(anims[dW0]); break;
-						case 2: setImage(anims[dW1]); break;
-						case 3: setImage(anims[dW2]); break;
-						case 4: setImage(anims[dW1]); break;
-						case 5: walkAnim = 1; setImage(anims[dW0]); break;
-					}
-				break;
-				case left: 
-					switch (walkAnim)
-					{
-						case 1: setImage(anims[lW0]); break;
-						case 2: setImage(anims[lW1]); break;
-						case 3: setImage(anims[lW2]); break;
-						case 4: setImage(anims[lW1]); break;
-						case 5: walkAnim = 1; setImage(anims[lW0]); break;
-					}
-				break;
-			}
-		}
-		if (soundFXFrame == soundFXSwitch || soundFXFrame == firstSound)
-		{
-			playWalkSound();
-			soundFXFrame = firstSound + 1;
-		}
-		else {soundFXFrame++;}
-	}
 	protected static final int startWalking = 0;
 	/**
 	 * plays walk sound
@@ -403,21 +347,19 @@ public class CombatChar extends Movable{
 	 */
     public void stopWalk()
 	{
-    	walkAnim = resetWalk;
-		walkFrame = 0;
 		soundFXFrame = 0;
+		idling = true;
 		switch (walkDirec)
 		{
-			case up: setImage(anims[uI]); break;
-			case right: setImage(anims[rI]); break;
-			case down: setImage(anims[dI]); break;
-			case left: setImage(anims[lI]); break;
+			case up: setAnim(uI); break;
+			case right: setAnim(rI); break;
+			case down: setAnim(dI); break;
+			case left: setAnim(lI); break;
 		}
 	}
     protected static final int shortStop = 0;
     protected static final int longStop = 1;
     protected static final int noStop = 2;
-    protected static final int resetWalk = -1;
     protected void handleCombatException()
 	{
 		if (health == 0) { try { throw new Exception("health for combatChar was 0");} 
@@ -432,16 +374,16 @@ public class CombatChar extends Movable{
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
 		if (walkSounds == null) { try { throw new Exception("walkSounds uninitialized for combatChar");} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
-		if (anims == null) { try { throw new Exception("anims uninitialized for combatChar");} 
-		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
 	}
     
-    protected static Texture[] getAnims(int start, int end)
+    protected static Animation[] getAnims(int start, int end, int switchFrame, Image owner)
 	{
-		Texture[] anims = new Texture[end - start + 1];
+		Animation[] anims = new Animation[end - start + 1];
 		for (int i = 0; i < anims.length; i++)
 		{
-			anims[i] = loadedTex[start + i];
+			Texture[] tex = loadedTex[start + i];
+			Animation anim = new Animation(tex, switchFrame, owner);
+			anims[i] = anim;
 		}
 		return anims;
 	}
@@ -456,21 +398,23 @@ public class CombatChar extends Movable{
 	}
     
     public static String[] loadedSounds;
-    public static Texture[] loadedTex;
+    public static Texture[][] loadedTex;
     
 	protected static final int skelAnimInd = 0;
-	protected static final int slimeAnimInd = 20;
-	protected static final int playerAnimInd = 40;
-	protected static final int healAnimInd = playerAnimInd + 20;
-	protected static final int duckAnimInd = healAnimInd + 22;
+	protected static final int slimeAnimInd = skelAnimInd + 12;
+	protected static final int playerAnimInd = slimeAnimInd + 12;
+	protected static final int healAnimInd = playerAnimInd + 12;
+	protected static final int duckAnimInd = healAnimInd + 1;
+	protected static final int archerAnimInd = duckAnimInd + 12;
 	
 	protected static final int skelSoundInd = 0;
 	protected static final int slimeSoundInd = 2;
 	protected static final int playerSoundInd = 12;
+	protected static final int duckSoundInd = 13;
 	
     public static void init ()
     {
-    	loadedSounds = new String[13];
+    	loadedSounds = new String[14];
 		loadedSounds[skelSoundInd + 0] = "Misc/random2";
 		loadedSounds[skelSoundInd + 1] = "Misc/random3";
 		loadedSounds[slimeSoundInd + 0] = "NPC/Slime/slime1";
@@ -483,117 +427,269 @@ public class CombatChar extends Movable{
 		loadedSounds[slimeSoundInd + 7] = "NPC/Slime/slime8";
 		loadedSounds[slimeSoundInd + 8] = "NPC/Slime/slime9";
 		loadedSounds[slimeSoundInd + 9] = "NPC/Slime/slime10";
-		loadedSounds[playerSoundInd + 0] = "Move/Steps/foot2";
+		loadedSounds[playerSoundInd] = "Move/Steps/foot2";
+		loadedSounds[duckSoundInd] = "Move/Steps/foot1";
 		
+		//49 animations
+		loadedTex = new Texture[61][];
+		Texture[] uWalk = loadedTex[uW + skelAnimInd] = new Texture[4];
+		Texture[] uIdle = loadedTex[uI + skelAnimInd] = new Texture[1];
+		Texture[] uAtk = loadedTex[uA + skelAnimInd] = new Texture[1];
 		
-		loadedTex = new Texture[duckAnimInd + 20];
-		loadedTex[skelAnimInd + uW0] = new Texture("Mobs/Skeleton/Animations/walkUp/up0.png");
-		loadedTex[skelAnimInd + uW1] = new Texture("Mobs/Skeleton/Animations/walkUp/up1.png");
-		loadedTex[skelAnimInd + uW2] = new Texture("Mobs/Skeleton/Animations/walkUp/up2.png");
-		loadedTex[skelAnimInd + uA] = new Texture("Mobs/Skeleton/Idle/IdleUp.png");
-		loadedTex[skelAnimInd + uI] = new Texture("Mobs/Skeleton/Idle/IdleUp.png");
-		loadedTex[skelAnimInd + rW0] = new Texture("Mobs/Skeleton/Animations/walkRight/right0.png");
-		loadedTex[skelAnimInd + rW1] = new Texture("Mobs/Skeleton/Animations/walkRight/right1.png");
-		loadedTex[skelAnimInd + rW2] = new Texture("Mobs/Skeleton/Animations/walkRight/right2.png");
-		loadedTex[skelAnimInd + rA] = new Texture("Mobs/Skeleton/Idle/IdleRight.png");
-		loadedTex[skelAnimInd + rI] = new Texture("Mobs/Skeleton/Idle/IdleRight.png");
-		loadedTex[skelAnimInd + dW0] = new Texture("Mobs/Skeleton/Animations/walkDown/down0.png");
-		loadedTex[skelAnimInd + dW1] = new Texture("Mobs/Skeleton/Animations/walkDown/down1.png");
-		loadedTex[skelAnimInd + dW2] = new Texture("Mobs/Skeleton/Animations/walkDown/down2.png");
-		loadedTex[skelAnimInd + dA] = new Texture("Mobs/Skeleton/Idle/IdleDown.png");
-		loadedTex[skelAnimInd + dI] = new Texture("Mobs/Skeleton/Idle/IdleDown.png");
-		loadedTex[skelAnimInd + lW0] = new Texture("Mobs/Skeleton/Animations/walkLeft/left0.png");
-		loadedTex[skelAnimInd + lW1] = new Texture("Mobs/Skeleton/Animations/walkLeft/left1.png");
-		loadedTex[skelAnimInd + lW2] = new Texture("Mobs/Skeleton/Animations/walkLeft/left2.png");
-		loadedTex[skelAnimInd + lA] = new Texture("Mobs/Skeleton/Idle/IdleLeft.png");
-		loadedTex[skelAnimInd + lI] = new Texture("Mobs/Skeleton/Idle/IdleLeft.png");
+		Texture[] rWalk = loadedTex[rW + skelAnimInd] = new Texture[4];
+		Texture[] rAtk = loadedTex[rA + skelAnimInd] = new Texture[1];
+		Texture[] rIdle = loadedTex[rI + skelAnimInd] = new Texture[1];
 		
-		loadedTex[duckAnimInd + uW0] = new Texture("Mobs/Duck/anims/up0.png");
-		loadedTex[duckAnimInd + uW1] = new Texture("Mobs/Duck/anims/up1.png");
-		loadedTex[duckAnimInd + uW2] = new Texture("Mobs/Duck/anims/up2.png");
-		loadedTex[duckAnimInd + uA] = new Texture("Mobs/Duck/anims/up1.png");
-		loadedTex[duckAnimInd + uI] = new Texture("Mobs/Duck/anims/up1.png");
-		loadedTex[duckAnimInd + rW0] = new Texture("Mobs/Duck/anims/right0.png");
-		loadedTex[duckAnimInd + rW1] = new Texture("Mobs/Duck/anims/right1.png");
-		loadedTex[duckAnimInd + rW2] = new Texture("Mobs/Duck/anims/right2.png");
-		loadedTex[duckAnimInd + rA] = new Texture("Mobs/Duck/anims/right1.png");
-		loadedTex[duckAnimInd + rI] = new Texture("Mobs/Duck/anims/right1.png");
-		loadedTex[duckAnimInd + lW0] = new Texture("Mobs/Duck/anims/left0.png");
-		loadedTex[duckAnimInd + lW1] = new Texture("Mobs/Duck/anims/left1.png");
-		loadedTex[duckAnimInd + lW2] = new Texture("Mobs/Duck/anims/left2.png");
-		loadedTex[duckAnimInd + lA] = new Texture("Mobs/Duck/anims/left1.png");
-		loadedTex[duckAnimInd + lI] = new Texture("Mobs/Duck/anims/left1.png");
-		loadedTex[duckAnimInd + dW0] = new Texture("Mobs/Duck/anims/down0.png");
-		loadedTex[duckAnimInd + dW1] = new Texture("Mobs/Duck/anims/down1.png");
-		loadedTex[duckAnimInd + dW2] = new Texture("Mobs/Duck/anims/down2.png");
-		loadedTex[duckAnimInd + dA] = new Texture("Mobs/Duck/anims/down1.png");
-		loadedTex[duckAnimInd + dI] = new Texture("Mobs/Duck/anims/down1.png");
+		Texture[] dWalk = loadedTex[dW + skelAnimInd] = new Texture[4];
+		Texture[] dAtk = loadedTex[dA + skelAnimInd] = new Texture[1];
+		Texture[] dIdle = loadedTex[dI + skelAnimInd] = new Texture[1];
 		
+		Texture[] lWalk = loadedTex[lW + skelAnimInd] = new Texture[4];
+		Texture[] lAtk = loadedTex[lA + skelAnimInd] = new Texture[1];
+		Texture[] lIdle = loadedTex[lI + skelAnimInd] = new Texture[1];
 		
-		loadedTex[slimeAnimInd + uW0] = new Texture("Mobs/Slime/IdleUp.png");
-		loadedTex[slimeAnimInd + uW1] = loadedTex[slimeAnimInd + uW0];
-		loadedTex[slimeAnimInd + uW2] = loadedTex[slimeAnimInd + uW0];
-		loadedTex[slimeAnimInd + uI] = loadedTex[slimeAnimInd + uW0];
-		loadedTex[slimeAnimInd + uA] = loadedTex[slimeAnimInd + uW0];
-		loadedTex[slimeAnimInd + rW0] = new Texture("Mobs/Slime/IdleRight.png");
-		loadedTex[slimeAnimInd + rW1] = loadedTex[slimeAnimInd + rW0];
-		loadedTex[slimeAnimInd + rW2] = loadedTex[slimeAnimInd + rW0];
-		loadedTex[slimeAnimInd + rI] = loadedTex[slimeAnimInd + rW0];
-		loadedTex[slimeAnimInd + rA] = loadedTex[slimeAnimInd + rW0];
-		loadedTex[slimeAnimInd + dW0] = new Texture("Mobs/Slime/IdleDown.png");
-		loadedTex[slimeAnimInd + dW1] = loadedTex[slimeAnimInd + dW0];
-		loadedTex[slimeAnimInd + dW2] = loadedTex[slimeAnimInd + dW0];
-		loadedTex[slimeAnimInd + dI] = loadedTex[slimeAnimInd + dW0];
-		loadedTex[slimeAnimInd + dA] = loadedTex[slimeAnimInd + dW0];
-		loadedTex[slimeAnimInd + lW0] = new Texture("Mobs/Slime/IdleLeft.png");
-		loadedTex[slimeAnimInd + lW1] = loadedTex[slimeAnimInd + lW0];
-		loadedTex[slimeAnimInd + lW2] = loadedTex[slimeAnimInd + lW0];
-		loadedTex[slimeAnimInd + lI] = loadedTex[slimeAnimInd + lW0];
-		loadedTex[slimeAnimInd + lA] = loadedTex[slimeAnimInd + lW0];
+		uWalk[0] = new Texture("Mobs/Skeleton/Animations/walkUp/up0.png");
+		uWalk[1] = new Texture("Mobs/Skeleton/Animations/walkUp/up1.png");
+		uWalk[2] = new Texture("Mobs/Skeleton/Animations/walkUp/up2.png");
+		uWalk[3] = uWalk[1];
+		uAtk[0] = new Texture("Mobs/Skeleton/Idle/IdleUp.png");
+		uIdle[0] = new Texture("Mobs/Skeleton/Idle/IdleUp.png");
 		
-		loadedTex[playerAnimInd + uW0] = new Texture("WalkAnim/WalkUp/Up01.PNG");
-    	loadedTex[playerAnimInd + uW1] = new Texture("WalkAnim/WalkUp/Up02.PNG");
-    	loadedTex[playerAnimInd + uW2] = new Texture("WalkAnim/WalkUp/Up03.PNG");
-    	loadedTex[playerAnimInd + uI] = new Texture("IdleAnim/IdleUp.PNG");
-    	loadedTex[playerAnimInd + uA] = loadedTex[playerAnimInd + uI];
-    	loadedTex[playerAnimInd + rW0] = new Texture("WalkAnim/WalkRight/Right01.PNG");
-    	loadedTex[playerAnimInd + rW1] = new Texture("WalkAnim/WalkRight/Right02.PNG");
-    	loadedTex[playerAnimInd + rW2] = new Texture("WalkAnim/WalkRight/Right03.PNG");
-    	loadedTex[playerAnimInd + rI] = new Texture("IdleAnim/IdleRight.PNG");
-    	loadedTex[playerAnimInd + rA] = loadedTex[playerAnimInd + rI];
-    	loadedTex[playerAnimInd + dW0] = new Texture("WalkAnim/WalkDown/Down01.PNG");
-    	loadedTex[playerAnimInd + dW1] = new Texture("WalkAnim/WalkDown/Down02.PNG");
-    	loadedTex[playerAnimInd + dW2] = new Texture("WalkAnim/WalkDown/Down03.PNG");
-    	loadedTex[playerAnimInd + dI] = new Texture("IdleAnim/IdleDown.PNG");
-    	loadedTex[playerAnimInd + dA] = loadedTex[playerAnimInd + dI];
-    	loadedTex[playerAnimInd + lW0] = new Texture("WalkAnim/WalkLeft/Left01.PNG");
-    	loadedTex[playerAnimInd + lW1] = new Texture("WalkAnim/WalkLeft/Left02.PNG");
-    	loadedTex[playerAnimInd + lW2] = new Texture("WalkAnim/WalkLeft/Left03.PNG");
-    	loadedTex[playerAnimInd + lI] = new Texture("IdleAnim/IdleLeft.PNG");
-    	loadedTex[playerAnimInd + lA] = loadedTex[playerAnimInd + lI];
+		rWalk[0] = new Texture("Mobs/Skeleton/Animations/walkRight/right0.png");
+		rWalk[1] = new Texture("Mobs/Skeleton/Animations/walkRight/right1.png");
+		rWalk[2] = new Texture("Mobs/Skeleton/Animations/walkRight/right2.png");
+		rWalk[3] = rWalk[1];
+		rIdle[0] = new Texture("Mobs/Skeleton/Idle/IdleRight.png");
+		rAtk[0] = new Texture("Mobs/Skeleton/Idle/IdleRight.png");
+		
+		dWalk[0] = new Texture("Mobs/Skeleton/Animations/walkDown/down0.png");
+		dWalk[1] = new Texture("Mobs/Skeleton/Animations/walkDown/down1.png");
+		dWalk[2] = new Texture("Mobs/Skeleton/Animations/walkDown/down2.png");
+		dWalk[3] = dWalk[1];
+		dAtk[0] = new Texture("Mobs/Skeleton/Idle/IdleDown.png");
+		dIdle[0] = new Texture("Mobs/Skeleton/Idle/IdleDown.png");
+		
+		lWalk[0] = new Texture("Mobs/Skeleton/Animations/walkLeft/left0.png");
+		lWalk[1] = new Texture("Mobs/Skeleton/Animations/walkLeft/left1.png");
+		lWalk[2] = new Texture("Mobs/Skeleton/Animations/walkLeft/left2.png");
+		lWalk[3] = lWalk[1];
+		lAtk[0] = new Texture("Mobs/Skeleton/Idle/IdleLeft.png");
+		lIdle[0] = new Texture("Mobs/Skeleton/Idle/IdleLeft.png");
+		
+		uWalk = loadedTex[uW + duckAnimInd] = new Texture[4];
+		uIdle = loadedTex[uI + duckAnimInd] = new Texture[1];
+		uAtk = loadedTex[uA + duckAnimInd] = new Texture[1];
+		
+		rWalk = loadedTex[rW + duckAnimInd] = new Texture[4];
+		rAtk = loadedTex[rA + duckAnimInd] = new Texture[1];
+		rIdle = loadedTex[rI + duckAnimInd] = new Texture[1];
+		
+		dWalk = loadedTex[dW + duckAnimInd] = new Texture[4];
+		dAtk = loadedTex[dA + duckAnimInd] = new Texture[1];
+		dIdle = loadedTex[dI + duckAnimInd] = new Texture[1];
+		
+		lWalk = loadedTex[lW + duckAnimInd] = new Texture[4];
+		lAtk = loadedTex[lA + duckAnimInd] = new Texture[1];
+		lIdle = loadedTex[lI + duckAnimInd] = new Texture[1];
+		
+		uWalk[0] = new Texture("Mobs/Duck/anims/up0.png");
+		uWalk[1] = new Texture("Mobs/Duck/anims/up1.png");
+		uWalk[2] = new Texture("Mobs/Duck/anims/up2.png");
+		uWalk[3] = uWalk[1];
+		uAtk[0] = uWalk[1];
+		uIdle[0] = uWalk[1];
+		
+		rWalk[0] = new Texture("Mobs/Duck/anims/right0.png");
+		rWalk[1] = new Texture("Mobs/Duck/anims/right1.png");
+		rWalk[2] = new Texture("Mobs/Duck/anims/right2.png");
+		rWalk[3] = rWalk[1];
+		rAtk[0] = rWalk[1];
+		rIdle[0] = rWalk[1];
+		
+		lWalk[0] = new Texture("Mobs/Duck/anims/left0.png");
+		lWalk[1] = new Texture("Mobs/Duck/anims/left1.png");
+		lWalk[2] = new Texture("Mobs/Duck/anims/left2.png");
+		lWalk[3] = lWalk[1];
+		lAtk[0] = lWalk[1];
+		lIdle[0] = lWalk[1];
+		
+		dWalk[0] = new Texture("Mobs/Duck/anims/down0.png");
+		dWalk[1] = new Texture("Mobs/Duck/anims/down1.png");
+		dWalk[2] = new Texture("Mobs/Duck/anims/down2.png");
+		dWalk[3] = dWalk[1];
+		dAtk[0] = dWalk[1];
+		dIdle[0] = dWalk[1];
+		
+		uWalk = loadedTex[uW + slimeAnimInd] = new Texture[4];
+		uIdle = loadedTex[uI + slimeAnimInd] = new Texture[1];
+		uAtk = loadedTex[uA + slimeAnimInd] = new Texture[1];
+		
+		rWalk = loadedTex[rW + slimeAnimInd] = new Texture[4];
+		rAtk = loadedTex[rA + slimeAnimInd] = new Texture[1];
+		rIdle = loadedTex[rI + slimeAnimInd] = new Texture[1];
+		
+		dWalk = loadedTex[dW + slimeAnimInd] = new Texture[4];
+		dAtk = loadedTex[dA + slimeAnimInd] = new Texture[1];
+		dIdle = loadedTex[dI + slimeAnimInd] = new Texture[1];
+		
+		lWalk = loadedTex[lW + slimeAnimInd] = new Texture[4];
+		lAtk = loadedTex[lA + slimeAnimInd] = new Texture[1];
+		lIdle = loadedTex[lI + slimeAnimInd] = new Texture[1];
+		
+		uWalk[0] = new Texture("Mobs/Slime/IdleUp.png");
+		uWalk[1] = uWalk[0];
+		uWalk[2] = uWalk[0];
+		uWalk[3] = uWalk[0];
+		uIdle[0] = uWalk[0];
+		uAtk[0] = uWalk[0];
+		
+		rWalk[0] = new Texture("Mobs/Slime/IdleRight.png");
+		rWalk[1] = rWalk[0];
+		rWalk[2] = rWalk[0];
+		rWalk[3] = rWalk[0];
+		rIdle[0] = rWalk[0];
+		rAtk[0] = rWalk[0];
+		
+		dWalk[0] = new Texture("Mobs/Slime/IdleDown.png");
+		dWalk[1] = dWalk[0];
+		dWalk[2] = dWalk[0];
+		dWalk[3] = dWalk[0];
+		dIdle[0] = dWalk[0];
+		dAtk[0] = dWalk[0];
+		
+		lWalk[0] = new Texture("Mobs/Slime/IdleLeft.png");
+		lWalk[1] = lWalk[0];
+		lWalk[2] = lWalk[0];
+		lIdle[0] = lWalk[0];
+		lAtk[0] = lWalk[0];
+		
+		uWalk = loadedTex[uW + playerAnimInd] = new Texture[4];
+		uIdle = loadedTex[uI + playerAnimInd] = new Texture[1];
+		uAtk = loadedTex[uA + playerAnimInd] = new Texture[1];
+		
+		rWalk = loadedTex[rW + playerAnimInd] = new Texture[4];
+		rAtk = loadedTex[rA + playerAnimInd] = new Texture[1];
+		rIdle = loadedTex[rI + playerAnimInd] = new Texture[1];
+		
+		dWalk = loadedTex[dW + playerAnimInd] = new Texture[4];
+		dAtk = loadedTex[dA + playerAnimInd] = new Texture[1];
+		dIdle = loadedTex[dI + playerAnimInd] = new Texture[1];
+		
+		lWalk = loadedTex[lW + playerAnimInd] = new Texture[4];
+		lAtk = loadedTex[lA + playerAnimInd] = new Texture[1];
+		lIdle = loadedTex[lI + playerAnimInd] = new Texture[1];
+		
+		uWalk[0] = new Texture("WalkAnim/WalkUp/Up01.PNG");
+		uWalk[1] = new Texture("WalkAnim/WalkUp/Up02.PNG");
+		uWalk[2] = new Texture("WalkAnim/WalkUp/Up03.PNG");
+		uWalk[3] = uWalk[1];
+    	uIdle[0] = uWalk[1];
+    	uAtk[0] = uWalk[1];
     	
-    	loadedTex[healAnimInd + 0] = new Texture("Particles/heal0.png");
-    	loadedTex[healAnimInd + 1] = new Texture("Particles/heal1.png");
-    	loadedTex[healAnimInd + 2] = new Texture("Particles/heal2.png");
-    	loadedTex[healAnimInd + 3] = new Texture("Particles/heal3.png");
-    	loadedTex[healAnimInd + 4] = new Texture("Particles/heal4.png");
-    	loadedTex[healAnimInd + 5] = new Texture("Particles/heal5.png");
-    	loadedTex[healAnimInd + 6] = new Texture("Particles/heal6.png");
-    	loadedTex[healAnimInd + 7] = new Texture("Particles/heal7.png");
-    	loadedTex[healAnimInd + 8] = new Texture("Particles/heal8.png");
-    	loadedTex[healAnimInd + 9] = new Texture("Particles/heal9.png");
-    	loadedTex[healAnimInd + 10] = new Texture("Particles/heal10.png");
-    	loadedTex[healAnimInd + 11] = new Texture("Particles/heal11.png");
-    	loadedTex[healAnimInd + 12] = new Texture("Particles/heal12.png");
-    	loadedTex[healAnimInd + 13] = new Texture("Particles/heal13.png");
-    	loadedTex[healAnimInd + 14] = new Texture("Particles/heal14.png");
-    	loadedTex[healAnimInd + 15] = new Texture("Particles/heal15.png");
-    	loadedTex[healAnimInd + 16] = new Texture("Particles/heal16.png");
-    	loadedTex[healAnimInd + 17] = new Texture("Particles/heal17.png");
-    	loadedTex[healAnimInd + 18] = new Texture("Particles/heal18.png");
-    	loadedTex[healAnimInd + 19] = new Texture("Particles/heal19.png");
-    	loadedTex[healAnimInd + 20] = new Texture("Particles/heal20.png");
-    	loadedTex[healAnimInd + 21] = new Texture("Particles/heal21.png");
+    	rWalk[0] = new Texture("WalkAnim/WalkRight/Right01.PNG");
+    	rWalk[1] = new Texture("WalkAnim/WalkRight/Right02.PNG");
+    	rWalk[2] = new Texture("WalkAnim/WalkRight/Right03.PNG");
+    	rWalk[3] = rWalk[1];
+    	rIdle[0] = rWalk[1];
+    	rAtk[0] = rWalk[1];
+    	
+    	dWalk[0] = new Texture("WalkAnim/WalkDown/Down01.PNG");
+    	dWalk[1] = new Texture("WalkAnim/WalkDown/Down02.PNG");
+    	dWalk[2] = new Texture("WalkAnim/WalkDown/Down03.PNG");
+    	dWalk[3] = dWalk[1];
+    	dIdle[0] = dWalk[1];
+    	dAtk[0] = dWalk[1];
+    	
+    	lWalk[0] = new Texture("WalkAnim/WalkLeft/Left01.PNG");
+    	lWalk[1] = new Texture("WalkAnim/WalkLeft/Left02.PNG");
+    	lWalk[2] = new Texture("WalkAnim/WalkLeft/Left03.PNG");
+    	lWalk[3] = lWalk[1];
+    	lIdle[0] = lWalk[1];
+    	lAtk[0] = lWalk[1];
+    	
+    	uWalk = loadedTex[uW + archerAnimInd] = new Texture[4];
+    	uAtk = loadedTex[uA + archerAnimInd] = new Texture[5];
+		uIdle = loadedTex[uI + archerAnimInd] = new Texture[1];
+		
+		rWalk = loadedTex[rW + archerAnimInd] = new Texture[4];
+		rAtk = loadedTex[rA + archerAnimInd] = new Texture[5];
+		rIdle = loadedTex[rI + archerAnimInd] = new Texture[1];
+		
+		dWalk = loadedTex[dW + archerAnimInd] = new Texture[4];
+		dAtk = loadedTex[dA + archerAnimInd] = new Texture[5];
+		dIdle = loadedTex[dI + archerAnimInd] = new Texture[1];
+		
+		lWalk = loadedTex[lW + archerAnimInd] = new Texture[4];
+		lAtk = loadedTex[lA + archerAnimInd] = new Texture[5];
+		lIdle = loadedTex[lI + archerAnimInd] = new Texture[1];
+		
+		uWalk[0] = new Texture("Mobs/Archer/up/up0.PNG");
+		uWalk[1] = new Texture("Mobs/Archer/up/up1.PNG");
+		uWalk[2] = new Texture("Mobs/Archer/up/up2.PNG");
+		uWalk[3] = uWalk[1];
+    	uIdle[0] = new Texture("Mobs/Archer/up/idle.PNG");
+    	uAtk[0] = new Texture("Mobs/Archer/up/attack0.PNG");
+    	uAtk[1] = new Texture("Mobs/Archer/up/attack1.PNG");
+    	uAtk[2] = new Texture("Mobs/Archer/up/attack2.PNG");
+    	uAtk[3] = new Texture("Mobs/Archer/up/attack3.PNG");
+    	uAtk[4] = new Texture("Mobs/Archer/up/attack4.PNG");
+    	
+    	rWalk[0] = new Texture("Mobs/Archer/right/right0.PNG");
+    	rWalk[1] = new Texture("Mobs/Archer/right/right1.PNG");
+    	rWalk[2] = new Texture("Mobs/Archer/right/right2.PNG");
+    	rWalk[3] = rWalk[1];
+    	rIdle[0] = new Texture("Mobs/Archer/right/idle.PNG");
+    	rAtk[0] = new Texture("Mobs/Archer/right/attack0.PNG");
+    	rAtk[1] = new Texture("Mobs/Archer/right/attack1.PNG");
+    	rAtk[2] = new Texture("Mobs/Archer/right/attack2.PNG");
+    	rAtk[3] = new Texture("Mobs/Archer/right/attack3.PNG");
+    	rAtk[4] = new Texture("Mobs/Archer/right/attack4.PNG");
+
+    	dWalk[0] = new Texture("Mobs/Archer/down/down0.PNG");
+    	dWalk[1] = new Texture("Mobs/Archer/down/down1.PNG");
+    	dWalk[2] = new Texture("Mobs/Archer/down/down2.PNG");
+    	dWalk[3] = dWalk[1];
+		dIdle[0] = new Texture("Mobs/Archer/down/idle.PNG");
+    	dAtk[0] = new Texture("Mobs/Archer/down/attack0.PNG");
+    	dAtk[1] = new Texture("Mobs/Archer/down/attack1.PNG");
+    	dAtk[2] = new Texture("Mobs/Archer/down/attack2.PNG");
+    	dAtk[3] = new Texture("Mobs/Archer/down/attack3.PNG");
+    	dAtk[4] = new Texture("Mobs/Archer/down/attack4.PNG");
+
+    	lWalk[0] = new Texture("Mobs/Archer/left/left0.PNG");
+		lWalk[1] = new Texture("Mobs/Archer/left/left1.PNG");
+		lWalk[2] = new Texture("Mobs/Archer/left/left2.PNG");
+		lWalk[3] = lWalk[1];
+    	lIdle[0] = new Texture("Mobs/Archer/left/idle.PNG");
+    	lAtk[0] = new Texture("Mobs/Archer/left/attack0.PNG");
+    	lAtk[1] = new Texture("Mobs/Archer/left/attack1.PNG");
+    	lAtk[2] = new Texture("Mobs/Archer/left/attack2.PNG");
+    	lAtk[3] = new Texture("Mobs/Archer/left/attack3.PNG");
+    	lAtk[4] = new Texture("Mobs/Archer/left/attack4.PNG");
+    	
+    	Texture[] heal = loadedTex[healAnimInd] = new Texture[22];
+    	heal[0] = new Texture("Particles/heal0.png");
+    	heal[1] = new Texture("Particles/heal1.png");
+    	heal[2] = new Texture("Particles/heal2.png");
+    	heal[3] = new Texture("Particles/heal3.png");
+    	heal[4] = new Texture("Particles/heal4.png");
+    	heal[5] = new Texture("Particles/heal5.png");
+    	heal[6] = new Texture("Particles/heal6.png");
+    	heal[7] = new Texture("Particles/heal7.png");
+    	heal[8] = new Texture("Particles/heal8.png");
+    	heal[9] = new Texture("Particles/heal9.png");
+    	heal[10] = new Texture("Particles/heal10.png");
+    	heal[11] = new Texture("Particles/heal11.png");
+    	heal[12] = new Texture("Particles/heal12.png");
+    	heal[13] = new Texture("Particles/heal13.png");
+    	heal[14] = new Texture("Particles/heal14.png");
+    	heal[15] = new Texture("Particles/heal15.png");
+    	heal[16] = new Texture("Particles/heal16.png");
+    	heal[17] = new Texture("Particles/heal17.png");
+    	heal[18] = new Texture("Particles/heal18.png");
+    	heal[19] = new Texture("Particles/heal19.png");
+    	heal[20] = new Texture("Particles/heal20.png");
+    	heal[21] = new Texture("Particles/heal21.png");
     }
     
 
@@ -601,34 +697,50 @@ public class CombatChar extends Movable{
 	//uW0 = up walk 0
 	//uI = up idle
 	//uA = up attack
-	public static final int uW0 = 0;
-	public static final int uW1 = 1;
-	public static final int uW2 = 2;
-	public static final int uI = 3;
-	public static final int uA = 4;
+	public static final int uW = 0;
+	public static final int uI = 1;
+	public static final int uA = 2;
 	
-	public static final int rW0 = 5;
-	public static final int rW1 = 6;
-	public static final int rW2 = 7;
-	public static final int rI = 8;
-	public static final int rA = 9;
+	public static final int rW = 3;
+	public static final int rI = 4;
+	public static final int rA = 5;
 	
-	public static final int dW0 = 10;
-	public static final int dW1 = 11;
-	public static final int dW2 = 12;
-	public static final int dI = 13;
-	public static final int dA = 14;
+	public static final int dW = 6;
+	public static final int dI = 7;
+	public static final int dA = 8;
 	
-	public static final int lW0 = 15;
-	public static final int lW1 = 16;
-	public static final int lW2 = 17;
-	public static final int lI = 18;
-	public static final int lA = 19;
+	public static final int lW = 9;
+	public static final int lI = 10;
+	public static final int lA = 11;
     
     private static final int pauseLength = 8;
-    private static final int startParticles = -1;
     
-    public void setDirec(int newDirec) {walkDirec = newDirec;}
+    protected void setAnim(int ind)
+    {
+    	currAnim = anims[ind];
+    	currAnim.reset();
+    }
+    /**
+     * Sets the animation toward a new direction, walking
+     * @param newDirec
+     */
+    public void walkInDirec(int newDirec)
+    {
+    	if (walkDirec != newDirec || idling)
+    	{
+    		switch (newDirec) {
+				case up: setAnim(uW); break;
+				case right: setAnim(rW); break;
+				case down: setAnim(dW); break;
+				case left: setAnim(lW); break;
+			}
+    		setDirec(newDirec);
+    		idling = false;
+    	}
+    }
+    public void setDirec(int newDirec) {
+    	walkDirec = newDirec;
+    }
     public void setDamageMultiplier(double newMultiplier) {damageMultiplier = newMultiplier;}
     public int getDirec() {return walkDirec;}
     public double getHealth() {return health;}
