@@ -17,7 +17,6 @@ public class RangedMob extends Mob{
 		switch (ID) {
 		case archer:
 			projectileID = Projectile.arrow;
-			//TODO: handle this
 			break;
 		}
 	}
@@ -50,16 +49,16 @@ public class RangedMob extends Mob{
 		Room currRoom = Main.allRooms[Main.currRoom];
 		while (!currRoom.pathPossible(this, testPoint))
 		{
-			testPoint = testPlayerPoint();
-			numTries++;
-			if (numTries == 1000)
+			if (++numTries == 1000)
 			{
 				try {
-					throw new Exception("RangedMob couldn't find PlayerPath");
+					throw new Exception("RangedMob couldn't find PlayerPath, tried: " + testPoint);
 				} catch (Exception e) {
 					e.printStackTrace();
+					System.exit(0);
 				}
 			}
+			testPoint = testPlayerPoint();
 		}
 		movementPoint = testPoint;
 	}
@@ -71,12 +70,12 @@ public class RangedMob extends Mob{
 	{
 		Random random = Main.random;
 		Point playerPoint = Main.player;
-		double minRadius = 100;
-		double maxRadius = 250;
-		//mob will find an angle within a semicircle ranging from -90 degrees to 90 degrees
-		double semiCircleAngle = (random.nextDouble() - .5) * Math.PI;
+		double minRadius = attackRange - 50;
+		double maxRadius = attackRange;
+		//mob will find an angle within a semicircle ranging from -45 degrees to 45 degrees
+		double quarterCircleAngle = (random.nextDouble() - .5) * Math.PI / 2;
 		//semicircle will be repositioned based on player's angle to the mob so that the mob always moves into the semicircle half facing it
-		double angle = semiCircleAngle + Main.player.angleTo(this);
+		double angle = quarterCircleAngle + Math.toRadians(playerPoint.angleTo(this));
 		double rangeSquared = Math.pow(maxRadius - minRadius, 2);
 		double radius = Math.sqrt(rangeSquared * random.nextDouble()) + minRadius;
 		Point testPoint = new Point(playerPoint.getX() + Math.cos(angle) * radius, playerPoint.getY() + Math.sin(angle) * radius);
@@ -84,6 +83,15 @@ public class RangedMob extends Mob{
 	}
 	protected void attack()
 	{
-		//TODO: implement this with projectiles
+		double radius = Math.max(getWidth(), getLength()) * 1.3;
+		double angle = angleTo(Main.player);
+		switch (walkDirec) {
+			case up: if (angle < 45) {angle = 45;} else if (angle > 135) {angle = 135;} break;
+			case right: if (angle <= 180 && angle > 45) {angle = 45;} else if (angle < 315 && angle > 180) {angle = 315;} break;
+			case down: if (angle > 315) {angle = 315;} else if (angle < 225) {angle = 225;} break;
+			case left: if (angle > 225) {angle = 225;} else if (angle < 135) {angle = 135;} break;
+		}
+		Projectile shot = new Projectile(projectileID, getX() + Math.cos(radius), getY() + Math.sin(radius), angle, damage, this);
+		Main.allRooms[Main.currRoom].permaShow(shot);
 	}
 }

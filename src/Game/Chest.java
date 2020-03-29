@@ -24,6 +24,7 @@ public class Chest extends Image{
 		openFrame = 0;
 		ID = inID;
 		setCollisionStatus(true);
+		setProjInteraction(true);
 	}
 	public void setState(boolean state)
 	{

@@ -8,6 +8,7 @@ import java.util.Random;
 
 import Game.Chest;
 import Game.Main;
+import Imported.Audio;
 import LowLevel.Geometrical;
 import LowLevel.Image;
 import LowLevel.Point;
@@ -21,10 +22,11 @@ public abstract class Mob extends CombatChar{
 	private double verticalMove;
 	private double horizontalMove;
 	private int longStoppingFrame;
-	private double attackRange;
+	protected double attackRange;
 	private int deathFrames;
 	private ItemDrop itemReward;
 	private ItemBag deathBag;
+	private String[] attackSounds;
 	
 	//mobs disappear after 12 seconds
 	private static int maxDeathFrames = 12 * Main.FPS;
@@ -38,6 +40,7 @@ public abstract class Mob extends CombatChar{
 	private boolean shouldCreate;
 	private boolean dontFollow;
 	private int mobID;
+	private double attackVolume;
 	
 	
 	protected int shortStoppingStart;
@@ -46,6 +49,7 @@ public abstract class Mob extends CombatChar{
 	protected Point movementPoint;
 	protected boolean followingPlayer;
 	protected int attackFrame;
+	protected int attackSwitchFrame;
 	/**
 	 * Frame at which character stops animation after attacking
 	 */
@@ -83,12 +87,11 @@ public abstract class Mob extends CombatChar{
 	{
 		super(null, x, y, 0, 0);
 		
-		
-
+		int pauseAfterAttack = 0;
 		switch (ID) {
 		case skeleton:
-			setWidth(50);
-			setLength(50);
+			setWidth(45);
+			setLength(getWidth());
 			walkAnimSwitch = 9;
 			anims = getAnims(skelAnimInd, skelAnimInd + 11, walkAnimSwitch, this);
 			walkSounds = getSounds(skelSoundInd, skelSoundInd + 1);
@@ -97,70 +100,74 @@ public abstract class Mob extends CombatChar{
 			longStoppingFrame = 20;
 			shortStoppingStart = longStoppingFrame - 5;
 			
-			damage = 10;
+			damage = 6;
 			attackRange = 60;
 			sightRange = 600;
-			attackEnd = 10;
-			pauseEnd = attackEnd + 10;
+			attackSwitchFrame = 5;
+			pauseAfterAttack = 10;
 			initialDamageVelocity = 5;
-			armor = 2;
+			armor = 1;
 			
 			firstSound = 6;
 			
 			soundFXSwitch = 25;
 			walkVolume = .4;
 			healthRegen = .05;
-			maxHealth = 30;
+			maxHealth = 20;
 
 			attackStun = 16;
 			attackInvuln = 48;
 			xpReward = 10;
 			
-			setHitLength(20);
-			setProjectileLength(50);
-			setProjectileWidth(45);
-			setHitWidth(35);
-			hitBoxDown(15);
+			setHitLength(getWidth() * 2 / 5);
+			setProjectileLength(getWidth());
+			setProjectileWidth(getWidth() * 9 / 10);
+			setHitWidth(getWidth() * 7 / 10);
+			hitBoxDown(getWidth() * 3 / 10);
+			
+			attackSounds = getSounds(skeletonAttackInd, skeletonAttackInd + 2);
+			attackVolume = .5;
 			
 			break;
 
 		case slime:
-			setWidth(35);
-			setLength(35);
+			setWidth(40);
+			setLength(getWidth());
 			walkAnimSwitch = 6;
 			anims = getAnims(slimeAnimInd, slimeAnimInd + 11, walkAnimSwitch, this);
 			walkSounds = getSounds(slimeSoundInd, slimeSoundInd + 9);
 			
 			speed = 6;
-			longStoppingFrame = 10;
-			shortStoppingStart = longStoppingFrame - 5;
 			
-			damage = 5;
+			damage = 4;
 			attackRange = 45;
 			sightRange = 600;
-			attackEnd = 15;
-			pauseEnd = attackEnd + 15;
-			armor = 1;
+			attackSwitchFrame = 5;
+			pauseAfterAttack = 15;
+			armor = .5;
 			
 			initialDamageVelocity = 5;
 			firstSound = 6;
 			soundFXSwitch = 20;
 			healthRegen = .05;
-			maxHealth = 20;
+			maxHealth = 15;
 			attackStun = 16;
 			attackInvuln = 48;
 			xpReward = 8;
 			
-			setProjectileLength(35);
-			setProjectileWidth(35);
-			setHitLength(25);
-			hitBoxDown(5);
+			setProjectileLength(getWidth());
+			setProjectileWidth(getWidth());
+			setHitLength(getWidth() * 5 / 7);
+			hitBoxDown(getWidth() / 7);
+			
+			attackSounds = getSounds(slimeAttackInd, slimeAttackInd);
+			attackVolume = .5;
 			
 			break;
 		case duck:
-			setWidth(50);
+			setWidth(45);
 			setLength(getWidth() * 10 / 7);
-			walkAnimSwitch = 9;
+			walkAnimSwitch = 7;
 			anims = getAnims(duckAnimInd, duckAnimInd + 11, walkAnimSwitch, this);
 			walkSounds = getSounds(duckSoundInd, duckSoundInd);
 			
@@ -168,37 +175,106 @@ public abstract class Mob extends CombatChar{
 			longStoppingFrame = 20;
 			shortStoppingStart = longStoppingFrame - 5;
 			
-			damage = 15;
-			attackRange = 60;
+			damage = 7;
+			attackRange = 40;
 			sightRange = 600;
-			attackEnd = 15;
-			pauseEnd = attackEnd + 15;
+			attackSwitchFrame = 5;
+			pauseAfterAttack = 15;
 			armor = 2;
 			
 			initialDamageVelocity = 7;
 			firstSound = 6;
 			soundFXSwitch = 20;
 			healthRegen = .1;
-			maxHealth = 55;
+			maxHealth = 30;
 			attackStun = 20;
 			attackInvuln = 40;
 			xpReward = 12;
 			
 			setProjectileWidth(getWidth());
 			setProjectileLength(getLength());
-			setHitWidth(40);
-			setHitLength(25);
-			hitBoxDown(15);
+			setHitWidth(getWidth() * 4 / 5);
+			setHitLength(getWidth() / 2);
+			hitBoxDown(getWidth() * 3 / 10);
 			walkVolume = .2;
+			
+			attackSounds = getAttackSounds(duckAttackInd, duckAttackInd);
+			attackVolume = .1;
 			break;
 		case archer:
+			setWidth(60);
+			setLength(getWidth());
+			walkAnimSwitch = 9;
+			anims = getAnims(archerAnimInd, archerAnimInd + 11, walkAnimSwitch, this);
+			walkSounds = getSounds(duckSoundInd, duckSoundInd);
+			
+			speed = 6;
+			damage = 11;
+			attackRange = 200;
+			sightRange = 600;
+			attackSwitchFrame = 2;
+			pauseAfterAttack = 20;
+			armor = .5;
+			
+			initialDamageVelocity = 7;
+			firstSound = 6;
+			soundFXSwitch = 20;
+			healthRegen = .1;
+			maxHealth = 20;
+			attackStun = 20;
+			attackInvuln = 40;
+			xpReward = 15;
+			
+			setProjectileWidth(getWidth() * 3 / 5);
+			setProjectileLength(getLength() * 4 / 5);
+			setHitWidth(getWidth() * 2 / 3);
+			setHitLength(getWidth() * 5 / 12);
+			hitBoxDown(getWidth() / 5);
+			walkVolume = .2;
+			
+			attackSounds = getAttackSounds(archerAttackInd, archerAttackInd + 1);
+			attackVolume = .3;
+			break;
+		case knight:
+			setWidth(60);
+			setLength(getWidth());
+			walkAnimSwitch = 4;
+			anims = getAnims(knightAnimInd, knightAnimInd + 11, walkAnimSwitch, this);
+			walkSounds = getSounds(duckSoundInd, duckSoundInd);
+			
+			speed = 7;
+			damage = 9;
+			attackRange = 50;
+			sightRange = 400;
+			attackSwitchFrame = 1;
+			pauseAfterAttack = 15;
+			armor = 3;
+			
+			initialDamageVelocity = 9;
+			firstSound = 6;
+			soundFXSwitch = 20;
+			healthRegen = .05;
+			maxHealth = 40;
+			attackStun = 20;
+			attackInvuln = 40;
+			xpReward = 20;
+			
+			setProjectileWidth(getWidth() * 3 / 5);
+			setProjectileLength(getLength() * 4 / 5);
+			setHitWidth(getWidth() * 2 / 3);
+			setHitLength(getWidth() * 5 / 12);
+			hitBoxDown(getWidth() / 5);
+			walkVolume = .2;
+			
+			attackSounds = getAttackSounds(archerAttackInd, archerAttackInd + 1);
+			attackVolume = .3;
 			break;
 		}
 
 			
 		
-		
-		
+		attackEnd = attackSwitchFrame * anims[uA].length;
+		pauseEnd = attackEnd + pauseAfterAttack;
 		mobID = ID;
 		followingPlayer = false;
 		shouldCreate = true;
@@ -211,7 +287,16 @@ public abstract class Mob extends CombatChar{
 		setEnemyState(bad);
 		createDrops();
 		handleMobException();
-		setAnim(dI);;
+		setAnim(dI);
+	}
+	public void playAttackSound()
+	{
+		int which = Main.random.nextInt(attackSounds.length);
+		Audio.playSound(attackSounds[which], attackVolume);
+	}
+	public void showMovementPoint()
+	{
+		if (movementPoint != null) {new Shape(Shape.square, movementPoint.getX(), movementPoint.getY(), 10, 10, 255, 0, 0, 100).show();}
 	}
 	public void setX(double newX)
 	{
@@ -234,16 +319,33 @@ public abstract class Mob extends CombatChar{
 			{
 			
 				updateMovement();
-			
 				if (attackFrame >= attackEnd) {
+					
 					if (attackFrame == pauseEnd)
 					{
-						if (inAttackRange() && Main.player.canBeAttacked()) {attack();}
+						if (inAttackRange() && Main.player.canBeAttacked()) {handleAttackAnims();}
 						else {move();}
 					}
 					else {attackFrame++;}
 				}
-				else {attackFrame++;}
+				else if (++attackFrame == attackEnd) {
+					attack();
+					playAttackSound();
+					switch (walkDirec) {
+						case up:
+							setAnim(uI);
+							break;
+						case right:
+							setAnim(rI);
+							break;
+						case down:
+							setAnim(dI);
+							break;
+						case left:
+							setAnim(lI);
+							break;
+					}
+				}
 				setHealth(getHealth() + healthRegen);
 			
 			
@@ -269,7 +371,7 @@ public abstract class Mob extends CombatChar{
 				handleDeathBag();
 				if (!deathBag.getVisibility()) {deathFrames++;}
 			}
-		}	
+		}
 		super.show();
 		if (!isDead) {stats.show();}
 	}
@@ -298,6 +400,18 @@ public abstract class Mob extends CombatChar{
 				IDs = new int[] {Item.ruby, Item.gold, Item.amethyst};
 				probabilities = new double[] {.3, .1, .2};
 				quantities = new int[] {4, 2, 2};
+				break;
+			case archer:
+				numRolls = 4;
+				IDs = new int[] {Item.ruby, Item.sapphire};
+				probabilities = new double[] {.2, .2};
+				quantities = new int[] {3, 3};
+				break;
+			case knight:
+				numRolls = 4;
+				IDs = new int[] {Item.ruby, Item.sapphire};
+				probabilities = new double[] {.2, .2};
+				quantities = new int[] {3, 3};
 				break;
 			default:
 				try {
@@ -460,17 +574,21 @@ public abstract class Mob extends CombatChar{
 	private void handleMobException()
 	{
 		handleCombatException();
-		if (attackEnd == 0) { try { throw new Exception("attackEnd was 0 for Mob " + mobID);} 
+		if (attackEnd == 0) { try { throw new Exception("attackEnd was 0 for Mob: " + mobID);} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
-		if (pauseEnd == 0) { try { throw new Exception("pauseEnd was 0 for Mob " + mobID);} 
+		if (pauseEnd == 0) { try { throw new Exception("pauseEnd was 0 for Mob: " + mobID);} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
-		if (damage == 0) { try { throw new Exception("damage was 0 for Mob " + mobID);} 
+		if (damage == 0) { try { throw new Exception("damage was 0 for Mob: " + mobID);} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
-		if (sightRange == 0) { try { throw new Exception("sightRange was 0 for Mob " + mobID);} 
+		if (sightRange == 0) { try { throw new Exception("sightRange was 0 for Mob: " + mobID);} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
-		if (initialDamageVelocity == 0) { try { throw new Exception("damageVelocity was 0 for Mob " + mobID);} 
+		if (initialDamageVelocity == 0) { try { throw new Exception("damageVelocity was 0 for Mob: " + mobID);} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
-		if (xpReward == 0) { try { throw new Exception("xpReward was 0 for Mob " + mobID);} 
+		if (xpReward == 0) { try { throw new Exception("xpReward was 0 for Mob: " + mobID);} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (attackSounds.length == 0) { try { throw new Exception("No sound effects for Mob: " + mobID);} 
+		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
+		if (attackVolume == 0) { try { throw new Exception("AttackVolume was 0 for Mob: " + mobID);} 
 		catch (Exception e) {e.printStackTrace(); System.exit(0);}}
 	}
 	private void die()
@@ -503,6 +621,8 @@ public abstract class Mob extends CombatChar{
 	}
 	protected void handleAttackAnims()
 	{
+		attackFrame = 0;
+		facePlayer();
 		switch (walkDirec)
 		{
 			case up: setAnim(uA); break;
@@ -510,6 +630,7 @@ public abstract class Mob extends CombatChar{
 			case down: setAnim(dA); break;
 			case left: setAnim(lA); break;
 		}
+		currAnim.setSwitch(attackSwitchFrame);
 	}
 	/**
 	 * Sends the mob in a direction toward the player <br>
@@ -594,15 +715,40 @@ public abstract class Mob extends CombatChar{
 		MN.setX(MN.getX() + MNxDiff);
 	    super.setMana(newMana);
 	}
+	private static String[] mobAttackSounds;
+	private static String[] getAttackSounds(int start, int end)
+	{
+		String[] sounds = new String[end - start +  1];
+		for (int i = 0; i <= end - start; i++)
+		{
+			sounds[i] = mobAttackSounds[start + i];
+		}
+		return sounds;
+	}
+	private static final int duckAttackInd = 0;
+	private static final int archerAttackInd = duckAttackInd + 1;
+	private static final int skeletonAttackInd = archerAttackInd + 2;
+	private static final int slimeAttackInd = skeletonAttackInd + 3;
+	protected static void initAttackSounds()
+	{
+		mobAttackSounds = new String[7];
+		mobAttackSounds[duckAttackInd + 0] = "Batt/headbutt";
+		mobAttackSounds[archerAttackInd + 0] = "Batt/arrow0";
+		mobAttackSounds[archerAttackInd + 1] = "Batt/arrow1";
+		mobAttackSounds[skeletonAttackInd + 0] = "Batt/swing";
+		mobAttackSounds[skeletonAttackInd + 1] = "Batt/swing2";
+		mobAttackSounds[skeletonAttackInd + 2] = "Batt/swing3";
+		mobAttackSounds[slimeAttackInd] = "NPC/Slime/slime4";
+	}
 	
 	public final static int skeleton = 0;
 	public final static int slime = 1;
 	public final static int duck = 2;
 	public final static int archer = 3;
+	public static final int knight = 4;
 
 	private static final int skelSoundInd = 0;
 	private static final int skelAnimInd = 0;
-	private static final int slimeAnimInd = 20;
 	private static final int slimeSoundInd = 2;
 	
 	private static final int shouldStopWalk = -1;

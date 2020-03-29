@@ -29,10 +29,13 @@ public class Audio extends JFrame {
 			clip.start();
 		} catch (UnsupportedAudioFileException e) {
 			e.printStackTrace();
+			System.exit(0);
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(0);
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
+			
 		}
 		volume = baseVolume;
    }

@@ -253,7 +253,7 @@ public class Player extends CombatChar
     				double radiusFromPlayer = 30;
     				double x = getX() + Math.cos(mouseAngle) * radiusFromPlayer;
     				double y = getY() + Math.sin(mouseAngle) * radiusFromPlayer;
-    				Projectile shot = new Projectile(Projectile.door, x, y, Math.toDegrees(mouseAngle), this);
+    				Projectile shot = new Projectile(Projectile.door, x, y, Math.toDegrees(mouseAngle), 15, this);
     				shot.setAngle(Main.random.nextDouble() * 360);
     				//Audio.playSound("Batt/fireball", .48);
     				Main.allRooms[Main.currRoom].permaShow(shot);
@@ -406,7 +406,7 @@ public class Player extends CombatChar
     				}
     			}
     		}
-    		Projectile currProj = new Projectile(Projectile.fireball, 0, 0, Projectile.facingUp, this);
+    		Projectile currProj = new Projectile(Projectile.fireball, 0, 0, Projectile.facingUp, 0, this);
     		currProj.setOrbit(true);
     		currProj.setOrbitAngle(angle);
     		double orbitRadius = currProj.getOrbitRadius();

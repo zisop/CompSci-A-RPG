@@ -47,7 +47,7 @@ public class CombatChar extends Movable{
 	
 	protected String[] walkSounds;
 	
-	private Animation currAnim;
+	protected Animation currAnim;
 	protected Animation[] anims;
 	
 	public CombatChar(Texture img, double inX, double inY, double w, double l) {
@@ -406,6 +406,7 @@ public class CombatChar extends Movable{
 	protected static final int healAnimInd = playerAnimInd + 12;
 	protected static final int duckAnimInd = healAnimInd + 1;
 	protected static final int archerAnimInd = duckAnimInd + 12;
+	protected static final int knightAnimInd = archerAnimInd + 12;
 	
 	protected static final int skelSoundInd = 0;
 	protected static final int slimeSoundInd = 2;
@@ -414,6 +415,7 @@ public class CombatChar extends Movable{
 	
     public static void init ()
     {
+    	Mob.initAttackSounds();
     	loadedSounds = new String[14];
 		loadedSounds[skelSoundInd + 0] = "Misc/random2";
 		loadedSounds[skelSoundInd + 1] = "Misc/random3";
@@ -431,7 +433,7 @@ public class CombatChar extends Movable{
 		loadedSounds[duckSoundInd] = "Move/Steps/foot1";
 		
 		//49 animations
-		loadedTex = new Texture[61][];
+		loadedTex = new Texture[73][];
 		Texture[] uWalk = loadedTex[uW + skelAnimInd] = new Texture[4];
 		Texture[] uIdle = loadedTex[uI + skelAnimInd] = new Texture[1];
 		Texture[] uAtk = loadedTex[uA + skelAnimInd] = new Texture[1];
@@ -560,6 +562,7 @@ public class CombatChar extends Movable{
 		lWalk[0] = new Texture("Mobs/Slime/IdleLeft.png");
 		lWalk[1] = lWalk[0];
 		lWalk[2] = lWalk[0];
+		lWalk[3] = lWalk[0];
 		lIdle[0] = lWalk[0];
 		lAtk[0] = lWalk[0];
 		
@@ -606,6 +609,98 @@ public class CombatChar extends Movable{
     	lWalk[3] = lWalk[1];
     	lIdle[0] = lWalk[1];
     	lAtk[0] = lWalk[1];
+    	
+    	uWalk = loadedTex[uW + knightAnimInd] = new Texture[9];
+    	uAtk = loadedTex[uA + knightAnimInd] = new Texture[8];
+		uIdle = loadedTex[uI + knightAnimInd] = new Texture[1];
+		
+		rWalk = loadedTex[rW + knightAnimInd] = new Texture[9];
+		rAtk = loadedTex[rA + knightAnimInd] = new Texture[8];
+		rIdle = loadedTex[rI + knightAnimInd] = new Texture[1];
+		
+		dWalk = loadedTex[dW + knightAnimInd] = new Texture[9];
+		dAtk = loadedTex[dA + knightAnimInd] = new Texture[8];
+		dIdle = loadedTex[dI + knightAnimInd] = new Texture[1];
+		
+		lWalk = loadedTex[lW + knightAnimInd] = new Texture[9];
+		lAtk = loadedTex[lA + knightAnimInd] = new Texture[8];
+		lIdle = loadedTex[lI + knightAnimInd] = new Texture[1];
+		
+		uWalk[0] = new Texture("Mobs/Knight/Up/walk0.png");
+		uWalk[1] = new Texture("Mobs/Knight/Up/walk1.png");
+		uWalk[2] = new Texture("Mobs/Knight/Up/walk2.png");
+		uWalk[3] = new Texture("Mobs/Knight/Up/walk3.png");
+		uWalk[4] = new Texture("Mobs/Knight/Up/walk4.png");
+		uWalk[5] = new Texture("Mobs/Knight/Up/walk5.png");
+		uWalk[6] = new Texture("Mobs/Knight/Up/walk6.png");
+		uWalk[7] = new Texture("Mobs/Knight/Up/walk7.png");
+		uWalk[8] = new Texture("Mobs/Knight/Up/walk8.png");
+		uAtk[0] = new Texture("Mobs/Knight/Up/attack0.png");
+		uAtk[1] = new Texture("Mobs/Knight/Up/attack1.png");
+		uAtk[2] = new Texture("Mobs/Knight/Up/attack2.png");
+		uAtk[3] = new Texture("Mobs/Knight/Up/attack3.png");
+		uAtk[4] = new Texture("Mobs/Knight/Up/attack4.png");
+		uAtk[5] = new Texture("Mobs/Knight/Up/attack5.png");
+		uAtk[6] = new Texture("Mobs/Knight/Up/attack6.png");
+		uAtk[7] = new Texture("Mobs/Knight/Up/attack7.png");
+		uIdle[0] = new Texture("Mobs/Knight/Up/idle.png");
+		
+		rWalk[0] = new Texture("Mobs/Knight/Right/walk0.png");
+		rWalk[1] = new Texture("Mobs/Knight/Right/walk1.png");
+		rWalk[2] = new Texture("Mobs/Knight/Right/walk2.png");
+		rWalk[3] = new Texture("Mobs/Knight/Right/walk3.png");
+		rWalk[4] = new Texture("Mobs/Knight/Right/walk4.png");
+		rWalk[5] = new Texture("Mobs/Knight/Right/walk5.png");
+		rWalk[6] = new Texture("Mobs/Knight/Right/walk6.png");
+		rWalk[7] = new Texture("Mobs/Knight/Right/walk7.png");
+		rWalk[8] = new Texture("Mobs/Knight/Right/walk8.png");
+		rAtk[0] = new Texture("Mobs/Knight/Right/attack0.png");
+		rAtk[1] = new Texture("Mobs/Knight/Right/attack1.png");
+		rAtk[2] = new Texture("Mobs/Knight/Right/attack2.png");
+		rAtk[3] = new Texture("Mobs/Knight/Right/attack3.png");
+		rAtk[4] = new Texture("Mobs/Knight/Right/attack4.png");
+		rAtk[5] = new Texture("Mobs/Knight/Right/attack5.png");
+		rAtk[6] = new Texture("Mobs/Knight/Right/attack6.png");
+		rAtk[7] = new Texture("Mobs/Knight/Right/attack7.png");
+		rIdle[0] = new Texture("Mobs/Knight/Right/idle.png");
+		
+		dWalk[0] = new Texture("Mobs/Knight/Down/walk0.png");
+		dWalk[1] = new Texture("Mobs/Knight/Down/walk1.png");
+		dWalk[2] = new Texture("Mobs/Knight/Down/walk2.png");
+		dWalk[3] = new Texture("Mobs/Knight/Down/walk3.png");
+		dWalk[4] = new Texture("Mobs/Knight/Down/walk4.png");
+		dWalk[5] = new Texture("Mobs/Knight/Down/walk5.png");
+		dWalk[6] = new Texture("Mobs/Knight/Down/walk6.png");
+		dWalk[7] = new Texture("Mobs/Knight/Down/walk7.png");
+		dWalk[8] = new Texture("Mobs/Knight/Down/walk8.png");
+		dAtk[0] = new Texture("Mobs/Knight/Down/attack0.png");
+		dAtk[1] = new Texture("Mobs/Knight/Down/attack1.png");
+		dAtk[2] = new Texture("Mobs/Knight/Down/attack2.png");
+		dAtk[3] = new Texture("Mobs/Knight/Down/attack3.png");
+		dAtk[4] = new Texture("Mobs/Knight/Down/attack4.png");
+		dAtk[5] = new Texture("Mobs/Knight/Down/attack5.png");
+		dAtk[6] = new Texture("Mobs/Knight/Down/attack6.png");
+		dAtk[7] = new Texture("Mobs/Knight/Down/attack7.png");
+		dIdle[0] = new Texture("Mobs/Knight/Down/idle.png");
+		
+		lWalk[0] = new Texture("Mobs/Knight/Left/walk0.png");
+		lWalk[1] = new Texture("Mobs/Knight/Left/walk1.png");
+		lWalk[2] = new Texture("Mobs/Knight/Left/walk2.png");
+		lWalk[3] = new Texture("Mobs/Knight/Left/walk3.png");
+		lWalk[4] = new Texture("Mobs/Knight/Left/walk4.png");
+		lWalk[5] = new Texture("Mobs/Knight/Left/walk5.png");
+		lWalk[6] = new Texture("Mobs/Knight/Left/walk6.png");
+		lWalk[7] = new Texture("Mobs/Knight/Left/walk7.png");
+		lWalk[8] = new Texture("Mobs/Knight/Left/walk8.png");
+		lAtk[0] = new Texture("Mobs/Knight/Left/attack0.png");
+		lAtk[1] = new Texture("Mobs/Knight/Left/attack1.png");
+		lAtk[2] = new Texture("Mobs/Knight/Left/attack2.png");
+		lAtk[3] = new Texture("Mobs/Knight/Left/attack3.png");
+		lAtk[4] = new Texture("Mobs/Knight/Left/attack4.png");
+		lAtk[5] = new Texture("Mobs/Knight/Left/attack5.png");
+		lAtk[6] = new Texture("Mobs/Knight/Left/attack6.png");
+		lAtk[7] = new Texture("Mobs/Knight/Left/attack7.png");
+		lIdle[0] = new Texture("Mobs/Knight/Left/idle.png");
     	
     	uWalk = loadedTex[uW + archerAnimInd] = new Texture[4];
     	uAtk = loadedTex[uA + archerAnimInd] = new Texture[5];
@@ -690,8 +785,27 @@ public class CombatChar extends Movable{
     	heal[19] = new Texture("Particles/heal19.png");
     	heal[20] = new Texture("Particles/heal20.png");
     	heal[21] = new Texture("Particles/heal21.png");
+    	searchNullExceptions();
     }
-    
+    private static void searchNullExceptions()
+    {
+    	for (int r = 0; r < loadedTex.length; r++)
+    	{
+    		for (int c = 0; c < loadedTex[r].length; c++)
+    		{
+    			Texture currTex = loadedTex[r][c];
+    			if (currTex == null)
+    			{
+    				try {
+						throw new Exception("CombatChar Texture at " + new Point(r, c) + " was null");
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(0);
+					}
+    			}
+    		}
+    	}
+    }
 
 	
 	//uW0 = up walk 0

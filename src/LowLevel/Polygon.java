@@ -9,7 +9,6 @@ import Imported.Texture;
 public class Polygon extends Image{
 	
 	private Texture image;
-	private float r, g, b, a;
 	public Polygon(Point[] points)
 	{
 		super(null, 0, 0, 0, 0);
@@ -46,7 +45,6 @@ public class Polygon extends Image{
 			collBas[i] = new Point(points[i].getX(), points[i].getY()); 
 		}
 		setCollisionBasis(collBas);
-		r = 255; g = 255; b = 255; a = 255;
 		setCollisionStatus(true);
 	}
 	public Polygon(Point[] points, float red, float green, float blue, float alpha)
@@ -85,7 +83,7 @@ public class Polygon extends Image{
 			collBas[i] = new Point(points[i].getX(), points[i].getY()); 
 		}
 		setCollisionBasis(collBas);
-		r = red; g = green; b = blue; a = alpha;
+		setRGBA(red, green, blue, alpha);
 		setCollisionStatus(true);
 	}
 	public void setWidth(double newWidth)
@@ -138,7 +136,7 @@ public class Polygon extends Image{
         
         image.bind();
         GL11.glBegin(GL11.GL_POLYGON);
-        GL11.glColor4f(r / 255, g / 255, b / 255, a / 255);
+        GL11.glColor4f(getRed() / 255, getGreen() / 255, getBlue() / 255, getAlpha() / 255);
         for (int i = 0; i < pointCords.length; i++)
         {
         	float currX = (float)((pointCords[i].getX() + getX()) * 2.0f / monWid);
@@ -161,7 +159,7 @@ public class Polygon extends Image{
         
         image.bind();
         GL11.glBegin(GL11.GL_POLYGON);
-        GL11.glColor4f(r / 255, g / 255, b / 255, a / 255);
+        GL11.glColor4f(getRed() / 255, getGreen() / 255, getBlue() / 255, getAlpha() / 255);
         for (int i = 0; i < pointCords.length; i++)
         {
         	float currX = (float)((pointCords[i].getX() + getX() - Main.player.getX()) * 2.0f / monWid);

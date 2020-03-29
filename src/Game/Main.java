@@ -11,6 +11,7 @@ import Combat.AOE;
 import Combat.CombatChar;
 import Combat.Player;
 import Combat.Projectile;
+import Combat.RangedMob;
 import Combat.SpawnPoint;
 import Exchange.ItemExchange;
 import Exchange.Shop;
@@ -169,7 +170,6 @@ public class Main
             else {Image.colorMultiplier = 1;}
             showVisibles();
             UI.showUI();
-            if (one && !oneLastFrame) {allRooms[currRoom].permaShow(new Projectile(Projectile.arrow, 0, 0, cursorAngle(), player));}
             
             glfwSwapBuffers(window);
             
@@ -280,9 +280,10 @@ public class Main
         Terrain test = Terrain.createTerrain(Tile.Dirt, 0, 0, 10, 10);
         test.addRow(Tile.GrassDirtBR, CombatChar.down);
         
-        int[] mobIDs = new int[] {Mob.duck};
+        int[] mobIDs = new int[] {Mob.archer};
         SpawnPoint spawnPoint = new SpawnPoint(-20, 20, mobIDs);
-        room.add(spawnPoint);
+        //room.add(spawnPoint);
+        room.add(new RangedMob(0, 0, Mob.archer));
         
         Room newRoom = new Room(room, new Terrain[] {test});
         allRooms[0] = newRoom;

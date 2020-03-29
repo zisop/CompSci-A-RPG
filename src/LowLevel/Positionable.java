@@ -255,6 +255,7 @@ public class Positionable extends Point
     	Point[] basis = getShowBasis();
     	Point[] rotatedBasis = Geometry.rotatePoints(basis, this, getAngle());
 		Polygon temp = new Polygon(rotatedBasis);
+		temp.setRGBA(0, 255, 0, 100);
 		temp.show();
 	}
 	public void showCollisionBox()
@@ -263,6 +264,7 @@ public class Positionable extends Point
 		Point myCenter = new Point(getX(), getY() - getHitDown());
     	Point[] rotatedBasis = Geometry.rotatePoints(basis, myCenter, getAngle());
 		Polygon temp = new Polygon(rotatedBasis);
+		temp.setRGBA(255, 0, 0, 100);
 		temp.show();
 	}
 	
@@ -272,6 +274,7 @@ public class Positionable extends Point
 		Point myCenter = new Point(getX(), getY() - getHitDown());
     	Point[] rotatedBasis = Geometry.rotatePoints(basis, myCenter, getAngle());
 		Polygon temp = new Polygon(rotatedBasis);
+		temp.setRGBA(0, 0, 255, 100);
 		temp.show();
 	}
     

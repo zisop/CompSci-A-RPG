@@ -60,6 +60,12 @@ public class Image extends Positionable
     	if (enemyState() == bad && otherChar.enemyState() == good) {return true;}
     	return false;
     }
+    public boolean isAlly(Image otherChar)
+    {
+    	if (enemyState() == good && otherChar.enemyState() == good) {return true;}
+    	if (enemyState() == bad && otherChar.enemyState() == bad) {return true;}
+    	return false;
+    }
     public void setEnemyState(int newState) {enemyState = newState;}
     public int enemyState() {return enemyState;}
     public void setAlpha(float newAlpha) {alpha = newAlpha;}
@@ -95,7 +101,8 @@ public class Image extends Positionable
         	else {
         		//Takes less time than show if shouldRotate; time optimization
         		pointCords = getShowBasis();
-        		image.bind();
+        		if (image != null) {image.bind();}
+        		else {Shape.shapes[Shape.square].bind();}
         		GL11.glBegin(GL11.GL_QUADS);
                 GL11.glTexCoord2f(0.0f, 1.0f);
                 GL11.glVertex2f(((float)(pointCords[DL].getX() - Main.player.getX()) * 2.0f / monWid), ((float)(pointCords[DL].getY() - Main.player.getY()) * 2.0f / monLen));

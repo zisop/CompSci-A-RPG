@@ -58,6 +58,11 @@ public class Point implements Comparable<Point>{
 	{
 		return compareTo(other) == 0;
 	}
+	/**
+	 * 
+	 * @param to
+	 * @return angle between 0 and 360
+	 */
 	public double angleTo(Point to)
 	{
 		if (to.equals(this)) {return 0;}

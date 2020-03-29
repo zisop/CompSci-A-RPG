@@ -109,6 +109,7 @@ public class Room extends Image{
 	public void permaShow(Projectile proj) {shotProj.add(proj);}
 	
 	public ArrayList<Image> getImages() {return images;}
+	public ArrayList<Projectile> getShotProj() {return shotProj;}
 	public Terrain[] getTerrain() {return terrains;}
 	public boolean strictCollision(Positionable otherChar) 
 	{

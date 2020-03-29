@@ -35,6 +35,7 @@ public class Door extends Image
         animInd = 0;
         opening = false;
         setCollisionStatus(true);
+        setProjInteraction(true);
         double wid = 75;
         double hitWid = 0;
         double len = 130;

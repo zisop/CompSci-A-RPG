@@ -2,7 +2,6 @@ package Combat;
 
 import java.util.ArrayList;
 
-import Game.Door;
 import Game.Main;
 import Imported.Texture;
 import LowLevel.Geometry;
@@ -19,6 +18,7 @@ public class Projectile extends Movable {
 	private int numHits;
 	private int maxHits;
 	private ArrayList<Image> alreadyAttacked;
+	private ArrayList<Image> collidingChars;
 	private double orbitRadius;
 	private boolean orbitting;
 	private boolean rotateWhileShot;
@@ -29,19 +29,19 @@ public class Projectile extends Movable {
 	private int changeFrame;
 	private int attackStun;
 	private int attackInvulnerability;
-	private Image collidingChar;
 	//All the animations (anims[0] should be frame 1, anims[7] should be frame 8 etc)
 	private Texture[] orbitAnims;
 	private Texture[] shotAnims;
 	private Texture[] anims;
 	private CombatChar owner;
 	private double orbitAngle;
-	public Projectile(int inID, double x, double y, double angle, CombatChar ownChar)
+	public Projectile(int inID, double x, double y, double angle, double damage, CombatChar ownChar)
 	{
 		super(null, x, y, 0, 0);
 		frameAnim = 0;
 		ID = inID;
 		alreadyAttacked = new ArrayList<Image>();
+		collidingChars = new ArrayList<Image>();
 		switch (ID) {
 			case fireball:
 				setWidth(50);
@@ -59,7 +59,6 @@ public class Projectile extends Movable {
 				rotateWhileShot = false;
 				break;
 			case door:
-				damage = 20;
 				speed = 20;
 				setLength(80);
 				setWidth(getLength() * 3 / 2);
@@ -75,7 +74,6 @@ public class Projectile extends Movable {
 				rotateWhileShot = true;
 				break;
 			case arrow:
-				damage = 15;
 				speed = 10;
 				setLength(40);
 				setWidth(getLength());
@@ -95,13 +93,16 @@ public class Projectile extends Movable {
 				catch (Exception e) {e.printStackTrace(); System.exit(0);}
 		}
 		setAngle(angle);
-		setOrbit(false);		
+		setOrbit(false);
+		setProjInteraction(true);
 		owner = ownChar;
+		this.damage = damage;
 		numHits = 0;
 		orbitAngle = 0;
 		framesShot = 0;
 		orbitRadius = Math.max(owner.getWidth(), owner.getLength()) * .85;
 		setRotation(true);
+		setEnemyState(owner.enemyState());
 	}
 	
 	//When a projectile shows, it'll add to its framecount and then show
@@ -116,22 +117,31 @@ public class Projectile extends Movable {
 			}
 			
 			updateCollision();
-			CombatChar coll = (CombatChar)collidingChar;
-			if (collidingChar != null && coll.canBeAttacked() && !alreadyAttacked.contains(collidingChar) && owner.isEnemy(collidingChar))
+			for (Image coll : collidingChars)
 			{
-				double[] damageInfo = new double[5];
-				damageInfo[Effect.damageDamage] = damage;
-				damageInfo[Effect.damageFromAngle] = collidingChar.angleTo(owner);
-				damageInfo[Effect.damageStunFrames] = attackStun;
-				damageInfo[Effect.damageInvulnFrames] = attackInvulnerability;
-				damageInfo[Effect.damageInitialVelocity] = initialHitVelocity;
-				Effect damage = new Effect(Effect.damage, damageInfo, owner);
-				coll.receiveEffect(damage);
-				if (!orbitting) {
-					numHits++; alreadyAttacked.add(collidingChar);
+				if (coll instanceof CombatChar)
+				{
+					CombatChar enemy = (CombatChar)(coll);
+					if (enemy.canBeAttacked() && !alreadyAttacked.contains(enemy) && isEnemy(enemy))
+					{
+					
+						double[] damageInfo = new double[5];
+						damageInfo[Effect.damageDamage] = damage;
+						damageInfo[Effect.damageFromAngle] = enemy.angleTo(owner);
+						damageInfo[Effect.damageStunFrames] = attackStun;
+						damageInfo[Effect.damageInvulnFrames] = attackInvulnerability;
+						damageInfo[Effect.damageInitialVelocity] = initialHitVelocity;
+						Effect damage = new Effect(Effect.damage, damageInfo, owner);
+						enemy.receiveEffect(damage);
+						
+					}
+				}
+				if (!orbitting && isEnemy(coll)) {
+					numHits++; alreadyAttacked.add(coll);
 					if (numHits == maxHits) {framesShot = endFrame;}
 				}
 			}
+			collidingChars.clear();
 			move();
 		}
 		super.show();
@@ -175,23 +185,27 @@ public class Projectile extends Movable {
 	private void updateCollision()
 	{
 		Room currRoom = Main.allRooms[Main.currRoom];
+		
+		ArrayList<Image> temp = new ArrayList<Image>();
 		ArrayList<Image> images = currRoom.getImages();
-		for (int i = 0; i < images.size(); i++)
+		ArrayList<Projectile> proj = currRoom.getShotProj();
+		
+		temp.addAll(images);
+		temp.addAll(proj);
+		for (int i = 0; i < temp.size(); i++)
 		{
-			Image currImg = images.get(i);
+			Image currImg = temp.get(i);
 			if (currImg != owner && currImg.interactsProj() && collision(currImg))
 			{
-				collidingChar = currImg;
-				return;
+				collidingChars.add(currImg);
 			}
 		}
-		collidingChar = null;
 	}
 	/**
 	 * determines whether the projectile should STOP EXISTING
 	 * @return end == true
 	 */
-	public boolean isEnded() {return framesShot == endFrame;}
+	public boolean isEnded() {return framesShot >= endFrame;}
 	public boolean isOrbitting() {return orbitting;}
 	public double getOrbitRadius() {return orbitRadius;}
 	/**
